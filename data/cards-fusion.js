@@ -23,8 +23,8 @@ window.SYNTH_CARDS = [
     ],
   },
   {
-    id: 'sphinx', no: '202', name: '斯芬克斯', en: 'Sphinx', kind: 'monster', domain: 'desert', rarity: 'epic',
-    cost: '合', atk: 5, hp: 6, art: 'sphinx', style: '紙草壁畫', form: 'synthesis',
+    id: 'sphinx', no: '202', name: '斯芬克斯', en: 'Sphinx', kind: 'monster', domain: 'desert', rarity: 'mythic',
+    cost: '合', atk: 5, hp: 6, art: 'sphinx', style: '黑底燙金', form: 'synthesis',
     mats: '小母獅 ＋ 法老',
     typeLine: '神獸｜合成',
     text: SYNTH_TEXT + '<br><b>守門</b>　對手想傷害你的心之前，必須先攻擊它。',

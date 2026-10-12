@@ -77,45 +77,91 @@
     return s;
   };
 
-  // ───────── 合成怪：斯芬克斯（獅身人面） ─────────
+  // ───────── 合成怪：斯芬克斯（黑底燙金・夕陽下的人面獅身像） ─────────
   SCENES.sphinx = (card) => {
-    const P = MODE.papyrus;
-    let s = papyrusGround(W.x, W.y, W.w, W.h, 61);
-    s += blockBand(W.x, W.y, W.w, 9, ['#2c5d9c', '#b6402a', '#3b7d58', '#e2b54c', '#b6402a']);
-    s += lotusFrieze(W.x, W.y + 9, W.w, 15);
-    s += `<circle cx="236" cy="178" r="40" fill="url(#SUN)" stroke="${L}" stroke-width="2"/>`;
-    const pyr = (cx, base, hw, h) => `<path d="M${cx - hw},${base} L${cx},${base - h} L${cx + hw},${base} Z" fill="#f0dca8" stroke="${L}" stroke-width="2" stroke-linejoin="round"/><path d="M${cx},${base - h} L${cx + hw},${base} L${cx},${base} Z" fill="#d1a860"/><path d="M${cx},${base - h} L${cx + hw},${base} L${cx - hw},${base}" fill="none" stroke="${L}" stroke-width="2" stroke-linejoin="round"/>`;
-    s += pyr(138, 344, 98, 150) + pyr(268, 344, 62, 96);
-    // 沙地
-    s += `<rect x="${W.x}" y="334" width="${W.w}" height="90" fill="#ecc874"/><path d="M${W.x},334 H${W.x + W.w}" stroke="${L}" stroke-width="2"/>`;
-    s += `<path d="M${W.x},388 H${W.x + W.w}" stroke="${L}" stroke-width="2"/><rect x="${W.x}" y="391" width="${W.w}" height="30" fill="#b6402a"/>`;
-    const r = rng(9);
-    for (let i = 0; i < 70; i++) s += `<circle cx="${f(W.x + 6 + r() * (W.w - 12))}" cy="${f(340 + r() * 44)}" r="${f(0.7 + r() * 0.8)}" fill="#8a5a1c" opacity=".55"/>`;
-    // 獅身
-    const body = 'M50,386 C44,340 58,298 100,280 C140,264 200,260 258,258 C292,256 314,252 326,240 L328,226 L384,226 L388,246 C386,278 382,296 394,318 C406,340 438,344 452,360 L454,386 Z';
-    const cid = uid('sp');
-    s += `<path d="M52,374 C28,376 22,350 34,334 C42,324 56,330 54,344" fill="none" stroke="${L}" stroke-width="9" stroke-linecap="round"/><path d="M52,374 C28,376 22,350 34,334 C42,324 56,330 54,344" fill="none" stroke="#e3ab52" stroke-width="5" stroke-linecap="round"/><ellipse cx="55" cy="347" rx="6" ry="9" fill="#5a3a22" stroke="${L}" stroke-width="1.6"/>`;
-    s += `<path d="${body}" fill="#e3ab52" stroke="${L}" stroke-width="2.2" stroke-linejoin="round"/>`;
-    s += `<clipPath id="${cid}"><path d="${body}"/></clipPath><g clip-path="url(#${cid})"><path d="M40,360 H470 V390 H40 Z" fill="#c98a3a" opacity=".75"/><path d="M80,276 C150,262 210,262 270,258 L270,300 C200,300 120,300 80,296 Z" fill="#f2c274" opacity=".55"/></g>`;
-    // 後腿與腳掌
-    s += `<path d="M96,296 C132,298 156,330 146,376" fill="none" stroke="${L}" stroke-width="2"/><path d="M92,386 C96,366 132,364 166,370 L174,386 Z" fill="#e8b45e" stroke="${L}" stroke-width="2" stroke-linejoin="round"/><path d="M146,380 V386 M156,378 V386" stroke="${L}" stroke-width="1.5"/>`;
-    // 前腿
-    s += `<path d="M330,326 C340,352 356,360 380,360 L442,360 C454,360 460,368 460,378 L460,386 L330,386 Z" fill="#edbb68" stroke="${L}" stroke-width="2.2" stroke-linejoin="round"/><path d="M350,372 H458" stroke="${L}" stroke-width="1.6"/><path d="M436,362 V372 M446,362 V372 M455,364 V372" stroke="${L}" stroke-width="1.5"/>`;
-    // 人面（法老）
-    const hs = 20, sw = f(P.sw / hs), st = `stroke="${L}" stroke-width="${sw}" stroke-linejoin="round"`;
+    const P = gP();
+    let s = goldGround(W.x, W.y, W.w, W.h, 61);
+    s += tint(uid('spA'), 372, 214, 250, '#e2553a', 0.62, 0.24);
+    s += tint(uid('spB'), 90, 300, 200, '#2a56b8', 0.22, 0.08);
+    const sx = 372, sy = 192, sr = 62;
+    // 落日：細長的日芒＋圓盤
+    for (let i = 0; i < 64; i++) {
+      const a = (i / 64) * Math.PI * 2, Lg = i % 4 === 0 ? 118 : i % 2 ? 92 : 104;
+      s += `<path d="M${f(sx + Math.cos(a) * (sr + 8))},${f(sy + Math.sin(a) * (sr + 8))} L${f(sx + Math.cos(a) * Lg)},${f(sy + Math.sin(a) * Lg)}" stroke="${G}" stroke-width="${i % 4 === 0 ? 1.4 : .8}" opacity="${i % 4 === 0 ? .9 : .55}"/>`;
+    }
+    s += `<circle cx="${sx}" cy="${sy}" r="${sr + 5}" fill="#0d0907" stroke="${G}" stroke-width="2.2"/><circle cx="${sx}" cy="${sy}" r="${sr}" fill="url(#SUN)"/>`;
+    s += `<circle cx="${sx}" cy="${sy}" r="${sr - 9}" fill="none" stroke="#ffd9a0" stroke-width="1" stroke-dasharray="0.1 5" stroke-linecap="round" opacity=".8"/>`;
+    // 金字塔：磚層線與受光面
+    const pyr = (cx, base, hw, h, lit) => {
+      const id = uid('py');
+      let o = `<clipPath id="${id}"><path d="M${cx - hw},${base} L${cx},${base - h} L${cx + hw},${base} Z"/></clipPath>`;
+      o += `<path d="M${cx - hw},${base} L${cx},${base - h} L${cx + hw},${base} Z" fill="#120d0a"/>`;
+      o += `<g clip-path="url(#${id})"><path d="M${cx},${base - h} L${cx + hw},${base} L${cx},${base} Z" fill="${lit}" opacity=".5"/><g stroke="${G}" stroke-width=".7" opacity=".45">`;
+      for (let k = 1; k < 16; k++) { const y = base - h + (h * k) / 16, w = (hw * k) / 16; o += `<path d="M${f(cx - w)},${f(y)} H${f(cx + w)}"/>`; }
+      o += `</g></g><path d="M${cx - hw},${base} L${cx},${base - h} L${cx + hw},${base} Z" fill="none" stroke="${G}" stroke-width="1.8" stroke-linejoin="round"/><path d="M${cx},${base - h} V${base}" stroke="${G}" stroke-width=".9" opacity=".6"/>`;
+      return o;
+    };
+    s += pyr(158, 384, 142, 196, '#8a2a1c') + pyr(268, 384, 76, 104, '#8a2a1c');
+    // 沙丘：燙金等高線
+    s += `<path d="M${W.x},346 Q120,330 200,346 T340,344 T${W.x + W.w},338 V${W.y + W.h} H${W.x} Z" fill="#0d0907" stroke="${G}" stroke-width="1.6"/>`;
+    s += `<g fill="none" stroke="${G}" stroke-width=".9" opacity=".55">`;
+    for (let k = 0; k < 4; k++) s += `<path d="M${W.x},${356 + k * 12} Q${120 + k * 20},${346 + k * 12} 220,${358 + k * 12} T${W.x + W.w},${352 + k * 12}"/>`;
+    s += `</g>`;
+    const rr = rng(14);
+    for (let i = 0; i < 40; i++) s += `<circle cx="${f(W.x + 6 + rr() * (W.w - 12))}" cy="${f(350 + rr() * 34)}" r="${f(.6 + rr() * .7)}" fill="${C.gold}" opacity=".55"/>`;
+    // ── 獅身 ──
+    const body = 'M42,386 C34,352 42,320 68,302 C92,286 126,278 164,276 C214,272 266,268 306,260 C324,256 336,248 343,238 L346,224 L392,224 L396,246 C394,272 390,296 396,318 C402,338 424,350 446,354 L458,358 L458,386 Z';
+    const cid = uid('sb'), gid = uid('sg');
+    s += `<linearGradient id="${gid}" gradientUnits="userSpaceOnUse" x1="40" y1="280" x2="460" y2="360"><stop offset="0" stop-color="#150e0a"/><stop offset=".55" stop-color="#26170e"/><stop offset="1" stop-color="#4a2814"/></linearGradient>`;
+    // 尾巴
+    s += `<path d="M46,372 C16,376 10,346 26,330 C36,320 52,326 48,342" fill="none" stroke="${G}" stroke-width="9" stroke-linecap="round"/><path d="M46,372 C16,376 10,346 26,330 C36,320 52,326 48,342" fill="none" stroke="#120d0a" stroke-width="5.5" stroke-linecap="round"/><path d="M50,346 q8,6 4,16 q-10,0 -10,-10 Z" fill="#120d0a" stroke="${G}" stroke-width="1.4"/>`;
+    s += `<path d="${body}" fill="url(#${gid})"/>`;
+    s += `<clipPath id="${cid}"><path d="${body}"/></clipPath><g clip-path="url(#${cid})">`;
+    s += `<ellipse cx="430" cy="300" rx="120" ry="110" fill="#e2553a" opacity=".3"/>`;
+    // 肌理：後腿大腿、肋骨、肩、背脊
+    s += `<g fill="none" stroke="${G}" stroke-linecap="round">`;
+    s += `<path d="M72,336 C84,300 132,294 152,332 C160,352 154,372 142,386" stroke-width="1.5"/><path d="M84,330 C96,308 128,306 140,334" stroke-width=".9" opacity=".7"/>`;
+    for (let k = 0; k < 6; k++) s += `<path d="M${196 + k * 17},${286 + k * 1.5} Q${204 + k * 17},${318} ${198 + k * 17},${348}" stroke-width="1" opacity="${f(.75 - k * .06)}"/>`;
+    s += `<path d="M298,292 C330,298 344,326 338,360" stroke-width="1.5"/><path d="M308,300 C332,308 340,330 336,352" stroke-width=".9" opacity=".7"/>`;
+    s += `<path d="M64,300 C92,284 126,278 164,276 C214,272 266,268 306,260 C324,256 336,248 343,238" stroke="#fff0c2" stroke-width="1.6" opacity=".85"/>`;
+    s += `<path d="M40,372 H340" stroke-width="1" stroke-dasharray="0.1 5" opacity=".7"/>`;
+    s += `</g></g>`;
+    s += `<path d="${body}" fill="none" stroke="${G}" stroke-width="2.4" stroke-linejoin="round"/>`;
+    // 後腳掌與前腿
+    s += `<path d="M96,386 C100,368 134,366 168,372 L176,386 Z" fill="#1d130d" stroke="${G}" stroke-width="1.8" stroke-linejoin="round"/><path d="M142,380 V386 M154,378 V386 M166,376 V386" stroke="${G}" stroke-width="1.3"/>`;
+    s += `<path d="M350,338 C356,356 374,362 398,362 L448,362 C458,362 460,372 460,386 L350,386 Z" fill="#2a190f" stroke="${G}" stroke-width="2.2" stroke-linejoin="round"/>`;
+    s += `<path d="M366,372 H458" stroke="${G}" stroke-width="1.3"/><path d="M436,364 V372 M446,364 V372 M455,366 V372" stroke="${G}" stroke-width="1.3"/>`;
+    s += `<path d="M372,366 H430" stroke="#fff0c2" stroke-width="1" opacity=".7"/><path d="M396,300 C398,330 392,342 384,352" fill="none" stroke="${G}" stroke-width="1.2" opacity=".7"/>`;
+    // 寬領圈（wesekh）：掛在胸前的彩色珠串
+    const cx0 = 370, cy0 = 234;
+    for (const [rad, col, op] of [[34, C.lapis, 1], [29, C.carn, 1], [24, C.turq, 1], [19, C.gold, 1], [14, C.rose, 1]]) {
+      s += `<path d="M${cx0 - rad},${cy0} A${rad},${rad * 0.9} 0 0 0 ${cx0 + rad},${cy0} L${cx0 + rad - 4.6},${cy0} A${rad - 4.6},${(rad - 4.6) * 0.9} 0 0 1 ${cx0 - rad + 4.6},${cy0} Z" fill="${col}" stroke="#0d0907" stroke-width=".9" opacity="${op}"/>`;
+    }
+    for (let i = 0; i <= 14; i++) { const a = Math.PI * i / 14, x = cx0 - Math.cos(a) * 35.5, y = cy0 + Math.sin(a) * 32; s += `<path d="M${f(x - 2)},${f(y - 1)} L${f(x)},${f(y + 5)} L${f(x + 2)},${f(y - 1)} Z" fill="${C.turq}" stroke="#0d0907" stroke-width=".6"/>`; }
+    // ── 人面（法老）──
+    const hs = 17, sw = f(P.sw / hs), st = `stroke="${BR}" stroke-width="${sw}" stroke-linejoin="round"`;
     const capD = 'M1.1,-18.15 Q1.05,-19.55 -0.3,-20.0 Q-2.0,-20.1 -2.65,-18.4 L-3.0,-15.0 L-1.6,-14.8 Q-1.3,-16.3 -0.62,-16.95 L-0.1,-17.3 Q0.3,-17.6 0.4,-18.0 Q0.8,-18.0 1.1,-18.15 Z';
     const lapD = 'M-1.5,-17.0 Q-0.5,-16.8 -0.2,-16.2 L0.5,-12.6 L-1.0,-12.4 Q-1.4,-14.8 -1.5,-17.0 Z';
-    const stripes = (clip, y0, y1) => { let o = `<clipPath id="${clip}"><path d="${clip.startsWith('nc') ? capD : lapD}"/></clipPath><g clip-path="url(#${clip})">`; let i = 0; for (let y = y0; y < y1; y += 0.4, i++) o += `<rect x="-3.4" y="${f(y)}" width="4.8" height="0.4" fill="${i % 2 ? '#e2b54c' : '#2c5d9c'}"/>`; return o + `</g>`; };
+    const bands = (clip, d, y0, y1) => { let o = `<clipPath id="${clip}"><path d="${d}"/></clipPath><g clip-path="url(#${clip})">`; let i = 0; for (let y = y0; y < y1; y += 0.36, i++) o += `<rect x="-3.4" y="${f(y)}" width="4.8" height="0.36" fill="${i % 2 ? '#173f45' : 'url(#GF)'}"/>`; return o + `<g stroke="${BR}" stroke-width="${f(sw * .5)}" opacity=".8">${Array.from({ length: 9 }, (_, k) => `<path d="M${f(-3 + k * .5)},${y0} L${f(-3.1 + k * .5)},${y1}"/>`).join('')}</g></g>`; };
     const c1 = uid('nc'), c2 = uid('nl');
-    s += `<g transform="translate(360,556) scale(${hs})">`;
-    s += `<path d="M-1.6,-18.2 L-3.1,-15.4 L-1.7,-14.7 L-0.9,-16.6 Z" fill="#2c5d9c" ${st}/>`;
-    s += `<path d="${FACE.head}" fill="${P.skin}" ${st}/><path d="${FACE.eye}" fill="${P.white}" ${st}/><circle cx="0.84" cy="-17.6" r=".1" fill="${P.black}"/><path d="${FACE.kohl}" fill="${P.black}"/>`;
-    s += `<path d="${FACE.brow}" fill="none" stroke="${P.black}" stroke-width="${f(sw * 1.1)}" stroke-linecap="round"/><path d="${FACE.lip}" fill="none" ${st}/>`;
-    s += `<path d="M0.55,-16.45 Q0.95,-16.05 0.98,-14.8 L1.5,-14.35 Q1.42,-15.9 1.1,-16.55 Z" fill="#2c5d9c" ${st}/>`;
-    s += `<path d="${capD}" fill="#e2b54c" ${st}/>${stripes(c1, -20.2, -14.6)}<path d="${capD}" fill="none" ${st}/>`;
-    s += `<path d="${lapD}" fill="#e2b54c" ${st}/>${stripes(c2, -17.2, -12.2)}<path d="${lapD}" fill="none" ${st}/>`;
-    s += `<path d="M1.02,-18.9 Q1.55,-19.0 1.45,-19.55 Q1.38,-19.85 1.12,-19.62 Q1.18,-19.3 0.95,-19.1 Z" fill="#b6402a" ${st}/>`;
+    s += `<g transform="translate(366,497) scale(${hs})">`;
+    s += `<path d="M-1.6,-18.2 L-3.15,-15.4 L-1.7,-14.7 L-0.9,-16.6 Z" fill="#173f45" ${st}/>`;
+    s += `<path d="${FACE.head}" fill="#2a160d" ${st}/>`;
+    s += `<path d="${FACE.eye}" fill="#f6e3a6" ${st}/><circle cx="0.84" cy="-17.6" r=".11" fill="#0d0907"/><path d="${FACE.kohl}" fill="${BR}"/>`;
+    s += `<path d="${FACE.brow}" fill="none" stroke="${BR}" stroke-width="${f(sw * 1.4)}" stroke-linecap="round"/><path d="${FACE.lip}" fill="none" ${st}/>`;
+    s += `<path d="M1.2,-17.05 Q1.55,-16.7 1.35,-16.55" fill="none" stroke="${BR}" stroke-width="${f(sw * .6)}" opacity=".8"/>`;
+    // 禮儀鬍：金色，帶綠松石色環
+    s += `<path d="M0.55,-16.45 Q0.95,-16.05 0.98,-14.8 L1.5,-14.35 Q1.42,-15.9 1.1,-16.55 Z" fill="url(#GF)" ${st}/><path d="M0.78,-15.8 L1.25,-15.7 M0.9,-15.25 L1.35,-15.12" stroke="#173f45" stroke-width="${f(sw * 1.4)}"/>`;
+    s += `<path d="${capD}" fill="#120d0a" ${st}/>${bands(c1, capD, -20.2, -14.6)}<path d="${capD}" fill="none" ${st}/>`;
+    s += `<path d="M-2.2,-19.5 L-2.7,-15.6" stroke="${BR}" stroke-width="${f(sw * .6)}" opacity=".8"/>`;
+    s += `<path d="${lapD}" fill="#120d0a" ${st}/>${bands(c2, lapD, -17.2, -12.2)}<path d="${lapD}" fill="none" ${st}/>`;
+    s += `<path d="M-1.9,-18.05 Q-0.4,-18.55 1.04,-18.2" fill="none" stroke="${C.turq}" stroke-width="${f(sw * 1.7)}"/>`;
+    s += `<path d="M1.02,-18.95 Q1.62,-19.05 1.5,-19.75 Q1.42,-20.15 1.12,-19.9 Q1.2,-19.5 0.95,-19.2 Z" fill="url(#GF)" ${st}/><circle cx="1.3" cy="-19.55" r=".07" fill="${C.turq}"/>`;
     s += `</g>`;
+    // 金色星芒與底座文字
+    const r2 = rng(5);
+    for (let i = 0; i < 14; i++) s += sparkle(W.x + 14 + r2() * (W.w - 28), W.y + 28 + r2() * 90, 2 + r2() * 5, G);
+    s += `<path d="M${W.x},386 H${W.x + W.w}" stroke="${G}" stroke-width="1.6"/>`;
     return s;
   };
 
