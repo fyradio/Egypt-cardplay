@@ -261,6 +261,14 @@
     mouth: 'M2.32,-17.16 Q1.6,-17.12 1.05,-17.08',
     nose: 'M2.48,-17.32 L2.3,-17.3',
   };
+  const FALCON = {
+    head: 'M0.6,-15.95 Q0.35,-16.5 0.6,-17.0 Q1.0,-17.4 0.98,-18.1 Q0.9,-18.9 0.1,-19.0 Q-0.8,-18.95 -0.95,-18.1 Q-1.0,-17.2 -0.5,-16.6 L-0.6,-15.95 Z',
+    beak: 'M0.88,-18.45 Q1.95,-18.5 2.1,-17.35 Q1.95,-17.42 1.82,-17.68 Q1.4,-17.88 0.9,-17.62 Z',
+    eye: 'M0.42,-18.2 m-0.17,0 a0.17,0.17 0 1,0 0.34,0 a0.17,0.17 0 1,0 -0.34,0',
+    mark1: 'M0.4,-18.0 Q0.36,-17.5 0.05,-17.05',
+    mark2: 'M0.55,-18.1 Q1.2,-17.9 1.5,-17.4',
+    mantle: 'M-0.95,-18.1 Q-1.9,-17.6 -2.0,-16.2 Q-1.9,-15.4 -1.4,-15.1 L-0.7,-15.3 Q-0.4,-16.0 -0.5,-16.6 Q-1.0,-17.2 -0.95,-18.1 Z',
+  };
   const IBIS = {
     head: 'M0.45,-16.6 Q0.98,-17.4 0.95,-18.05 Q0.88,-18.85 0.1,-18.9 Q-0.75,-18.85 -0.85,-18.0 Q-0.85,-17.2 -0.3,-16.75 Z',
     beak: 'M0.82,-18.42 Q2.95,-18.15 3.9,-14.75 Q3.86,-14.55 3.7,-14.62 Q2.65,-17.25 0.86,-17.62 Z',
@@ -347,6 +355,11 @@
       g += `<path d="${PART.frontArmFwd}" fill="${skin}" ${st}/>`;
       g += `<path d="M3.55,-12.88 L3.98,-12.78 L4.0,-12.0 L3.52,-11.9 Z" fill="${P.gold}" ${st}/>`;
       g += `<ellipse cx="5.86" cy="-11.98" rx=".52" ry=".48" fill="${skin}" ${st}/>`;
+    } else if (o.frontHold === 'ankhFwd') {
+      g += ankh(5.95, -12.35, 3.0, o.ankhFill || P.blue, L, sw);
+      g += `<path d="${PART.frontArmFwd}" fill="${skin}" ${st}/>`;
+      g += `<path d="M3.55,-12.88 L3.98,-12.78 L4.0,-12.0 L3.52,-11.9 Z" fill="${P.gold}" ${st}/>`;
+      g += `<ellipse cx="5.86" cy="-11.98" rx=".52" ry=".48" fill="${skin}" ${st}/>`;
     } else if (o.frontHold === 'adze') {
       // 祭司的手斧（開口儀式用）：長柄，前端是彎起的金屬刃
       const t = o.adzeTip || [9.5, -15.1];
@@ -395,6 +408,13 @@
       g += `<path d="${JACKAL.earIn}" fill="${o.earIn || P.gold}" opacity=".85"/>`;
       g += `<path d="${JACKAL.eye}" fill="${o.eyeFill || P.white}" stroke="${o.eyeLine || P.gold}" stroke-width="${f(sw * 0.7)}"/>`;
       g += `<path d="${JACKAL.mouth}" fill="none" stroke="${o.eyeLine || P.gold}" stroke-width="${f(sw * 0.6)}"/>`;
+    } else if (o.head === 'falcon') {
+      g += `<path d="${FALCON.mantle}" fill="${P.wig}" ${st}/>`;
+      g += `<path d="${FALCON.head}" fill="${P.ibis}" ${st}/>`;
+      g += `<path d="${FALCON.beak}" fill="${o.beak || P.gold}" ${st}/>`;
+      g += `<path d="${FALCON.mark1}" fill="none" stroke="${o.eyeLine || P.turq}" stroke-width="${f(sw * 1.5)}" stroke-linecap="round"/>`;
+      g += `<path d="${FALCON.mark2}" fill="none" stroke="${o.eyeLine || P.turq}" stroke-width="${f(sw * 1.1)}" stroke-linecap="round"/>`;
+      g += `<path d="${FALCON.eye}" fill="${o.eyeFill || P.white}" stroke="${o.eyeLine || P.line}" stroke-width="${f(sw * 0.6)}"/>`;
     } else if (o.head === 'ibis') {
       g += wigBlock(P, s);
       g += `<path d="${IBIS.head}" fill="${P.ibis}" ${st}/>`;
@@ -414,10 +434,13 @@
       g += `<path d="${FACE.brow}" fill="none" stroke="${P.black}" stroke-width="${f(sw * 1.1)}" stroke-linecap="round"/>`;
       g += `<path d="${FACE.lip}" fill="none" ${st}/>`;
       g += wigCap(P, s);
+      if (o.beard) g += `<path d="M0.55,-16.45 Q0.95,-16.05 0.98,-14.8 L1.5,-14.35 Q1.42,-15.9 1.1,-16.55 Z" fill="${o.beardFill || P.gold}" ${st}/>`;
       if (o.band) g += `<path d="M1.02,-18.25 Q-0.4,-18.55 -1.98,-18.2 L-1.98,-17.92 Q-0.4,-18.25 1.0,-17.98 Z" fill="${o.band}" ${st}/>`;
     }
     // 頭飾
     if (o.crown === 'lunar') g += lunarCrown(P, s, o);
+    if (o.crown === 'sun') g += sunCrown(P, s, o);
+    if (o.crown === 'plumes') g += plumeCrown(P, s, o);
     if (o.crown === 'feather') g += maatFeather(P, s);
     g += `</g>`;
     return g;
@@ -440,6 +463,24 @@
     const d = 'M1.08,-18.15 Q1.05,-19.05 0.0,-19.48 Q-1.42,-19.62 -1.92,-18.5 Q-2.02,-17.5 -1.9,-16.75 L-0.62,-16.95 Q-0.32,-17.0 -0.1,-17.12 Q0.2,-17.3 0.3,-17.6 Q0.38,-17.85 0.56,-17.96 Q0.92,-18.02 1.08,-18.15 Z';
     let g = `<path d="${d}" fill="${P.wig}" stroke="${L}" stroke-width="${sw}" stroke-linejoin="round"/>`;
     g += `<clipPath id="wk${++UID}"><path d="${d}"/></clipPath><g clip-path="url(#wk${UID})">${wigStrands(P, s, -19.6, -16.5)}</g>`;
+    return g;
+  }
+
+  function sunCrown(P, s, o) {
+    const sw = f(P.sw / s);
+    return `<path d="M-1.0,-19.15 Q-0.05,-18.9 1.0,-19.15 L0.85,-19.6 Q-0.05,-19.4 -0.85,-19.6 Z" fill="${P.gold}" stroke="${P.line}" stroke-width="${sw}"/>
+      <circle cx="-0.05" cy="-20.7" r="1.2" fill="${o.disk || P.sun}" stroke="${P.line}" stroke-width="${sw}"/>
+      <path d="M0.55,-19.2 Q1.65,-19.5 1.45,-20.75 Q1.35,-21.25 1.0,-21.0 Q1.1,-20.6 0.85,-20.15 Q0.75,-19.75 0.4,-19.5 Z" fill="${o.uraeus || P.red}" stroke="${P.line}" stroke-width="${sw}"/>`;
+  }
+  function plumeCrown(P, s, o) {
+    const sw = f(P.sw / s);
+    let g = `<path d="M-1.6,-19.35 L1.35,-19.35 L1.2,-20.1 L-1.45,-20.1 Z" fill="${o.cap || P.gold}" stroke="${P.line}" stroke-width="${sw}"/>`;
+    const plume = (x, fill, band) => {
+      let o2 = `<g transform="translate(${x},0)"><path d="M0,-20.05 Q-0.9,-22 -0.75,-25 Q-0.6,-27.6 0,-28.8 Q0.6,-27.6 0.75,-25 Q0.9,-22 0,-20.05 Z" fill="${fill}" stroke="${P.line}" stroke-width="${sw}" stroke-linejoin="round"/>`;
+      for (let y = -21.2; y > -28; y -= 1.1) o2 += `<path d="M-0.62,${f(y)} Q0,${f(y - 0.35)} 0.62,${f(y)}" fill="none" stroke="${band}" stroke-width="${f(sw * 0.9)}"/>`;
+      return o2 + `<path d="M0,-20.2 V-28.4" stroke="${band}" stroke-width="${f(sw * 0.7)}"/></g>`;
+    };
+    g += plume(-0.4, o.plumeA || '#14316a', o.plumeBand || '#e6c677') + plume(0.62, o.plumeB || '#5a2a1c', o.plumeBand || '#e6c677');
     return g;
   }
 
@@ -910,6 +951,135 @@
     return o + `</g>`;
   }
 
+  // ───────── 三神 ─────────
+  const BR = '#e8c978';                       // 三神人物用的亮金線
+  const gP = () => Object.assign({}, MODE.gold, { line: BR, sw: 1.5 });
+  function podium() {
+    let o = `<g fill="#15100d" stroke="url(#G)" stroke-width="1.3"><path d="M120,${GROUND} H380 V${GROUND + 10} H120 Z"/><path d="M104,${GROUND + 10} H396 V${GROUND + 22} H104 Z"/></g>`;
+    for (let i = 0; i < 14; i++) o += diamond(128 + i * 19, GROUND + 5, 3, 3, i % 2 ? C.turq : C.rose, 'none', 0);
+    return o;
+  }
+  function tint(id, cx, cy, r, col, a1, a2) {
+    return `<radialGradient id="${id}" cx="${cx}" cy="${cy}" r="${r}" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="${col}" stop-opacity="${a1}"/><stop offset=".55" stop-color="${col}" stop-opacity="${a2}"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></radialGradient><rect x="${W.x}" y="${W.y}" width="${W.w}" height="${W.h}" fill="url(#${id})"/>`;
+  }
+  function ringGlyphs(cx, cy, r, codes, size, fill) {
+    let o = '';
+    codes.forEach((code, i) => {
+      const a = (i / codes.length) * 360, g = GL.g[code], sc = size / GL.upm;
+      const w = (g.b[2] - g.b[0]) * sc, h = (g.b[3] - g.b[1]) * sc;
+      o += `<g transform="rotate(${a} ${cx} ${cy})"><path d="${g.d}" transform="translate(${f(cx - w / 2 - g.b[0] * sc)},${f(cy - r + h / 2 + g.b[1] * sc)}) scale(${f(sc * 1000) / 1000},${-f(sc * 1000) / 1000})" ${gst(fill)}/></g>`;
+    });
+    return o;
+  }
+
+  // 拉：巨大的日輪，鷹頭人身，頂著日輪與聖蛇
+  SCENES.ra = (card) => {
+    const P = gP();
+    let s = goldGround(W.x, W.y, W.w, W.h, 41);
+    s += tint('rg' + (++UID), 250, 240, 230, '#e2553a', 0.5, 0.2);
+    const cx = 250, cy = 236, r = 118;
+    // 日芒：長短相間的金色三角形
+    for (let i = 0; i < 48; i++) {
+      const a = (i / 48) * Math.PI * 2, a2 = ((i + 0.5) / 48) * Math.PI * 2, a3 = ((i + 1) / 48) * Math.PI * 2;
+      const L = i % 2 ? 150 : 176;
+      s += `<path d="M${f(cx + Math.cos(a) * (r + 8))},${f(cy + Math.sin(a) * (r + 8))} L${f(cx + Math.cos(a2) * L)},${f(cy + Math.sin(a2) * L)} L${f(cx + Math.cos(a3) * (r + 8))},${f(cy + Math.sin(a3) * (r + 8))} Z" fill="${i % 2 ? 'none' : 'url(#GF)'}" stroke="url(#G)" stroke-width="1" opacity="${i % 2 ? .8 : .55}"/>`;
+    }
+    s += `<circle cx="${cx}" cy="${cy}" r="${r + 5}" fill="#0d0907" stroke="url(#G)" stroke-width="2.2"/>`;
+    s += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#SUN)"/>`;
+    s += `<circle cx="${cx}" cy="${cy}" r="${r - 10}" fill="none" stroke="#ffd9a0" stroke-width="1" stroke-dasharray="0.1 5" stroke-linecap="round" opacity=".8"/>`;
+    s += `<circle cx="${cx}" cy="${cy}" r="${r - 24}" fill="none" stroke="#ffd9a0" stroke-width=".8" opacity=".5"/>`;
+    s += podium();
+    s += strider(P, 250, GROUND, 11.4, { head: 'falcon', crown: 'sun', skin: '#3d150c', backHold: 'ankh', frontHold: 'was', ankhFill: C.turq, disk: '#e2553a', uraeus: '#5a2a1c', staff: '#1a120e', beak: '#1a120e', eyeLine: C.gold });
+    // 兩側直行文字：拉（rꜥ）、天空之主（nb pt）
+    s += `<g stroke="url(#G)" stroke-width="1"><path d="M96,262 V382 M404,262 V382"/></g>`;
+    s += glyphColumn(['N005', 'Z001'], 96, 270, 24, 'url(#G)', 6).svg + glyphColumn(['V030', 'N001'], 404, 270, 24, 'url(#G)', 6).svg;
+    return s;
+  };
+
+  // 阿蒙：夜空與方尖碑，藍色的皮膚，兩根高羽毛
+  SCENES.amun = (card) => {
+    const P = gP();
+    let s = goldGround(W.x, W.y, W.w, W.h, 77);
+    s += tint('ag' + (++UID), 250, 240, 230, '#2a56b8', 0.55, 0.22);
+    const r = rng(8);
+    for (let i = 0; i < 30; i++) s += sparkle(W.x + 14 + r() * (W.w - 28), W.y + 24 + r() * 190, 2.5 + r() * 6, 'url(#G)');
+    // 風：三條飄動的線
+    s += `<g fill="none" stroke="url(#G)" stroke-width="1.1" opacity=".55">`;
+    for (const [y, x0] of [[196, 120], [244, 96], [292, 130]]) { let d = `M${x0},${y}`; for (let i = 0; i < 14; i++) d += ` q9,${i % 2 ? 8 : -8} 18,0`; s += `<path d="${d}"/>`; }
+    s += `</g>`;
+    // 光暈：雙圈與一圈星辰（夜、隱藏）
+    const cx = 250, cy = 244;
+    s += `<circle cx="${cx}" cy="${cy}" r="124" fill="none" stroke="url(#G)" stroke-width="1.8"/><circle cx="${cx}" cy="${cy}" r="116" fill="none" stroke="url(#G)" stroke-width="1" stroke-dasharray="0.1 5" stroke-linecap="round"/>`;
+    s += `<circle cx="${cx}" cy="${cy}" r="96" fill="none" stroke="url(#G)" stroke-width=".8" opacity=".6"/>`;
+    s += ringGlyphs(cx, cy, 106, Array(24).fill('N014'), 13, 'url(#G)');
+    // 方尖碑
+    const obelisk = (x) => `<g fill="#120d0a" stroke="url(#G)" stroke-width="1.4" stroke-linejoin="round"><path d="M${x - 13},${GROUND} L${x - 8},178 L${x},156 L${x + 8},178 L${x + 13},${GROUND} Z"/><path d="M${x - 8},178 H${x + 8}" fill="none"/><path d="M${x},156 L${x - 8},178 L${x + 8},178 Z" fill="${C.turq}" opacity=".8"/>
+      <path d="M${x - 5},206 V${GROUND - 10} M${x + 5},206 V${GROUND - 10}" fill="none" stroke-width=".8"/>${[0, 1, 2, 3, 4].map(i => diamond(x, 232 + i * 28, 3.2, 5, i % 2 ? C.rose : C.turq, 'none', 0)).join('')}
+      <path d="M${x - 19},${GROUND} H${x + 19}" fill="none"/></g>`;
+    s += obelisk(86) + obelisk(414);
+    s += podium();
+    s += strider(P, 246, GROUND, 9.7, { head: 'human', crown: 'plumes', beard: true, skin: '#17366f', frontHold: 'ankhFwd', ankhFill: C.turq, wigLong: false, beardFill: '#1a120e', plumeA: '#14316a', plumeB: '#6a2a1c' });
+    // 文字：阿蒙（imn）、偉大的神（nṯr ꜥ3）
+    s += `<g stroke="url(#G)" stroke-width="1"><path d="M138,262 V382 M362,262 V382"/></g>`;
+    s += glyphColumn(['M017', 'Y005', 'N035'], 138, 270, 24, 'url(#G)', 6).svg + glyphColumn(['R008', 'O029'], 362, 270, 24, 'url(#G)', 6).svg;
+    return s;
+  };
+
+  // 普塔：杏仁形光環、心與舌，包著壽衣的工匠之神
+  function ptahFigure(P, cx, gy, s, o) {
+    const sw = f(P.sw / s), L = P.line, st = `stroke="${L}" stroke-width="${sw}" stroke-linejoin="round"`;
+    const skin = o.skin;
+    let g = `<g ${gT(cx, gy, s)}>`;
+    // 權杖：瓦斯（底部分叉）＋傑德柱＋安卡
+    g += `<path d="M3.4,-0.2 V-15.9" stroke="${L}" stroke-width=".44" stroke-linecap="round"/>`;
+    g += `<path d="M3.4,-0.4 L2.9,0 M3.4,-0.4 L3.9,0" stroke="${L}" stroke-width=".3" stroke-linecap="round"/>`;
+    g += `<path d="M2.95,-15.9 H3.85 V-16.5 H3.1 Q3.0,-16.5 2.95,-16.2 Z" fill="${o.djed || '#173f45'}" ${st}/>`;
+    g += `<path d="M3.12,-16.5 H3.68 V-19.5 H3.12 Z" fill="${o.djed || '#173f45'}" ${st}/>`;
+    for (const y of [-17.0, -17.75, -18.5, -19.25]) g += `<path d="M2.65,${y} Q2.6,${y - 0.28} 2.95,${y - 0.3} H3.85 Q4.2,${y - 0.28} 4.15,${y} Z" fill="${o.djed || '#173f45'}" ${st}/>`;
+    g += ankh(3.4, -22.15, 2.55, o.ankhFill || C.turq, L, sw);
+    // 壽衣
+    const body = 'M-2.0,-15.9 Q-2.5,-12.5 -2.25,-7 Q-2.15,-3.2 -1.8,0 L2.05,0 Q2.35,-3.2 2.35,-7 Q2.55,-12.4 2.25,-15.9 Z';
+    g += `<path d="${body}" fill="${o.shroud || '#0f2a24'}" ${st}/>`;
+    g += `<g fill="none" stroke="${L}" stroke-width="${f(sw * 0.5)}" opacity=".7"><path d="M-2.3,-10.5 Q0,-10.0 2.4,-10.6"/><path d="M-2.2,-7.8 Q0,-7.3 2.35,-7.9"/><path d="M-2.1,-5.0 Q0,-4.6 2.3,-5.1"/><path d="M-1.9,-2.2 Q0,-1.8 2.1,-2.3"/></g>`;
+    g += `<path d="M-1.95,-12.2 L2.2,-12.2" stroke="${L}" stroke-width="${f(sw * 0.5)}" opacity="0"/>`;
+    // 雙手握杖
+    g += `<ellipse cx="3.0" cy="-13.4" rx=".55" ry=".5" fill="${skin}" ${st}/><ellipse cx="3.0" cy="-12.2" rx=".55" ry=".5" fill="${skin}" ${st}/>`;
+    g += `<path d="M2.1,-14.6 Q2.7,-14.2 2.7,-13.5 M2.1,-12.9 Q2.6,-12.7 2.6,-12.2" fill="none" ${st}/>`;
+    // 領圈、頭、緊貼的頭帽、直鬍子
+    g += `<path d="${PART.neck}" fill="${skin}" ${st}/>`;
+    g += collar(P, s, -16.12, 2.45);
+    g += `<path d="${FACE.head}" fill="${skin}" ${st}/>`;
+    g += `<path d="${FACE.eye}" fill="${P.white}" ${st}/><circle cx="0.84" cy="-17.6" r=".1" fill="${P.black}"/>`;
+    g += `<path d="${FACE.kohl}" fill="${P.black}"/><path d="${FACE.brow}" fill="none" stroke="${P.black}" stroke-width="${f(sw * 1.1)}" stroke-linecap="round"/><path d="${FACE.lip}" fill="none" ${st}/>`;
+    g += `<path d="M0.5,-16.55 L0.52,-14.95 L1.3,-14.9 L1.28,-16.55 Z" fill="${o.beardFill || '#1a120e'}" ${st}/><path d="M0.7,-16.3 V-15.1 M0.9,-16.3 V-15.1 M1.1,-16.3 V-15.1" stroke="${L}" stroke-width="${f(sw * 0.4)}"/>`;
+    g += `<path d="M1.12,-18.2 Q1.08,-19.15 0.1,-19.55 Q-1.4,-19.65 -1.98,-18.5 Q-2.12,-17.5 -1.85,-16.45 L-0.55,-16.5 L-0.5,-17.55 Q0.1,-17.85 0.6,-17.98 Q0.98,-18.05 1.12,-18.2 Z" fill="${o.cap || '#173f45'}" ${st}/>`;
+    g += `<path d="M-1.8,-17.6 Q-0.4,-18.2 1.0,-18.05" fill="none" stroke="${C.turq}" stroke-width="${f(sw * 0.8)}"/>`;
+    g += `</g>`;
+    return g;
+  }
+  SCENES.ptah = (card) => {
+    const P = gP();
+    let s = goldGround(W.x, W.y, W.w, W.h, 119);
+    s += tint('pg' + (++UID), 250, 240, 230, '#27b59a', 0.45, 0.18);
+    const cx = 250, cy = 236;
+    // 杏仁形光環（vesica）
+    const vesica = (k, w) => `<path d="M${cx},${cy - 128 * k} Q${cx + w * k},${cy} ${cx},${cy + 128 * k} Q${cx - w * k},${cy} ${cx},${cy - 128 * k} Z"/>`;
+    s += `<g fill="none" stroke="url(#G)"><g stroke-width="1.8">${vesica(1, 150)}</g><g stroke-width="1" stroke-dasharray="0.1 5" stroke-linecap="round">${vesica(0.92, 138)}</g><g stroke-width=".8" opacity=".7">${vesica(0.8, 120)}</g></g>`;
+    // 兩側紙莎草柱
+    s += papyrusColumn(60, 168, GROUND, 15, 'url(#G)', C.turq) + papyrusColumn(440, 168, GROUND, 15, 'url(#G)', C.turq);
+    s += crescent(76, 128, 9, 'url(#G)') + crescent(424, 128, 9, 'url(#G)');
+    // 心（ib）與舌（ns）：普塔用心想、用舌說
+    const orb = (x, y, code) => `<circle cx="${x}" cy="${y}" r="30" fill="#0d0907" stroke="url(#G)" stroke-width="1.8"/><circle cx="${x}" cy="${y}" r="24" fill="none" stroke="${C.turq}" stroke-width=".9"/><circle cx="${x}" cy="${y}" r="30" fill="${C.turq}" opacity=".16"/>` + glyphColumn([code], x, y - 15, 30, 'url(#G)', 0).svg;
+    s += orb(148, 176, 'F034') + orb(352, 176, 'F020');
+    s += `<g fill="none" stroke="url(#G)" stroke-width="1" stroke-dasharray="0.1 4" stroke-linecap="round" opacity=".9"><path d="M178,176 Q214,150 232,168"/><path d="M322,176 Q286,150 268,168"/></g>`;
+    s += podium();
+    s += ptahFigure(P, 244, GROUND, 11.0, { skin: '#0f3a30', cap: '#173f45', ankhFill: C.turq });
+    // 文字：普塔（ptḥ）、真理之主（nb mꜣꜥt）
+    s += `<g stroke="url(#G)" stroke-width="1"><path d="M118,250 V384 M382,250 V384"/></g>`;
+    s += glyphColumn(['Q003', 'X001', 'V028'], 118, 258, 24, 'url(#G)', 6).svg + glyphColumn(['V030', 'Aa011', 'D036', 'X001', 'H006'], 382, 258, 22, 'url(#G)', 4).svg;
+    return s;
+  };
+
   // ───────── 外框 ─────────
   const KIND = {
     monster: { accent: C.gold, accent2: C.goldLo, name: '神祇' },
@@ -921,12 +1091,14 @@
     rare: { gem: C.turq, name: '稀有' },
     epic: { gem: '#8c6fd1', name: '史詩' },
     mythic: { gem: '#f2cf72', name: '神話' },
+    divine: { gem: '#ffe7a0', name: '三神' },
   };
 
   function domainEmblem(card, cx, cy) {
     const map = { sun: ['N005', '#d9533a'], desert: ['N025', '#d9a24a'], nile: ['N035A', '#5aa2d6'], underworld: ['R014', '#e8dcc0'], moon: ['N011', '#e9e1c8'] };
     let code, col;
-    if (card.kind === 'spell') { code = 'S034'; col = C.turq; }
+    if (card.emblem) { code = card.emblem[0]; col = card.emblem[1]; }
+    else if (card.kind === 'spell') { code = 'S034'; col = C.turq; }
     else if (card.kind === 'trap') { code = 'O001'; col = '#e89a72'; }
     else[code, col] = map[card.domain] || ['N005', C.gold];
     const g = GL.g[code], size = 34;
@@ -964,6 +1136,14 @@
     s += domainEmblem(card, 448, 62);
     // 插圖窗外框
     s += `<rect x="${W.x - 6}" y="${W.y - 6}" width="${W.w + 12}" height="${W.h + 12}" fill="#0d0907" stroke="url(#G)" stroke-width="2.4"/>`;
+    if (card.rarity === 'divine') {
+      // 三神：第三道珠點外框、側邊寶石、標題列兩端的菱形與下角扇紋
+      s += `<rect x="3.6" y="3.6" width="492.8" height="692.8" rx="21" fill="none" stroke="url(#G)" stroke-width="1.2" stroke-dasharray="0.1 5" stroke-linecap="round"/>`;
+      for (const y of [150, 300, 450, 560]) s += diamond(9, y, 4.5, 8, '#0d0907') + diamond(491, y, 4.5, 8, '#0d0907');
+      s += diamond(106, 62, 5, 9, R.gem) + diamond(418, 62, 5, 9, R.gem);
+      s += `<path d="M120,40 H404 M120,84 H404" stroke="url(#G)" stroke-width=".8" stroke-dasharray="0.1 4" stroke-linecap="round" opacity=".9"/>`;
+      s += `<g opacity=".85">${cornerFan(21, 679, 38, 0, 'url(#G)')}${cornerFan(479, 679, 38, 270, 'url(#G)')}</g>`;
+    }
     return s;
   }
 
@@ -977,10 +1157,10 @@
       s += `<rect x="${x - 7}" y="${y - 7}" width="14" height="14" fill="#100b09" stroke="url(#G)" stroke-width="1.6"/>`;
       s += diamond(x, y, 4, 4, card.rarity === 'common' ? C.gold : R.gem, 'none', 0);
     }
-    if (card.rarity === 'rare' || card.rarity === 'epic' || card.rarity === 'mythic') {
+    if (card.rarity === 'rare' || card.rarity === 'epic' || card.rarity === 'mythic' || card.rarity === 'divine') {
       s += diamond(W.x - 6, W.y + W.h / 2, 6, 10, R.gem) + diamond(W.x + W.w + 6, W.y + W.h / 2, 6, 10, R.gem);
     }
-    if (card.rarity === 'epic' || card.rarity === 'mythic') {
+    if (card.rarity === 'epic' || card.rarity === 'mythic' || card.rarity === 'divine') {
       // 領圈色珠帶（插圖窗上下）
       const band = (y) => {
         let o = ''; const n = 44, bw = (W.w - 24) / n;
@@ -988,6 +1168,15 @@
         return o;
       };
       s += band(W.y - 6) + band(W.y + W.h + 6);
+    }
+    if (card.rarity === 'divine') {
+      // 窗框的第二道亮金線，與上緣的有翼日輪冠飾
+      s += `<rect x="${W.x - 9.5}" y="${W.y - 9.5}" width="${W.w + 19}" height="${W.h + 19}" fill="none" stroke="url(#GF)" stroke-width="1.2" opacity=".9"/>`;
+      s += `<path d="M${250 - 92},${W.y - 6} H${250 + 92}" stroke="#0d0907" stroke-width="12"/>`;
+      s += wingedSun(250, W.y - 5, 0.3);
+      s += `<path d="M${250 - 92},${W.y + W.h + 6} H${250 + 92}" stroke="#0d0907" stroke-width="12"/>`;
+      s += diamond(250, W.y + W.h + 6, 24, 8, '#120d0a') + diamond(250, W.y + W.h + 6, 10, 5, R.gem, 'none', 0);
+      for (const dx of [-60, -42, 42, 60]) s += diamond(250 + dx, W.y + W.h + 6, 3.4, 3.4, C.turq, 'none', 0);
     }
     return s;
   }
@@ -1019,6 +1208,12 @@
     if (card.kind === 'monster') {
       s += medallion(76, 652, 30, A) + medallion(424, 652, 30, A);
 
+    }
+    if (card.rarity === 'divine') {
+      s += `<rect x="27" y="471" width="446" height="154" rx="6" fill="none" stroke="url(#G)" stroke-width="1" stroke-dasharray="0.1 4.5" stroke-linecap="round"/>`;
+      if (card.kind === 'monster') s += `<circle cx="76" cy="652" r="38" fill="none" stroke="url(#G)" stroke-width="1.3" stroke-dasharray="0.1 4.5" stroke-linecap="round"/><circle cx="424" cy="652" r="38" fill="none" stroke="url(#G)" stroke-width="1.3" stroke-dasharray="0.1 4.5" stroke-linecap="round"/>`;
+      s += `<circle cx="250" cy="652" r="27" fill="#100b09" stroke="url(#G)" stroke-width="2.2"/><circle cx="250" cy="652" r="22" fill="none" stroke="${A}" stroke-width=".9"/>`;
+      for (let i = 0; i < 16; i++) { const a = i / 16 * Math.PI * 2; s += `<path d="M${f(250 + Math.cos(a) * 28.5)},${f(652 + Math.sin(a) * 28.5)} L${f(250 + Math.cos(a) * (i % 2 ? 33 : 37))},${f(652 + Math.sin(a) * (i % 2 ? 33 : 37))}" stroke="url(#G)" stroke-width="1.2"/>`; }
     }
     // 稀有度寶石
     s += diamond(250, 652, 11, 15, R.gem, 'url(#G)', 1.6);

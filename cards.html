@@ -51,6 +51,13 @@
   .evo .arrow { display: grid; justify-items: center; gap: 6px; color: var(--gold); font: 700 12px/1 var(--serif); letter-spacing: .12em; }
   .evo .arrow svg { width: 40px; height: 24px; }
   @media (max-width: 860px) { .evo { grid-template-columns: minmax(0, 1fr); max-width: 360px; margin: 0 auto; gap: 14px; } .evo .arrow svg { transform: rotate(90deg); } }
+  .tri { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 34px; isolation: isolate; }
+  .tri::before { content: ""; position: absolute; inset: -40px -30px; z-index: -1; border-radius: 50%; opacity: 0; transition: opacity 1.2s ease;
+    background: radial-gradient(closest-side, rgba(255, 214, 120, .35), rgba(255, 170, 70, .12) 55%, transparent 100%); }
+  .tri.on::before { opacity: 1; }
+  .tri-actions { display: flex; justify-content: center; margin-top: 26px; }
+  @media (max-width: 860px) { .tri { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 16px; } }
+  @media (max-width: 560px) { .tri { grid-template-columns: minmax(0, 1fr); max-width: 360px; margin: 0 auto; gap: 34px; } }
   section.notes { margin-top: 56px; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
   .note { border: 1px solid var(--line); border-radius: 6px; padding: 18px 20px; background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(0,0,0,0)); min-width: 0; }
   .note h2 { margin: 0 0 8px; font: 700 17px/1.3 var(--serif); letter-spacing: .1em; color: var(--gold); }
@@ -79,7 +86,7 @@
   <header>
     <div class="eyebrow">主風格樣張　第一版</div>
     <h1>太陽船之書</h1>
-    <p class="lede">六張基本卡（三張怪獸、兩張魔法、一張陷阱）和一條三階進化線。點一下卡片翻牌，翻開後可以看「小檔案」。滑鼠移動或手指按住拖曳，可以看到燙金反光。</p>
+    <p class="lede">六張基本卡、一條三階進化線，和三神。點一下卡片翻牌，翻開後可以看「小檔案」。滑鼠移動或手指按住拖曳，可以看到燙金反光。</p>
     <div class="rule"></div>
   </header>
 
@@ -93,6 +100,11 @@
   <h2 class="sec">進化線</h2>
   <p class="sec">一階、二階、三階：進化卡疊在場上的低階牌上，只付費用差額，傷害與裝備保留。類別列中間的三顆菱形，亮到目前的階段。</p>
   <div class="evo" id="evo"></div>
+
+  <h2 class="sec">三神</h2>
+  <p class="sec">阿蒙、拉、普塔：新王國時期的《萊頓讚歌》把他們並稱「三位一體」。三神不從卡包抽到，只能特殊召喚；三位同場時，觸發「神域」。</p>
+  <div class="tri" id="tri"></div>
+  <div class="tri-actions"><button id="btn-domain" type="button">三神同場：神域</button></div>
 
   <section class="notes">
     <div class="note">
@@ -135,6 +147,7 @@
 <script src="js/cardview.js"></script>
 <script src="data/cards-sample.js"></script>
 <script src="data/cards-evo.js"></script>
+<script src="data/cards-trinity.js"></script>
 <script>
 (function () {
   const grid = document.getElementById('grid');
@@ -148,7 +161,7 @@
     v.dataset.name = card.name;
     const cap = document.createElement('div');
     cap.className = 'cap';
-    cap.innerHTML = `<div><div class="t">${card.name}</div><div class="s">${card.typeLine}・${CardArt.RARITY[card.rarity].name}${card.stage ? '・' + card.stage : ''}</div></div><button type="button" hidden>小檔案</button>`;
+    cap.innerHTML = `<div><div class="t">${card.name}</div><div class="s">${card.typeLine}${card.rarity === 'divine' ? '' : '・'}${card.rarity === 'divine' ? '' : CardArt.RARITY[card.rarity].name}${card.stage ? '・' + card.stage : ''}</div></div><button type="button" hidden>小檔案</button>`;
     const btn = cap.querySelector('button');
     const toggle = () => CardView.flip(v).then(() => { btn.hidden = !v._state.faceUp; });
     v.addEventListener('click', toggle);
@@ -163,6 +176,14 @@
     if (i > 0) evo.insertAdjacentHTML('beforeend', ARROW(i === 1 ? '費用 1' : '費用 2'));
     makeSlot(card, evo);
   });
+  const tri = document.getElementById('tri');
+  const triViews = [];
+  window.TRINITY_CARDS.forEach((card) => { makeSlot(card, tri); triViews.push(views[views.length - 1]); });
+  document.getElementById('btn-domain').onclick = () => {
+    tri.classList.remove('on');
+    triViews.forEach(([v, btn], i) => setTimeout(() => CardView.flip(v, true).then(() => { btn.hidden = false; }), i * 700));
+    setTimeout(() => tri.classList.add('on'), 700 * 2 + 1100);
+  };
   const all = (up) => views.forEach(([v, btn], i) => setTimeout(() => CardView.flip(v, up).then(() => { btn.hidden = !v._state.faceUp; }), i * 140));
   document.getElementById('btn-open').onclick = () => all(true);
   document.getElementById('btn-close').onclick = () => all(false);

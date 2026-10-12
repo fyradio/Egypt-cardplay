@@ -66,6 +66,15 @@
 @keyframes shimmer { 0%, 62% { background-position: 150% 0; } 100% { background-position: -50% 0; } }
 .card3d.is-tilting .shimmer { opacity: 0; }
 
+/* 三神：彩虹色的稜鏡光（跟著手指移動，待機時也會慢慢飄） */
+.holo { position: absolute; inset: 0; pointer-events: none; border-radius: inherit; mix-blend-mode: overlay; opacity: .09;
+  background: linear-gradient(115deg, #ff5d8f 0%, #ffd25d 18%, #7dffb5 36%, #5dc8ff 54%, #b07dff 72%, #ff5d8f 90%); background-size: 260% 100%; background-position: var(--mx, 50%) 0; animation: holo 9s ease-in-out infinite alternate; transition: opacity .3s; }
+@keyframes holo { from { background-position: 0% 0; } to { background-position: 100% 0; } }
+.card3d.is-tilting .holo { opacity: .3; animation: none; }
+.rarity-divine .face.front .foil { background: linear-gradient(115deg, transparent calc(var(--mx, 50%) - 20%), rgba(255, 226, 160, .8) calc(var(--mx, 50%) - 5%), #fff8e6 var(--mx, 50%), rgba(150, 230, 215, .55) calc(var(--mx, 50%) + 6%), transparent calc(var(--mx, 50%) + 20%)); mix-blend-mode: color-dodge; }
+.card3d.is-tilting.rarity-divine .face.front .foil { opacity: .8; }
+.rarity-divine .shimmer { animation-duration: 5s; }
+
 /* 翻開瞬間掃過的一道光 */
 .glint { position: absolute; inset: 0; pointer-events: none; border-radius: inherit; mix-blend-mode: overlay; opacity: 0;
   background: linear-gradient(110deg, transparent 44%, rgba(255, 244, 210, .9) 49%, #fff 50%, rgba(255, 244, 210, .9) 51%, transparent 56%) no-repeat; background-size: 300% 100%; background-position: 100% 0; }
@@ -84,5 +93,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .card3d .tilt { transition: none; }
-  .glint.run, .burst.run .ray, .burst.run i, .shimmer { animation: none; }
+  .glint.run, .burst.run .ray, .burst.run i, .shimmer, .holo { animation: none; }
 }
+
+.cf-cost.sp { font: 700 7.2cqw/1 var(--serif); letter-spacing: 0; }

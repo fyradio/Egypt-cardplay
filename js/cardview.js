@@ -9,7 +9,7 @@
   function frontHTML(card) {
     const R = window.CardArt.RARITY[card.rarity];
     let h = window.CardArt.cardSVG(card);
-    h += `<div class="cf cf-cost">${card.cost}</div>`;
+    h += `<div class="cf cf-cost${typeof card.cost === 'string' ? ' sp' : ''}">${card.cost}</div>`;
     h += `<div class="cf cf-name${card.name.length > 4 ? ' long' : ''}">${card.name}</div>`;
     h += `<div class="cf cf-type">${card.typeLine}${card.stage ? `<span class="stage">${card.stage}</span>` : ''}</div>`;
     h += `<div class="cf cf-text"><div>${card.text}</div>${card.flavor ? `<div class="cf-flavor">${card.flavor}</div>` : ''}</div>`;
@@ -19,7 +19,7 @@
     } else {
       h += `<div class="cf cf-foot l">${card.sub}</div><div class="cf cf-foot r">No.${card.no}　${R.name}</div>`;
     }
-    h += `${card.rarity === 'mythic' ? '<div class="shimmer"></div>' : ''}<div class="foil"></div><div class="glint"></div>`;
+    h += `${card.rarity === 'mythic' || card.rarity === 'divine' ? '<div class="shimmer"></div>' : ''}${card.rarity === 'divine' ? '<div class="holo"></div>' : ''}<div class="foil"></div><div class="glint"></div>`;
     return h;
   }
 
@@ -38,9 +38,9 @@
     const front = el('div', 'face front', frontHTML(card));
     const edge = el('div', 'edge');
     flipper.append(back, edge, front);
-    if (card.rarity === 'mythic') {
-      const burst = el('div', 'burst', '<div class="ray"></div>' + Array.from({ length: 22 }, (_, i) => {
-        const a = (i / 22) * Math.PI * 2 + Math.random() * 0.3, d = 90 + Math.random() * 80;
+    if (card.rarity === 'mythic' || card.rarity === 'divine') {
+      const burst = el('div', 'burst', '<div class="ray"></div>' + Array.from({ length: card.rarity === 'divine' ? 40 : 22 }, (_, i) => {
+        const a = (i / (card.rarity === 'divine' ? 40 : 22)) * Math.PI * 2 + Math.random() * 0.3, d = 90 + Math.random() * 80;
         return `<i style="--tx:${Math.cos(a) * d}%;--ty:${Math.sin(a) * d}%;--d:${(Math.random() * 0.18).toFixed(2)}s"></i>`;
       }).join(''));
       tilt.append(burst);
@@ -84,7 +84,7 @@
       { transform: `translateZ(0) rotateY(${to}deg) scale(1)` },
     ], { duration: 980, easing: 'cubic-bezier(.35,.1,.25,1)' });
     shadow.animate([{ opacity: 1, transform: 'translateZ(-1px) scale(1)' }, { opacity: .45, transform: 'translateZ(-1px) scale(1.12) translateY(6%)', offset: .5 }, { opacity: 1, transform: 'translateZ(-1px) scale(1)' }], { duration: 980, easing: 'ease-in-out' });
-    if (toFaceUp && root.classList.contains('rarity-mythic')) {
+    if (toFaceUp && (root.classList.contains('rarity-mythic') || root.classList.contains('rarity-divine'))) {
       setTimeout(() => { const b = root.querySelector('.burst'); if (b) { b.classList.remove('run'); void b.offsetWidth; b.classList.add('run'); } }, 600);
     }
     return anim.finished.then(done, done);
