@@ -112,6 +112,9 @@
   <h2 class="sec">場地</h2>
   <p class="sec">場地魔法把整張卡當成一扇神殿的門，門外是整個戰場。場地區只有一格，新的會取代舊的。</p>
   <div class="grid" id="fld"></div>
+  <h2 class="sec">對戰用卡牌</h2>
+  <p class="sec">對戰畫面兩副示範牌組用到的 19 張卡：獅子線、荷魯斯、法老、伊西斯、哈碧、阿比斯聖牛、賽特、木乃伊戰士、奧西里斯、孔蘇、巴斯泰特、阿佩普、沙漠蠍，加上兩張魔法與兩張陷阱。數值與對戰模擬一致，仍是草案。</p>
+  <div class="grid" id="bat"></div>
 
   <section class="notes">
     <div class="note">
@@ -156,8 +159,11 @@
 <script src="data/cards-evo.js"></script>
 <script src="data/cards-trinity.js"></script>
 <script src="js/cardart-ext.js"></script>
+<script src="js/cardart-battle.js"></script>
+<script src="js/cardart-battle2.js"></script>
 <script src="data/cards-fusion.js"></script>
 <script src="data/cards-field.js"></script>
+<script src="data/cards-battle.js"></script>
 <script>
 (function () {
   const grid = document.getElementById('grid');
@@ -198,6 +204,8 @@
   for (const card of [...window.SYNTH_CARDS, ...window.FUSION_CARDS]) makeSlot(card, fus);
   const fld = document.getElementById('fld');
   for (const card of window.FIELD_CARDS) makeSlot(card, fld);
+  const bat = document.getElementById('bat');
+  for (const card of window.BATTLE_CARDS) makeSlot(card, bat);
   const all = (up) => views.forEach(([v, btn], i) => setTimeout(() => CardView.flip(v, up).then(() => { btn.hidden = !v._state.faceUp; }), i * 140));
   document.getElementById('btn-open').onclick = () => all(true);
   document.getElementById('btn-close').onclick = () => all(false);

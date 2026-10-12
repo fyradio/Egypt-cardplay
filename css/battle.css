@@ -2,7 +2,7 @@
   --sun: #e8814f; --desert: #dcae52; --nile: #5aa7dc; --underworld: #a49bc4; --moon: #d4def2; }
 * { box-sizing: border-box; }
 html, body { margin: 0; background: var(--bg); color: var(--txt); font: 14px/1.5 var(--sans); overflow-x: hidden; }
-.bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; padding: 7px 10px; background: #120d0a; border-bottom: 1px solid var(--line); position: relative; z-index: 50; }
+.bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; padding: 7px 10px; background: #120d0a; border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 50; }
 button, select { font: 700 14px var(--serif); color: var(--gold-hi); background: #241912; border: 1px solid #6c5230; border-radius: 9px; padding: 6px 13px; cursor: pointer; letter-spacing: .06em; }
 button:hover:not(:disabled) { background: #33231a; border-color: var(--gold); }
 button.main { background: linear-gradient(180deg, #7a5a28, #4d3716); border-color: var(--gold); }

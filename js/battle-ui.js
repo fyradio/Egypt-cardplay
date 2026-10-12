@@ -12,7 +12,7 @@
 
   // ───────── 卡資料：有做好的用真卡，其他用占位卡 ─────────
   const ART = {};
-  for (const arr of [window.SAMPLE_CARDS, window.EVO_CARDS, window.TRINITY_CARDS, window.SYNTH_CARDS, window.FUSION_CARDS, window.FIELD_CARDS]) for (const c of arr || []) ART[c.id] = c;
+  for (const arr of [window.SAMPLE_CARDS, window.EVO_CARDS, window.TRINITY_CARDS, window.SYNTH_CARDS, window.FUSION_CARDS, window.FIELD_CARDS, window.BATTLE_CARDS]) for (const c of arr || []) ART[c.id] = c;
   function cardOf(id) {
     if (ART[id] && DEFS[id] && DEFS[id].art) return ART[id];
     const d = DEFS[id];
@@ -32,11 +32,11 @@
   const PORT = /layout=p/.test(location.search) || (!/layout=l/.test(location.search) && window.innerWidth < window.innerHeight);
   const EXPL = /[#&]x=1/.test(location.hash); // 解說欄（預設關閉，正式版面）
   const CFG = PORT && !EXPL ? {
-    SW: 720, SH: 1040, PW: 720, CW: 138, CH: 193, HW: 104, HH: 146, cx: 360, cy: 474, castW: 270,
-    gy: [526, 238], hy: [846, 80], hudX: 12, hudY: [762, 8], hudH: 64, wide: true,
+    SW: 720, SH: 984, PW: 720, CW: 138, CH: 193, HW: 104, HH: 146, cx: 360, cy: 440, castW: 270,
+    gy: [486, 192], hy: [796, 76], hudX: 12, hudY: [716, 8], hudH: 64, wide: true,
     slotX: [24, 174, 324], field: { x: 484, dy: 0, w: 66, h: 92 }, deck: { x: 556, dy: 0, w: 66, h: 92 }, grave: { x: 628, dy: 0, w: 66, h: 92 },
     trap: { x: [484, 544, 604], dy: 112, w: 52, h: 73 }, arkDy: 192,
-    cap: { x: 0, y: 448, w: 720, h: 52 }, side: { x: 12, y: 828, w: 696, h: 272 }, bannerW: 720,
+    cap: { x: 0, y: 414, w: 720, h: 52 }, side: { x: 12, y: 828, w: 696, h: 272 }, bannerW: 720,
   } : PORT ? {
     SW: 720, SH: 1280, PW: 720, CW: 138, CH: 193, HW: 92, HH: 129, cx: 360, cy: 462, castW: 270,
     gy: [514, 226], hy: [1124, 80], hudX: 12, hudY: [748, 8], hudH: 64, wide: true,
@@ -175,10 +175,12 @@
   const slotCenter = (pi, slot) => ({ x: SLOTX[slot] + CW / 2, y: L[pi].gy + CH / 2 });
 
   // ───────── 手牌 ─────────
+  const OPS = 0.7; // 對手手牌縮小
+  const hsz = (i) => (i ? [Math.round(HW * OPS), Math.round(HH * OPS)] : [HW, HH]);
   function layoutHand(o, animateNew, delay0) {
-    const hand = o.hand, n = hand.length, y = L[o.i].hy;
-    const gap = Math.min(HW * 0.92, (CFG.PW - 360 + (PORT ? 200 : 0)) / Math.max(1, n));
-    const total = gap * (n - 1) + HW;
+    const hand = o.hand, n = hand.length, y = L[o.i].hy, HWx = hsz(o.i)[0];
+    const gap = Math.min(HWx * 0.92, (CFG.PW - 360 + (PORT ? 200 : 0)) / Math.max(1, n));
+    const total = gap * (n - 1) + HWx;
     hand.forEach((h, k) => {
       const m = k - (n - 1) / 2;
       const x = CX - total / 2 + k * gap, yy = y + Math.abs(m) * Math.abs(m) * 0.7 * (o.i ? -1 : 1) + (o.i ? 0 : 0);
@@ -186,7 +188,7 @@
       h.style.left = x + 'px'; h.style.top = yy + 'px'; h.style.transform = `rotate(${rot}deg)`; h.style.zIndex = k + 1;
       if (h._isNew && animateNew) {
         h._isNew = false;
-        const dx = DECKX + PILEW / 2 - HW / 2 - x, dy = L[o.i].gy + CFG.deck.dy - yy;
+        const dx = DECKX + PILEW / 2 - HWx / 2 - x, dy = L[o.i].gy + CFG.deck.dy - yy;
         anim(h, [{ transform: `translate(${dx}px,${dy}px) scale(.85) rotate(0deg)`, opacity: 0 }, { opacity: 1, offset: .15 }, { transform: `rotate(${rot}deg)`, opacity: 1 }], { duration: 520, delay: T((delay0 || 0) + (h._k || 0) * 110) });
       }
       h._isNew = false;
@@ -194,7 +196,7 @@
   }
   function showFace(i) { return i === 0 || peek; }
   function newHandCard(o, id) {
-    const h = mk('pc', handEl[o.i], `width:${HW}px;height:${HH}px`);
+    const sz = hsz(o.i), h = mk('pc', handEl[o.i], `width:${sz[0]}px;height:${sz[1]}px`);
     h._id = id; h._face = showFace(o.i);
     h.appendChild(h._face ? flatOf(id) : backOf());
     h._isNew = true;
@@ -210,7 +212,7 @@
     added.forEach((h, k) => { h._k = k; });
     // 沒配到的 = 離手
     const gone = pool;
-    for (const h of gone) { const p0 = pos(h); o.origin[h._id] = { x: p0.x + HW / 2, y: p0.y + HH / 2, el: h }; }
+    for (const h of gone) { const p0 = pos(h); o.origin[h._id] = { x: p0.x + parseFloat(h.style.width) / 2, y: p0.y + parseFloat(h.style.height) / 2, el: h }; }
     o.hand = next;
     layoutHand(o, animated, 0);
     return gone;
@@ -292,7 +294,6 @@
     });
     for (const [i, el] of removedGods) {
       const p0 = pos(el), cx = p0.x + CW / 2, cy = p0.y + CH / 2;
-      o.originGone = { x: cx, y: cy };
       if (!animated) { el.remove(); continue; }
       el.style.zIndex = 3;
       if (type === 'synth' || type === 'fusion') {
@@ -386,7 +387,7 @@
   async function cast(e) {
     // 魔法／陷阱翻開：卡片飛到中央放大
     const id = e.cards[0], who = e.who, o = P[who];
-    let src = null, w = HW, h = HH;
+    let src = null, w = hsz(who)[0], h = hsz(who)[1];
     if (e.type === 'spell') src = o.hand.find((x) => x._id === id);
     else { src = o.traps.find((x) => x._id === id); w = TRAPW; h = TRAPH; }
     const p0 = src ? pos(src) : { x: CX, y: L[who].gy };

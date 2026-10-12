@@ -145,7 +145,7 @@
   const DC = { sun: 'var(--sun)', desert: 'var(--desert)', nile: 'var(--nile)', underworld: 'var(--underworld)', moon: 'var(--moon)' };
   const TYPE = { turn: '回合', draw: '抽牌', sac: '祭品', summon: '召喚', evolve: '進化', synth: '合成', fusion: '融合', spell: '魔法', trap: '陷阱', field: '場地', attack: '攻擊', dmg: '傷害', death: '倒下', effect: '效果', heal: '回復', end: '結束', info: '說明', setup: '開局' };
   const ART = {};
-  for (const arr of [window.SAMPLE_CARDS, window.EVO_CARDS, window.TRINITY_CARDS, window.SYNTH_CARDS, window.FUSION_CARDS, window.FIELD_CARDS]) for (const c of arr) ART[c.id] = c;
+  for (const arr of [window.SAMPLE_CARDS, window.EVO_CARDS, window.TRINITY_CARDS, window.SYNTH_CARDS, window.FUSION_CARDS, window.FIELD_CARDS, window.BATTLE_CARDS]) for (const c of arr) ART[c.id] = c;
   const viewCache = {};
   const $ = (id) => document.getElementById(id);
   const kindName = { god: '神祇', spell: '魔法', trap: '陷阱', field: '場地魔法' };

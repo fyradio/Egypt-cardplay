@@ -415,6 +415,24 @@
       g += `<path d="${FALCON.mark1}" fill="none" stroke="${o.eyeLine || P.turq}" stroke-width="${f(sw * 1.5)}" stroke-linecap="round"/>`;
       g += `<path d="${FALCON.mark2}" fill="none" stroke="${o.eyeLine || P.turq}" stroke-width="${f(sw * 1.1)}" stroke-linecap="round"/>`;
       g += `<path d="${FALCON.eye}" fill="${o.eyeFill || P.white}" stroke="${o.eyeLine || P.line}" stroke-width="${f(sw * 0.6)}"/>`;
+    } else if (o.head === 'set') {
+      // 賽特獸：長而下彎的鼻、方形高耳
+      const fill = o.headFill || P.jackal;
+      g += wigBlock(P, s);
+      g += `<path d="M-1.15,-18.4 L-1.32,-20.95 L-0.5,-20.95 L-0.4,-18.5 Z" fill="${fill}" ${st}/>`;
+      g += `<path d="M0.6,-15.95 Q0.32,-16.45 0.62,-16.78 Q1.4,-16.9 2.3,-17.15 Q2.95,-17.4 2.9,-18.05 Q2.55,-17.95 2.3,-17.78 Q1.3,-18.0 0.55,-18.52 Q0.18,-18.78 -0.32,-18.72 Q-1.12,-18.52 -1.22,-17.6 Q-1.16,-16.6 -0.55,-16.42 L-0.6,-15.95 Z" fill="${fill}" ${st}/>`;
+      g += `<path d="M-0.55,-18.6 L-0.72,-21.05 L0.18,-21.05 L0.2,-18.55 Z" fill="${fill}" ${st}/>`;
+      g += `<path d="M-0.64,-20.2 L0.08,-20.2" stroke="${o.earIn || P.gold}" stroke-width="${f(sw * 0.8)}"/>`;
+      g += `<path d="${JACKAL.eye}" fill="${o.eyeFill || P.white}" stroke="${o.eyeLine || P.gold}" stroke-width="${f(sw * 0.7)}"/>`;
+      g += `<path d="M2.2,-17.2 Q1.5,-17.12 1.05,-17.08" fill="none" stroke="${o.eyeLine || P.gold}" stroke-width="${f(sw * 0.6)}"/>`;
+    } else if (o.head === 'lion') {
+      // 獅頭：短鼻、圓耳，長假髮當鬃毛
+      const fill = o.headFill || P.gold;
+      g += wigBlock(P, s);
+      g += `<path d="M-0.25,-18.65 Q-0.15,-19.5 0.45,-19.3 Q0.6,-18.8 0.35,-18.5 Z" fill="${fill}" ${st}/>`;
+      g += `<path d="M0.6,-15.95 Q0.3,-16.5 0.7,-16.9 Q1.5,-17.0 1.9,-17.22 Q2.1,-17.5 1.85,-17.72 Q1.3,-17.85 0.7,-18.3 Q0.3,-18.9 -0.4,-18.8 Q-1.2,-18.6 -1.25,-17.7 Q-1.2,-16.6 -0.55,-16.4 L-0.6,-15.95 Z" fill="${fill}" ${st}/>`;
+      g += `<path d="M0.52,-18.05 Q0.82,-18.2 1.08,-18.0 Q0.8,-17.88 0.52,-18.05 Z" fill="${P.white}" stroke="${o.eyeLine || P.line}" stroke-width="${f(sw * 0.6)}"/>`;
+      g += `<path d="M2.05,-17.3 L2.15,-17.45" stroke="${P.line}" stroke-width="${f(sw * 1.4)}" stroke-linecap="round"/><path d="M1.85,-17.0 Q1.4,-16.95 1.0,-17.05" fill="none" stroke="${P.line}" stroke-width="${f(sw * 0.7)}"/>`;
     } else if (o.head === 'ibis') {
       g += wigBlock(P, s);
       g += `<path d="${IBIS.head}" fill="${P.ibis}" ${st}/>`;
@@ -443,6 +461,18 @@
     if (o.crown === 'plumes') g += plumeCrown(P, s, o);
     if (o.crown === 'modius') g += modiusCrown(P, s, o);
     if (o.crown === 'feather') g += maatFeather(P, s);
+    if (o.crown === 'throne') g += `<path d="M-0.95,-19.3 L-0.95,-22.3 L0.35,-22.3 L0.35,-20.45 L1.55,-20.45 L1.55,-19.3 Z" fill="${P.gold}" stroke="${P.line}" stroke-width="${sw}" stroke-linejoin="round"/><path d="M-0.5,-21.7 H0 M-0.1,-19.9 H1.1" stroke="${P.line}" stroke-width="${f(sw * 0.6)}"/>`;
+    if (o.crown === 'papyrus') {
+      for (const [x, h] of [[-0.55, 2.6], [0.05, 3.3], [0.65, 2.7]]) {
+        g += `<path d="M${x},-19.3 V${-19.3 - h}" stroke="${P.line}" stroke-width="${f(sw * 2.4)}"/><path d="M${x},-19.3 V${-19.3 - h}" stroke="${P.green}" stroke-width="${f(sw * 1.3)}"/>`;
+        for (let k = -3; k <= 3; k++) g += `<path d="M${x},${-19.3 - h} L${f(x + k * 0.2)},${f(-19.3 - h - 0.75 + Math.abs(k) * 0.12)}" stroke="${P.line}" stroke-width="${f(sw * 1.1)}" stroke-linecap="round"/>`;
+      }
+    }
+    if (o.crown === 'atef') {
+      g += `<path d="M-0.95,-19.3 Q-1.15,-22.2 -0.4,-24.6 Q0.1,-25.4 0.6,-24.6 Q1.2,-22.2 1.0,-19.3 Z" fill="${o.atef || P.white}" stroke="${P.line}" stroke-width="${sw}" stroke-linejoin="round"/><circle cx="0.1" cy="-25.2" r=".42" fill="${P.red}" stroke="${P.line}" stroke-width="${sw}"/>`;
+      for (const d of [-1, 1]) g += `<path d="M${d * 1.0},-20.2 Q${d * 2.5},-21.8 ${d * 1.8},-24.4 Q${d * 1.0},-23.0 ${d * 0.95},-20.4 Z" fill="${P.gold}" stroke="${P.line}" stroke-width="${sw}"/><path d="M${d * 1.2},-21 Q${d * 1.9},-22.4 ${d * 1.7},-23.7" fill="none" stroke="${P.line}" stroke-width="${f(sw * 0.6)}"/>`;
+    }
+    if (o.sidelock) g += `<path d="M-0.15,-18.3 Q0.9,-17.4 0.75,-15.4" fill="none" stroke="${P.line}" stroke-width="${f(sw * 3.2)}" stroke-linecap="round"/><path d="M-0.15,-18.3 Q0.9,-17.4 0.75,-15.4" fill="none" stroke="${P.wig}" stroke-width="${f(sw * 1.8)}" stroke-linecap="round"/><circle cx="0.75" cy="-15.3" r=".3" fill="${P.gold}" stroke="${P.line}" stroke-width="${f(sw * 0.7)}"/>`;
     g += `</g>`;
     return g;
   }
@@ -590,7 +620,7 @@
     return s;
   };
 
-  function kneelingWinged(P, cx, gy, s) {
+  function kneelingWinged(P, cx, gy, s, ho) {
     const sw = f(P.sw / s), L = P.line, st = `stroke="${L}" stroke-width="${sw}" stroke-linejoin="round"`;
     const skin = P.skinF, sy = -9.85; // 肩線
     let g = `<g ${gT(cx, gy, s)}>`;
@@ -637,7 +667,7 @@
     g += `<path d="M-0.9,-8.95 L-0.4,${sy - 0.2} M1.2,-8.95 L0.7,${sy - 0.2}" stroke="${P.dress}" stroke-width="${f(0.22)}"/>`;
     g += `<g transform="translate(0,${sy + 16})">`;
     g += `<path d="${PART.neck}" fill="${skin}" ${st}/>` + collar(P, s, -16.12, 2.2);
-    g += head(P, s, { head: 'human', crown: 'feather', wigLong: true, band: P.red }, 0, skin);
+    g += head(P, s, Object.assign({ head: 'human', crown: 'feather', wigLong: true, band: P.red }, ho || {}), 0, skin);
     g += `</g></g>`;
     return g;
   }
@@ -1457,6 +1487,6 @@
   // 給 cardart-ext.js 等延伸檔使用的零件
   const kit = { f, rng, C, MODE, W, GROUND, BR, gP, GL, SCENES, nextId: () => ++UID, gT, gst, glyph, glyphColumn, glyphRow, rowWidth, sparkle, crescent, diamond, cornerFan,
     papyrusColumn, blockBand, lotusFrieze, papyrusGround, goldGround, papyrusPlant, ankh, strider, head, collar, wigBlock, wigCap, plumeCrown, ptahFigure, scarabColor, sunDiscRays,
-    feather, tint, ringGlyphs, podium, wingedSun, solarBoat, goldScarab, PART, FACE, JACKAL, FALCON, IBIS, wedjat };
+    feather, tint, ringGlyphs, podium, wingedSun, solarBoat, goldScarab, PART, FACE, JACKAL, FALCON, IBIS, wedjat, mummy, kneelingWinged };
   window.CardArt = { cardSVG, backSVG, C, KIND, RARITY, kit };
 })();
