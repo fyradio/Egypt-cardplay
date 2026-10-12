@@ -28,35 +28,46 @@
   function flatOf(id) { if (!tpl[id]) tpl[id] = window.CardView.flat(cardOf(id)); return tpl[id].cloneNode(true); }
   function backOf() { if (!tpl._b) tpl._b = window.CardView.flatBack(); return tpl._b.cloneNode(true); }
 
-  // ───────── 版面 ─────────
-  const CW = 96, CH = 134, HW = 78, HH = 109;
-  const L = [ // 0 = 甲（下方）、1 = 乙（上方）
-    { gy: 410, hy: 596, hudY: 518 },
-    { gy: 150, hy: 8, hudY: 10 },
-  ];
-  const SLOTX = [330, 462, 594];
-  const TRAPX = [706, 762, 818], TRAPW = 50, TRAPH = 70;
-  const DECKX = 880, GRAVEX = 952, PILEW = 68, PILEH = 95;
-  const FIELDX = 222, FIELDW = 86, FIELDH = 120;
-  const CX = 514;
+  // ───────── 版面（橫式 1280×720／直式 720×1280）─────────
+  const PORT = /layout=p/.test(location.search) || (!/layout=l/.test(location.search) && window.innerWidth < window.innerHeight);
+  const CFG = PORT ? {
+    SW: 720, SH: 1280, PW: 720, CW: 138, CH: 193, HW: 92, HH: 129, cx: 360, cy: 462, castW: 270,
+    gy: [514, 226], hy: [1124, 80], hudX: 12, hudY: [748, 8], hudH: 64, wide: true,
+    slotX: [24, 174, 324], field: { x: 484, dy: 0, w: 66, h: 92 }, deck: { x: 556, dy: 0, w: 66, h: 92 }, grave: { x: 628, dy: 0, w: 66, h: 92 },
+    trap: { x: [484, 544, 604], dy: 112, w: 52, h: 73 }, arkDy: 192,
+    cap: { x: 0, y: 436, w: 720, h: 52 }, side: { x: 12, y: 828, w: 696, h: 272, row: true }, bannerW: 720,
+  } : {
+    SW: 1280, SH: 720, PW: 1028, CW: 96, CH: 134, HW: 78, HH: 109, cx: 514, cy: 362, castW: 250,
+    gy: [410, 150], hy: [596, 8], hudX: 14, hudY: [518, 10], hudH: 140, wide: false,
+    slotX: [330, 462, 594], field: { x: 222, dy: 0, w: 86, h: 120 }, deck: { x: 880, dy: 0, w: 68, h: 95 }, grave: { x: 952, dy: 0, w: 68, h: 95 },
+    trap: { x: [706, 762, 818], dy: 0, w: 50, h: 70 }, arkDy: 96,
+    cap: { x: 210, y: 340, w: 800, h: 44 }, side: { x: 1028, y: 10, w: 244, h: 700 }, bannerW: 1028,
+  };
+  const { CW, CH, HW, HH } = CFG;
+  const L = [{ gy: CFG.gy[0], hy: CFG.hy[0], hudY: CFG.hudY[0] }, { gy: CFG.gy[1], hy: CFG.hy[1], hudY: CFG.hudY[1] }]; // 0 = 甲（下）、1 = 乙（上）
+  const SLOTX = CFG.slotX, TRAPX = CFG.trap.x, TRAPW = CFG.trap.w, TRAPH = CFG.trap.h;
+  const DECKX = CFG.deck.x, GRAVEX = CFG.grave.x, PILEW = CFG.deck.w, PILEH = CFG.deck.h;
+  const FIELDX = CFG.field.x, FIELDW = CFG.field.w, FIELDH = CFG.field.h, CX = CFG.cx;
+  stage.style.width = CFG.SW + 'px'; stage.style.height = CFG.SH + 'px';
 
   const mk = (cls, parent, css, html) => { const d = document.createElement('div'); if (cls) d.className = cls; if (css) d.style.cssText = css; if (html != null) d.innerHTML = html; (parent || stage).appendChild(d); return d; };
 
   // 牌桌背景
   const mat = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  mat.id = 'mat'; mat.setAttribute('viewBox', '0 0 1280 720');
+  mat.id = 'mat'; mat.setAttribute('viewBox', `0 0 ${CFG.SW} ${CFG.SH}`); mat.style.width = CFG.SW + 'px'; mat.style.height = CFG.SH + 'px';
+  { const PW = CFG.PW, SH = CFG.SH, cy = CFG.cy, cx = CFG.cx;
   mat.innerHTML = `<defs>
     <radialGradient id="mg" cx="40%" cy="50%" r="75%"><stop offset="0" stop-color="#2a2016"/><stop offset=".7" stop-color="#17110c"/><stop offset="1" stop-color="#0b0806"/></radialGradient>
     <linearGradient id="mgold" x1="0" x2="1"><stop offset="0" stop-color="#8a6a2e"/><stop offset=".5" stop-color="#f1dc9a"/><stop offset="1" stop-color="#8a6a2e"/></linearGradient>
     <pattern id="mp" width="36" height="36" patternUnits="userSpaceOnUse"><path d="M18 3 L33 18 L18 33 L3 18Z" fill="none" stroke="#e9cd85" stroke-opacity=".05"/></pattern>
   </defs>
-  <rect width="1280" height="720" fill="url(#mg)"/><rect width="1028" height="720" fill="url(#mp)"/>
-  <rect x="6" y="6" width="1016" height="708" rx="14" fill="none" stroke="url(#mgold)" stroke-opacity=".55" stroke-width="2"/>
-  <rect x="12" y="12" width="1004" height="696" rx="10" fill="none" stroke="#e9cd85" stroke-opacity=".18"/>
-  <line x1="60" y1="362" x2="968" y2="362" stroke="url(#mgold)" stroke-opacity=".5" stroke-width="1.5"/>
-  <circle cx="514" cy="362" r="22" fill="#120d0a" stroke="url(#mgold)" stroke-width="2"/>
-  <circle cx="514" cy="362" r="9" fill="none" stroke="#e9cd85" stroke-opacity=".7"/><circle cx="514" cy="362" r="3" fill="#e9cd85"/>
-  <path d="M1028 0V720" stroke="#e9cd85" stroke-opacity=".25"/><rect x="1028" width="252" height="720" fill="#0e0a07"/>`;
+  <rect width="${CFG.SW}" height="${SH}" fill="url(#mg)"/><rect width="${PW}" height="${SH}" fill="url(#mp)"/>
+  <rect x="6" y="6" width="${PW - 12}" height="${SH - 12}" rx="14" fill="none" stroke="url(#mgold)" stroke-opacity=".55" stroke-width="2"/>
+  <rect x="12" y="12" width="${PW - 24}" height="${SH - 24}" rx="10" fill="none" stroke="#e9cd85" stroke-opacity=".18"/>
+  <line x1="40" y1="${cy}" x2="${PW - 40}" y2="${cy}" stroke="url(#mgold)" stroke-opacity=".5" stroke-width="1.5"/>
+  <circle cx="${cx}" cy="${cy}" r="22" fill="#120d0a" stroke="url(#mgold)" stroke-width="2"/>
+  <circle cx="${cx}" cy="${cy}" r="9" fill="none" stroke="#e9cd85" stroke-opacity=".7"/><circle cx="${cx}" cy="${cy}" r="3" fill="#e9cd85"/>
+  ${PORT ? '' : `<path d="M1028 0V720" stroke="#e9cd85" stroke-opacity=".25"/><rect x="1028" width="252" height="720" fill="#0e0a07"/>`}`; }
   stage.appendChild(mat);
 
   const side = mk('', null); side.id = 'side';
@@ -64,7 +75,11 @@
   const note = mk('', side); note.id = 'note';
   const cap = mk('', null); cap.id = 'cap';
   const banner = mk('', null); banner.id = 'banner'; banner.innerHTML = '<div class="b1"></div><div class="b2"></div>';
-  const fx = mk('', null); fx.id = 'fx';
+  const fx = mk('', null); fx.id = 'fx'; fx.style.width = CFG.SW + 'px'; fx.style.height = CFG.SH + 'px';
+  { const c = CFG.cap, sd = CFG.side;
+    cap.style.cssText = `left:${c.x}px;top:${c.y}px;width:${c.w}px;height:${c.h}px`;
+    side.style.cssText = `left:${sd.x}px;top:${sd.y}px;width:${sd.w}px;height:${sd.h}px`; if (sd.row) side.classList.add('row');
+    banner.style.cssText = `top:${CFG.cy - 60}px;width:${CFG.bannerW}px`; }
   const handEl = [mk('hand', null, 'left:0;top:0;width:0;height:0'), mk('hand mine', null, 'left:0;top:0;width:0;height:0')];
   handEl[0].className = 'hand'; handEl[1].className = 'hand mine';
   // 讓 fx 與 cap 疊在最上層（依 DOM 順序）
@@ -72,20 +87,20 @@
 
   // 區域底框與 HUD
   const P = [0, 1].map((i) => {
-    const y = L[i].gy, o = { i };
+    const y = L[i].gy, o = { i }, F = CFG.field, D = CFG.deck, G = CFG.grave, TR = CFG.trap;
     for (let k = 0; k < 3; k++) mk('zone', null, `left:${SLOTX[k] - 3}px;top:${y - 3}px;width:${CW + 6}px;height:${CH + 6}px`);
-    mk('zlabel', null, `left:${SLOTX[0]}px;width:${SLOTX[2] + CW - SLOTX[0]};top:${i ? y + CH + 22 : y - 19}px`, '神　祇');
-    for (let k = 0; k < 3; k++) mk('zone', null, `left:${TRAPX[k] - 2}px;top:${y - 2}px;width:${TRAPW + 4}px;height:${TRAPH + 4}px`);
-    mk('zlabel', null, `left:${TRAPX[0]}px;width:${TRAPX[2] + TRAPW - TRAPX[0]};top:${y + TRAPH + 6}px`, '墓　室');
-    o.ark = mk('zlabel', null, `left:${TRAPX[0] - 10}px;width:${TRAPX[2] + TRAPW - TRAPX[0] + 20}px;top:${y + TRAPH + 26}px;color:#7fa6a0;font-size:12px;letter-spacing:.04em`, '');
-    mk('zone', null, `left:${FIELDX - 3}px;top:${y - 3}px;width:${FIELDW + 6}px;height:${FIELDH + 6}px`);
-    mk('zlabel', null, `left:${FIELDX - 3}px;width:${FIELDW + 6}px;top:${y + FIELDH + 6}px`, '場　地');
-    o.deckZ = mk('zone', null, `left:${DECKX - 3}px;top:${y - 3}px;width:${PILEW + 6}px;height:${PILEH + 6}px`);
-    o.graveZ = mk('zone', null, `left:${GRAVEX - 3}px;top:${y - 3}px;width:${PILEW + 6}px;height:${PILEH + 6}px`);
-    mk('zlabel', null, `left:${DECKX}px;width:${PILEW}px;top:${y + PILEH + 6}px`, '牌組');
-    o.graveLbl = mk('zlabel', null, `left:${GRAVEX - 10}px;width:${PILEW + 20}px;top:${y + PILEH + 6}px`, '墓地');
+    mk('zlabel', null, `left:${SLOTX[0]}px;width:${SLOTX[2] + CW - SLOTX[0]}px;top:${i ? y + CH + 22 : y - 19}px`, '神　祇');
+    for (let k = 0; k < 3; k++) mk('zone', null, `left:${TRAPX[k] - 2}px;top:${y + TR.dy - 2}px;width:${TRAPW + 4}px;height:${TRAPH + 4}px`);
+    mk('zlabel', null, `left:${TRAPX[0]}px;width:${TRAPX[2] + TRAPW - TRAPX[0]}px;top:${y + TR.dy + TRAPH + 6}px`, PORT ? '' : '墓　室');
+    o.ark = mk('zlabel', null, `left:${TRAPX[0] - 10}px;width:${TRAPX[2] + TRAPW - TRAPX[0] + 20}px;top:${y + CFG.arkDy}px;color:#7fa6a0;font-size:12px;letter-spacing:.04em`, '');
+    mk('zone', null, `left:${F.x - 3}px;top:${y + F.dy - 3}px;width:${F.w + 6}px;height:${F.h + 6}px`);
+    mk('zlabel', null, `left:${F.x - 3}px;width:${F.w + 6}px;top:${y + F.dy + F.h + 6}px`, '場　地');
+    o.deckZ = mk('zone', null, `left:${D.x - 3}px;top:${y + D.dy - 3}px;width:${D.w + 6}px;height:${D.h + 6}px`);
+    o.graveZ = mk('zone', null, `left:${G.x - 3}px;top:${y + G.dy - 3}px;width:${G.w + 6}px;height:${G.h + 6}px`);
+    mk('zlabel', null, `left:${D.x}px;width:${D.w}px;top:${y + D.dy + D.h + 6}px`, '牌組');
+    o.graveLbl = mk('zlabel', null, `left:${G.x - 10}px;width:${G.w + 20}px;top:${y + G.dy + G.h + 6}px`, '墓地');
     // HUD
-    o.hud = mk('hud', null, `left:14px;top:${L[i].hudY}px`,
+    o.hud = mk('hud' + (CFG.wide ? ' wide' : ''), null, `left:${CFG.hudX}px;top:${L[i].hudY}px`,
       `<div class="nm"></div><div class="dk"></div><div class="hv"><span class="hn">20</span><small>心</small></div><div class="hb"><i></i></div><div class="gems"></div><div class="cnt"></div><div class="tg">行動中</div>`);
     o.q = (s) => o.hud.querySelector(s);
     o.gods = new Map(); o.hand = []; o.traps = []; o.field = null; o.deck = null; o.grave = null; o.graveId = null;
@@ -95,9 +110,9 @@
   // 牌堆元件
   P.forEach((o, i) => {
     const y = L[i].gy;
-    o.deck = mk('pc', null, `left:${DECKX}px;top:${y}px;width:${PILEW}px;height:${PILEH}px`);
+    o.deck = mk('pc', null, `left:${DECKX}px;top:${y + CFG.deck.dy}px;width:${PILEW}px;height:${PILEH}px`);
     o.deck.appendChild(backOf()); o.deckN = mk('pile-n', o.deck, '', '0');
-    o.grave = mk('pc', null, `left:${GRAVEX}px;top:${y}px;width:${PILEW}px;height:${PILEH}px`);
+    o.grave = mk('pc', null, `left:${GRAVEX}px;top:${y + CFG.grave.dy}px;width:${PILEW}px;height:${PILEH}px`);
     o.graveBox = mk('', o.grave, 'position:absolute;inset:0'); o.graveN = mk('pile-n', o.grave, '', '0');
   });
 
@@ -154,7 +169,7 @@
   // ───────── 手牌 ─────────
   function layoutHand(o, animateNew, delay0) {
     const hand = o.hand, n = hand.length, y = L[o.i].hy;
-    const gap = Math.min(HW * 0.92, 560 / Math.max(1, n));
+    const gap = Math.min(HW * 0.92, (CFG.PW - 360 + (PORT ? 200 : 0)) / Math.max(1, n));
     const total = gap * (n - 1) + HW;
     hand.forEach((h, k) => {
       const m = k - (n - 1) / 2;
@@ -163,7 +178,7 @@
       h.style.left = x + 'px'; h.style.top = yy + 'px'; h.style.transform = `rotate(${rot}deg)`; h.style.zIndex = k + 1;
       if (h._isNew && animateNew) {
         h._isNew = false;
-        const dx = DECKX + PILEW / 2 - HW / 2 - x, dy = L[o.i].gy - yy;
+        const dx = DECKX + PILEW / 2 - HW / 2 - x, dy = L[o.i].gy + CFG.deck.dy - yy;
         anim(h, [{ transform: `translate(${dx}px,${dy}px) scale(.85) rotate(0deg)`, opacity: 0 }, { opacity: 1, offset: .15 }, { transform: `rotate(${rot}deg)`, opacity: 1 }], { duration: 520, delay: T((delay0 || 0) + (h._k || 0) * 110) });
       }
       h._isNew = false;
@@ -205,9 +220,9 @@
       const old = o.heart; o.heart = sp.heart;
       o.q('.hn').textContent = Math.max(0, sp.heart); o.q('.hb i').style.width = Math.max(0, Math.min(100, sp.heart * 5)) + '%';
       if (animated && old != null && old !== sp.heart) {
-        const d = sp.heart - old, hp = o.q('.hv').getBoundingClientRect(), sc = stage.getBoundingClientRect().width / 1280;
+        const d = sp.heart - old, hp = o.q('.hv').getBoundingClientRect(), sc = stage.getBoundingClientRect().width / CFG.SW;
         floatTxt((hp.left - stage.getBoundingClientRect().left) / sc + 40, (hp.top - stage.getBoundingClientRect().top) / sc + 10, (d > 0 ? '+' : '') + d, d > 0 ? 'heal' : 'dmg');
-        if (d < 0) { shake(o.hud); flashRed(o.hud); } else burst(100, L[i].hudY + 50, '#7ef0b0', 6);
+        if (d < 0) { shake(o.hud); flashRed(o.hud); } else burst(CFG.hudX + 110, L[i].hudY + CFG.hudH / 2, '#7ef0b0', 6);
       }
       let gm = ''; const nile = sp.nileAnkh || 0;
       for (let k = 0; k < sp.ankhMax; k++) gm += `<span class="${k < sp.ankh ? 'on' : 'off'}">◆</span>`;
@@ -243,7 +258,7 @@
           el = godEl(g, o); o.gods.set(g.uid, el); stage.appendChild(el);
           if (animated) {
             const org = (o.origin[g.id] && o.origin[g.id].el.isConnected !== undefined) ? o.origin[g.id] : null;
-            const from = org || { x: DECKX + PILEW / 2, y: L[i].gy + PILEH / 2 };
+            const from = org || { x: DECKX + PILEW / 2, y: L[i].gy + CFG.deck.dy + PILEH / 2 };
             const c = slotCenter(i, g.slot);
             const big = ['evolve', 'synth', 'fusion'].includes(type) || DEFS[g.id].divine;
             el._arrive = true;
@@ -286,17 +301,17 @@
 
     // 場地與陷阱
     snap.p.forEach((sp, i) => {
-      const o = P[i], y = L[i].gy;
+      const o = P[i], y = L[i].gy, fy = y + CFG.field.dy, tyy = y + CFG.trap.dy;
       // 場地
       if ((o.field && o.field._id) !== sp.field) {
         if (o.field) { const f0 = o.field; o.field = null; if (animated) anim(f0, [{ opacity: 1 }, { opacity: 0 }], { duration: 400 }).then(() => f0.remove()); else f0.remove(); }
         if (sp.field) {
-          const f = mk('pc', null, `left:${FIELDX}px;top:${y}px;width:${FIELDW}px;height:${FIELDH}px;--dc:var(--gold)`);
+          const f = mk('pc', null, `left:${FIELDX}px;top:${fy}px;width:${FIELDW}px;height:${FIELDH}px;--dc:var(--gold)`);
           f._id = sp.field; f.appendChild(flatOf(sp.field)); mk('tint', f); o.field = f;
           if (animated) {
-            const org = o.origin[sp.field] || { x: CX, y: y + 60 };
-            anim(f, [{ transform: tr(org.x - FIELDX - FIELDW / 2, org.y - y - FIELDH / 2, 1.1, 0), opacity: 0 }, { opacity: 1, offset: .3 }, { transform: tr(0, 0, 1, 0), opacity: 1 }], { duration: 700 });
-            burst(FIELDX + FIELDW / 2, y + FIELDH / 2, '#ffe9a0', 14);
+            const org = o.origin[sp.field] || { x: CX, y: fy + 40 };
+            anim(f, [{ transform: tr(org.x - FIELDX - FIELDW / 2, org.y - fy - FIELDH / 2, 1.1, 0), opacity: 0 }, { opacity: 1, offset: .3 }, { transform: tr(0, 0, 1, 0), opacity: 1 }], { duration: 700 });
+            burst(FIELDX + FIELDW / 2, fy + FIELDH / 2, '#ffe9a0', 14);
           }
         }
       }
@@ -307,9 +322,9 @@
         let t;
         if (j >= 0) t = pool.splice(j, 1)[0];
         else {
-          t = mk('pc', null, `left:${TRAPX[k]}px;top:${y}px;width:${TRAPW}px;height:${TRAPH}px`);
+          t = mk('pc', null, `left:${TRAPX[k]}px;top:${tyy}px;width:${TRAPW}px;height:${TRAPH}px`);
           t._id = id; t._face = showFace(i); t.appendChild(t._face ? flatOf(id) : backOf());
-          if (animated) { const org = o.origin[id] || { x: CX, y: y + 60 }; anim(t, [{ transform: tr(org.x - TRAPX[k] - TRAPW / 2, org.y - y - TRAPH / 2, 1.5, 0), opacity: 0 }, { opacity: 1, offset: .3 }, { transform: tr(0, 0, 1, 0), opacity: 1 }], { duration: 600 }); }
+          if (animated) { const org = o.origin[id] || { x: CX, y: tyy + 30 }; anim(t, [{ transform: tr(org.x - TRAPX[k] - TRAPW / 2, org.y - tyy - TRAPH / 2, 1.5, 0), opacity: 0 }, { opacity: 1, offset: .3 }, { transform: tr(0, 0, 1, 0), opacity: 1 }], { duration: 600 }); }
         }
         t.style.left = TRAPX[k] + 'px'; next.push(t);
       });
@@ -352,7 +367,7 @@
     let tx, ty, tEl = null;
     if (e.cards.length > 1) tEl = [...op.gods.values()].find((el) => el._id === tgtId);
     if (tEl) { const p0 = pos(tEl); tx = p0.x + CW / 2; ty = p0.y + CH / 2; }
-    else { tx = 110; ty = L[1 - who].hudY + 70; }
+    else { tx = CFG.hudX + 110; ty = L[1 - who].hudY + CFG.hudH / 2; }
     const p1 = pos(a), cx = p1.x + CW / 2, cy = p1.y + CH / 2;
     const dx = (tx - cx) * 0.78, dy = (ty - cy) * 0.78;
     a.style.zIndex = 8;
@@ -370,10 +385,10 @@
     const big = mk('pc', fx, `left:${p0.x}px;top:${p0.y}px;width:${w}px;height:${h}px;z-index:25`);
     big.appendChild(flatOf(id)); mk('tint', big, '', '').style.cssText += ';--dc:var(--gold)';
     big.style.setProperty('--dc', 'var(--gold)');
-    const s = 2.6 / (w / 96), tx = CX - p0.x - w / 2, ty = 330 - p0.y - h / 2;
+    const s = CFG.castW / w, tx = CX - p0.x - w / 2, ty = CFG.cy - 32 - p0.y - h / 2;
     big.style.zIndex = 25;
     await anim(big, [{ transform: tr(0, 0, 1, 0) }, { transform: tr(tx, ty, s, 0) }], { duration: 520 });
-    burst(CX, 330, '#ffe9a0', 18);
+    burst(CX, CFG.cy - 32, '#ffe9a0', 18);
     setTimeout(() => anim(big, [{ opacity: 1 }, { opacity: 0 }], { duration: 400 }).then(() => big.remove()), T(520));
   }
   function showBanner(b1, b2, hold) {
@@ -448,10 +463,10 @@
   function fit() {
     const wrap = $('wrap'), bar = document.querySelector('.bar').offsetHeight;
     const w = window.innerWidth, h = Math.max(200, window.innerHeight - bar);
-    const f = Math.min(w / 1280, h / 720);
-    stage.style.transform = `scale(${f})`; wrap.style.height = 720 * f + 'px'; stage.style.left = (w - 1280 * f) / 2 + 'px';
+    const f = Math.min(w / CFG.SW, h / CFG.SH);
+    stage.style.transform = `scale(${f})`; wrap.style.height = CFG.SH * f + 'px'; stage.style.left = (w - CFG.SW * f) / 2 + 'px';
   }
-  window.addEventListener('resize', fit); fit();
+  window.addEventListener('resize', () => { if ((window.innerWidth < window.innerHeight) !== PORT && !/layout=/.test(location.search)) location.reload(); else fit(); }); fit();
 
   const m = /seed=(\d+)/.exec(location.hash);
   start(m ? +m[1] : 3874, false);
