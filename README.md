@@ -12,7 +12,8 @@
 **美術階段：主風格樣張第一版。** 這次美術與卡牌品質優先，樣張通過後才開工做對決遊戲。
 
 - 卡牌試看頁：[`cards.html`](cards.html)（開啟 Pages 後：https://fyradio.github.io/Egypt-cardplay/cards.html ）——基本卡、進化線、三神（各有專屬光影）、合成與融合怪、場地卡、燙金卡背、立體翻牌、神話小檔案
-- 對戰模擬：[`sim.html`](sim.html)（開啟 Pages 後：https://fyradio.github.io/Egypt-cardplay/sim.html ）——兩個 AI 用草案規則自動對戰，附播放／暫停／重新開始與逐步文字說明
+- 對戰畫面：[`sim.html`](sim.html)（開啟 Pages 後：https://fyradio.github.io/Egypt-cardplay/sim.html ）——兩個 AI 在牌桌上實際對戰：真實卡牌、手牌、召喚／進化／合成／攻擊／受傷動畫，附播放／暫停／重新開始、單步、速度、看乙的手牌、戰況紀錄
+- 文字版對戰說明：[`sim-text.html`](sim-text.html)——同一套模擬，用文字逐步解釋每個動作
 - 完整企劃：[`docs/埃及神話卡牌-企劃.md`](docs/埃及神話卡牌-企劃.md)
 
 ## 美術主風格
@@ -43,7 +44,10 @@ js/cardart-ext.js     ✅ 合成怪、融合怪、場地卡的插圖
 js/cardview.js        ✅ 卡片元件、立體翻牌、傾斜反光
 js/sim-engine.js      ✅ 對戰模擬引擎（草案規則，可單獨用 node 跑）
 data/sim-cards.js     ✅ 模擬用的卡牌與兩副牌組
-sim.html              ✅ AI 對 AI 對戰模擬頁
+sim.html              ✅ AI 對 AI 對戰畫面（牌桌與動畫）
+css/battle.css        ✅ 對戰畫面樣式
+js/battle-ui.js       ✅ 對戰畫面：事件轉動畫
+sim-text.html         ✅ 文字版對戰說明
 js/glyphs.js          ✅ 象形文字向量路徑（自動產生）
 data/cards-sample.js  ✅ 樣張六張卡的資料與小檔案
 data/cards-evo.js     ✅ 進化線樣張（聖甲蟲卵 → 聖甲蟲 → 凱布利）
@@ -100,6 +104,8 @@ docs/                 企劃與文件
 - 2026-10-12：三神樣張（阿蒙、拉、普塔），三神專用卡框與稜鏡光
 - 2026-10-12：斯芬克斯重畫（黑底燙金・夕陽人面獅身像）；新增 AI 對 AI 對戰模擬頁 `sim.html`
 - 2026-10-12：三神專屬浮動光影與每 5 秒的掃光（阿蒙月光帶、拉日芒、普塔水光）；合成怪、融合怪（含素材條與繩紋卡框）、三張場地卡（神殿門框）
+
+- 2026-10-12：對戰模擬改成實際牌桌畫面 `sim.html`（原文字版改名 `sim-text.html`）
 
 ## 授權
 

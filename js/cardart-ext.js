@@ -341,3 +341,18 @@
     return s;
   };
 })();
+
+/* 還沒做卡面的卡：用同一套卡框，插圖窗放一個大大的領域符號 */
+(function () {
+  const K = window.CardArt.kit, { W, C, glyph, papyrusGround, goldGround, f } = K;
+  const MAP = { sun: ['N005', '#c8432a'], desert: ['N025', '#b88a3a'], nile: ['N035A', '#2c5d9c'], underworld: ['R014', '#4a3a58'], moon: ['N011', '#6a7a9c'], none: ['S034', '#2e7c70'] };
+  K.SCENES.placeholder = (card) => {
+    const [code, col] = MAP[card.kind === 'monster' ? (card.domain || 'sun') : card.kind === 'trap' ? 'underworld' : 'none'] || MAP.sun;
+    const gold = card.rarity === 'mythic' || card.rarity === 'divine';
+    let s = gold ? goldGround(W.x, W.y, W.w, W.h, 7) : papyrusGround(W.x, W.y, W.w, W.h, 7);
+    const size = 190;
+    s += `<g opacity="${gold ? .95 : .85}">${glyph(code, 250 - size * 0.5, 262 - size * 0.5, size, gold ? 'url(#G)' : col)}</g>`;
+    s += `<g fill="none" stroke="${gold ? 'url(#G)' : '#1b1410'}" stroke-width="1.4" opacity=".6"><circle cx="250" cy="260" r="124"/><circle cx="250" cy="260" r="116" stroke-dasharray="0.1 6" stroke-linecap="round"/></g>`;
+    return s;
+  };
+})();

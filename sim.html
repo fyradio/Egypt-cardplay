@@ -3,129 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>對戰模擬 · 太陽船之書</title>
+<title>對戰畫面 · 太陽船之書</title>
 <link rel="stylesheet" href="css/cards.css">
-<style>
-  :root { color-scheme: dark; --bg: #0e0a08; --panel: #17110d; --line: #3a2b1d; --gold: #e9cd85; --gold-hi: #fff0c4; --txt: #efe2c0; --dim: #a8987a; --turq: #5fbcaa; --carn: #d27a52;
-    --sun: #e8814f; --desert: #dcae52; --nile: #5aa7dc; --underworld: #a49bc4; --moon: #d4def2; }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: radial-gradient(1200px 600px at 50% -10%, #231810, var(--bg) 60%); color: var(--txt); font: 15px/1.6 var(--sans); }
-  header { padding: 22px 16px 8px; text-align: center; }
-  h1 { margin: 0; font: 700 clamp(24px, 4vw, 34px)/1.2 var(--serif); letter-spacing: .12em; background: linear-gradient(180deg, #fff3cf, #e0b865 55%, #a87d38); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  header p { margin: 6px auto 0; max-width: 720px; color: var(--dim); font-size: 13.5px; }
-  .bar { position: sticky; top: 0; z-index: 20; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: center; padding: 10px 12px; background: rgba(14, 10, 8, .92); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); }
-  button, select { font: 700 15px var(--serif); color: var(--gold-hi); background: #241912; border: 1px solid #6c5230; border-radius: 10px; padding: 8px 16px; cursor: pointer; letter-spacing: .08em; }
-  button:hover:not(:disabled) { background: #33231a; border-color: var(--gold); }
-  button.main { background: linear-gradient(180deg, #7a5a28, #4d3716); border-color: var(--gold); }
-  button:disabled { opacity: .4; cursor: default; }
-  .meta { color: var(--dim); font-size: 13px; }
-  .meta b { color: var(--gold); font-family: var(--serif); }
-  main { max-width: 1280px; margin: 0 auto; padding: 14px 12px 40px; display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 16px; }
-  @media (max-width: 980px) { main { grid-template-columns: minmax(0, 1fr); } }
-  @media (max-width: 980px) { .right { order: -1; } #log { height: 42vh; } }
-  @media (max-width: 600px) { .slot { flex: 1 1 28%; min-width: 0; padding: 6px 7px; } .god .n { font-size: 13px; } .trap { flex: 1 1 28%; max-width: none; } .spot .cw, .tcard { width: 150px; } }
-  .boards { display: flex; flex-direction: column; gap: 12px; }
-  .side { border: 1px solid var(--line); background: linear-gradient(180deg, #1a130e, #120d0a); border-radius: 14px; padding: 12px 14px; transition: box-shadow .4s, border-color .4s; }
-  .side.turn { border-color: var(--gold); box-shadow: 0 0 0 1px rgba(233, 205, 133, .35), 0 0 28px rgba(233, 205, 133, .12); }
-  .side h2 { margin: 0 0 8px; font: 700 17px var(--serif); letter-spacing: .08em; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; }
-  .side h2 small { font: 13px var(--sans); color: var(--dim); letter-spacing: 0; }
-  .side h2 .tag { margin-left: auto; font: 700 12px var(--serif); color: #1a120a; background: var(--gold); padding: 1px 9px; border-radius: 99px; visibility: hidden; }
-  .side.turn h2 .tag { visibility: visible; }
-  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px 14px; margin-bottom: 10px; font-size: 13px; }
-  .stat .k { color: var(--dim); font-size: 12px; }
-  .heart { display: flex; gap: 2px; margin-top: 2px; }
-  .heart i { width: 7px; height: 12px; border-radius: 2px; background: #3a1f19; }
-  .heart i.on { background: linear-gradient(180deg, #ef8a62, #b6402a); }
-  .ankh { font-size: 17px; letter-spacing: 1px; line-height: 1.2; }
-  .ankh .on { color: var(--gold-hi); } .ankh .off { color: #4b3b28; } .ankh .nile { color: var(--nile); }
-  .row { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; align-items: stretch; }
-  .lab { font: 700 12px var(--serif); color: var(--dim); letter-spacing: .1em; margin: 8px 0 3px; }
-  .slot { flex: 1 1 130px; min-height: 92px; max-width: 220px; border: 1px dashed #4a3a28; border-radius: 10px; padding: 7px 9px; font-size: 13px; background: #130e0b; position: relative; }
-  .slot.empty { color: #5a4a36; display: flex; align-items: center; justify-content: center; }
-  .god { border-style: solid; border-color: var(--dc, #6c5230); background: linear-gradient(180deg, color-mix(in srgb, var(--dc, #6c5230) 14%, #1b140f), #130e0b); }
-  .god .n { font: 700 14.5px var(--serif); color: var(--gold-hi); letter-spacing: .05em; }
-  .god .d { font-size: 11.5px; color: var(--dc); }
-  .god .st { font: 700 18px var(--num); color: var(--gold-hi); margin-top: 2px; }
-  .god .st em { font-style: normal; color: #ef8a62; } .god .st span { color: #7fe0c8; }
-  .god .kw { font-size: 11.5px; color: var(--dim); }
-  .god .flag { position: absolute; top: 6px; right: 8px; font-size: 11px; color: var(--dim); }
-  .god.hl, .chip.hl, .trap.hl { box-shadow: 0 0 0 2px var(--gold), 0 0 18px rgba(233, 205, 133, .45); }
-  .trap { flex: 1 1 100px; max-width: 150px; min-height: 44px; border: 1px solid #5a3a2a; border-radius: 8px; padding: 6px 9px; font-size: 12.5px; background: repeating-linear-gradient(135deg, #1a1210 0 6px, #211613 6px 12px); color: #d9a48a; }
-  .trap.empty { border-style: dashed; background: none; color: #5a4a36; }
-  .field { border: 1px solid #5a4a2e; border-radius: 8px; padding: 6px 10px; font-size: 13px; background: #15100c; }
-  .chips { display: flex; flex-wrap: wrap; gap: 5px; }
-  .chip { font-size: 12.5px; border: 1px solid #4a3a28; border-radius: 99px; padding: 1px 10px; background: #1b140f; color: var(--txt); }
-  .chip.star::before { content: '★ '; color: var(--gold); }
-  .chip.k-spell { color: #8fd8c8; } .chip.k-trap { color: #e8a888; } .chip.k-field { color: #e6d28a; }
-  .chip.dim { color: var(--dim); }
-  .right { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
-  .spot { border: 1px solid var(--line); border-radius: 14px; background: #130e0b; padding: 12px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; min-height: 150px; align-items: flex-start; }
-  .spot .none { color: #6a5a44; align-self: center; font-size: 13px; }
-  .spot .cw { width: 176px; }
-  .tcard { width: 176px; aspect-ratio: 5/7; border-radius: 10px; border: 2px dashed var(--dc, #6c5230); background: linear-gradient(180deg, #1d1510, #120d0a); padding: 10px; display: flex; flex-direction: column; gap: 4px; font-size: 12px; }
-  .tcard .t { font: 700 16px var(--serif); color: var(--gold-hi); letter-spacing: .06em; }
-  .tcard .s { color: var(--dc, var(--dim)); font-size: 11.5px; }
-  .tcard .x { color: var(--txt); flex: 1; line-height: 1.5; }
-  .tcard .no { color: #7a6a52; font-size: 11px; }
-  .tcard .nums { font: 700 20px var(--num); color: var(--gold-hi); display: flex; justify-content: space-between; }
-  .log { border: 1px solid var(--line); border-radius: 14px; background: #130e0b; display: flex; flex-direction: column; min-height: 0; }
-  .log h3 { margin: 0; padding: 10px 14px 6px; font: 700 15px var(--serif); letter-spacing: .1em; color: var(--gold); }
-  #log { height: min(60vh, 560px); overflow-y: auto; padding: 4px 12px 14px; scroll-behavior: smooth; }
-  .ev { padding: 6px 8px 6px 10px; margin: 3px 0; border-left: 3px solid #4a3a28; border-radius: 0 8px 8px 0; font-size: 14px; background: transparent; opacity: .78; }
-  .ev.cur { opacity: 1; background: #1d1611; }
-  .ev .pill { display: inline-block; font: 700 11px var(--serif); letter-spacing: .08em; padding: 0 7px; margin-right: 6px; border-radius: 99px; background: #3a2b1d; color: var(--gold-hi); vertical-align: 1px; }
-  .ev .why { color: var(--turq); font-size: 12.5px; margin-top: 2px; }
-  .ev .rule { margin-top: 4px; padding: 6px 9px; border-radius: 8px; background: #231a12; border: 1px solid #4a3a28; color: var(--gold); font-size: 12.5px; white-space: pre-line; }
-  .ev.e-turn { border-left-color: var(--gold); margin-top: 12px; background: #1d1611; opacity: 1; font: 700 14px var(--serif); color: var(--gold-hi); letter-spacing: .06em; }
-  .ev.e-turn.p1 { border-left-color: var(--carn); }
-  .ev.e-sac, .ev.e-draw { border-left-color: #6a5a3a; }
-  .ev.e-summon, .ev.e-evolve, .ev.e-synth, .ev.e-fusion { border-left-color: var(--turq); }
-  .ev.e-spell, .ev.e-field, .ev.e-effect { border-left-color: #7aa9e0; }
-  .ev.e-trap { border-left-color: var(--carn); }
-  .ev.e-attack, .ev.e-dmg { border-left-color: #d8553a; }
-  .ev.e-death { border-left-color: #8a3a2a; color: #e8b9a8; }
-  .ev.e-end { border-left-color: var(--gold); background: #2a1f10; font: 700 16px var(--serif); color: var(--gold-hi); opacity: 1; }
-  .ev.e-heal { border-left-color: #6ac08a; }
-  .banner { display: none; text-align: center; padding: 12px; margin-bottom: 4px; border: 1px solid var(--gold); border-radius: 12px; background: #2a1f10; font: 700 17px var(--serif); color: var(--gold-hi); letter-spacing: .08em; }
-  .banner.on { display: block; }
-  .info { max-width: 1280px; margin: 0 auto; padding: 0 12px 60px; }
-  .info details { border: 1px solid var(--line); border-radius: 12px; background: #130e0b; margin: 10px 0; padding: 4px 16px; }
-  .info summary { cursor: pointer; font: 700 16px var(--serif); letter-spacing: .08em; color: var(--gold); padding: 10px 0; }
-  .info h4 { margin: 14px 0 4px; font: 700 14px var(--serif); color: var(--gold-hi); letter-spacing: .06em; }
-  .info li { margin: 3px 0; color: var(--txt); }
-  .info li small { color: var(--dim); }
-  .tbl { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-  .tbl td, .tbl th { border-bottom: 1px solid #2a1f16; padding: 5px 8px; text-align: left; vertical-align: top; }
-  .tbl th { color: var(--dim); font-weight: 700; font-size: 12px; }
-  .ok { color: #8fd8a8; } .tx { color: #e6c277; } .no { color: #d98a6a; }
-</style>
+<link rel="stylesheet" href="css/battle.css">
 </head>
 <body>
-<header>
-  <h1>對戰模擬</h1>
-  <p>兩個 AI 用草案規則自動對戰。每個動作都會用文字說明在做什麼、為什麼；已經做好卡面的卡會在右邊亮相，還沒做的先用文字卡代替。</p>
-</header>
 <div class="bar">
   <button id="play" class="main" type="button">▶ 播放</button>
   <button id="pause" type="button">⏸ 暫停</button>
   <button id="restart" type="button">↻ 重新開始</button>
   <button id="prev" type="button" title="退一步">◀</button>
   <button id="next" type="button" title="進一步">▶</button>
-  <select id="speed" aria-label="播放速度"><option value="2200">慢</option><option value="1400" selected>中</option><option value="700">快</option><option value="220">極快</option></select>
-  <span class="meta" id="m-hint"></span><span class="meta">第 <b id="m-turn">0</b> 回合・步驟 <b id="m-step">0</b>／<span id="m-total">0</span>・種子 <b id="m-seed"></b></span>
+  <select id="speed" aria-label="播放速度"><option value="0.6">慢</option><option value="1" selected>中</option><option value="1.8">快</option><option value="4">極快</option></select>
+  <label class="chk"><input type="checkbox" id="peek"> 看乙的手牌</label>
+  <button id="logbtn" type="button">紀錄</button>
+  <a class="lnk" href="sim-text.html">文字版</a>
+  <span class="meta">第 <b id="m-turn">0</b> 回合・<b id="m-step">0</b>／<span id="m-total">0</span>・種子 <b id="m-seed"></b></span>
 </div>
-<main>
-  <section class="boards">
-    <div class="banner" id="banner"></div>
-    <div class="side" id="side0"></div>
-    <div class="side" id="side1"></div>
-  </section>
-  <section class="right">
-    <div class="spot" id="spot"><div class="none">這一步牽涉到的卡會顯示在這裡</div></div>
-    <div class="log"><h3>戰況說明</h3><div id="log"></div></div>
-  </section>
-</main>
-<div class="info" id="info"></div>
+<div id="wrap"><div id="stage"></div></div>
+<div id="drawer"><div class="dh"><b>戰況紀錄</b><button id="dclose" type="button">關閉</button></div><div id="dlog"></div></div>
 
 <script src="js/glyphs.js"></script>
 <script src="js/cardart.js"></script>
@@ -138,161 +34,6 @@
 <script src="data/cards-field.js"></script>
 <script src="data/sim-cards.js"></script>
 <script src="js/sim-engine.js"></script>
-<script>
-(function () {
-  'use strict';
-  const E = window.SimEngine, DEFS = E.DEFS;
-  const DC = { sun: 'var(--sun)', desert: 'var(--desert)', nile: 'var(--nile)', underworld: 'var(--underworld)', moon: 'var(--moon)' };
-  const TYPE = { turn: '回合', draw: '抽牌', sac: '祭品', summon: '召喚', evolve: '進化', synth: '合成', fusion: '融合', spell: '魔法', trap: '陷阱', field: '場地', attack: '攻擊', dmg: '傷害', death: '倒下', effect: '效果', heal: '回復', end: '結束', info: '說明', setup: '開局' };
-  const ART = {};
-  for (const arr of [window.SAMPLE_CARDS, window.EVO_CARDS, window.TRINITY_CARDS, window.SYNTH_CARDS, window.FUSION_CARDS, window.FIELD_CARDS]) for (const c of arr) ART[c.id] = c;
-  const viewCache = {};
-  const $ = (id) => document.getElementById(id);
-  const kindName = { god: '神祇', spell: '魔法', trap: '陷阱', field: '場地魔法' };
-
-  let game = null, idx = -1, timer = null, playing = false;
-
-  function newSeed() { return Math.floor(Math.random() * 90000) + 10000; }
-  function start(seed) {
-    stop();
-    game = E.play(seed, ['A', 'B']);
-    $('m-seed').textContent = seed; $('m-total').textContent = game.events.length;
-    $('log').innerHTML = ''; $('banner').className = 'banner';
-    idx = -1; step(1);
-    play();
-  }
-  function stop() { playing = false; clearTimeout(timer); $('play').disabled = false; $('pause').disabled = true; }
-  function play() {
-    if (idx >= game.events.length - 1) return;
-    playing = true; $('play').disabled = true; $('pause').disabled = false;
-    const e = game.events[idx];
-    const f = e && (e.type === 'turn' ? 0.7 : e.type === 'info' || e.type === 'draw' ? 0.6 : e.type === 'dmg' ? 0.8 : 1) || 1;
-    const len = (e ? e.text.length + (e.why ? e.why.length : 0) + (e.rule ? e.rule.length : 0) : 0);
-    const base = +$('speed').value;
-    timer = setTimeout(() => { step(1); if (playing) play(); }, base * f * (1 + Math.min(len, 160) / 220));
-  }
-  function step(d) {
-    const t = Math.max(0, Math.min(game.events.length - 1, idx + d));
-    if (d < 0) { idx = t; rebuild(); return; }
-    if (t === idx) { if (idx >= game.events.length - 1) stop(); return; }
-    idx = t; appendEvent(idx); show();
-    if (idx >= game.events.length - 1) stop();
-  }
-  function rebuild() { $('log').innerHTML = ''; for (let i = 0; i <= idx; i++) appendEvent(i, true); show(); }
-
-  function appendEvent(i, quiet) {
-    const e = game.events[i], log = $('log');
-    log.querySelectorAll('.cur').forEach((n) => n.classList.remove('cur'));
-    const d = document.createElement('div');
-    d.className = `ev e-${e.type}${e.type === 'turn' ? ' p' + e.who : ''} cur`;
-    d.innerHTML = `${e.type === 'turn' ? '' : `<span class="pill">${TYPE[e.type] || ''}</span>`}${e.text}${e.why ? `<div class="why">${e.why}</div>` : ''}${e.rule ? `<div class="rule">${e.rule}</div>` : ''}`;
-    log.append(d);
-    log.scrollTop = log.scrollHeight;
-  }
-
-  function godHTML(x, hl) {
-    const d = DEFS[x.id], kws = d.kw.filter((k) => E.KWN[k]).map((k) => E.KWN[k]).join('・');
-    const buff = x.atk !== x.base ? ` title="含場地／夜行加成"` : '';
-    return `<div class="slot god${hl ? ' hl' : ''}" style="--dc:${DC[d.domain]}"><div class="n">${d.name}${d.art ? ' ★' : ''}</div><div class="d">${E.DN[d.domain]}${d.stage ? '・' + d.stage + '階' : ''}</div><div class="st"${buff}><em>${x.atk}</em> ／ <span>${x.hp}</span><small style="font-size:11px;color:var(--dim)"> /${x.max}</small></div><div class="kw">${kws || '&nbsp;'}</div><div class="flag">${x.sick ? '剛召喚' : x.stun ? '昏睡' : ''}</div></div>`;
-  }
-  const chip = (id, hl) => { const d = DEFS[id]; return `<span class="chip k-${d.kind}${d.art ? ' star' : ''}${hl ? ' hl' : ''}">${d.name}</span>`; };
-
-  function sideHTML(s, i, ev) {
-    const p = s.p[i], hl = new Set(ev.cards || []);
-    let h = `<h2>${p.name}　<small>${p.deckName}</small><span class="tag">行動中</span></h2>`;
-    h += `<div class="stats"><div class="stat"><div class="k">心　${Math.max(0, p.heart)}／20</div><div class="heart">${Array.from({ length: 20 }, (_, k) => `<i class="${k < p.heart ? 'on' : ''}"></i>`).join('')}</div></div>`;
-    h += `<div class="stat"><div class="k">安卡　${p.ankh}／${p.ankhMax}　神殿 ${p.temple} 張</div><div class="ankh">${Array.from({ length: p.ankhMax }, (_, k) => `<span class="${k < p.ankh ? 'on' : 'off'}">☥</span>`).join('')}${p.nileAnkh ? `<span class="nile">☥</span>` : ''}</div></div>`;
-    h += `<div class="stat"><div class="k">牌組 ${p.deck}　手牌 ${p.hand.length}　墓地 ${p.grave.length}${p.exiled ? '　放逐 ' + p.exiled : ''}</div></div></div>`;
-    h += `<div class="lab">神祇欄（3）</div><div class="row">`;
-    for (let k = 0; k < 3; k++) h += p.gods[k] ? godHTML(p.gods[k], hl.has(p.gods[k].id)) : `<div class="slot empty">空</div>`;
-    h += `</div><div class="lab">墓室（陷阱／持續魔法，3）　場地</div><div class="row">`;
-    for (let k = 0; k < 3; k++) h += p.traps[k] ? `<div class="trap${hl.has(p.traps[k]) ? ' hl' : ''}">蓋放中<br><small>（${DEFS[p.traps[k]].name}）</small></div>` : `<div class="trap empty">空</div>`;
-    h += `<div class="field">${p.field ? '場地：' + DEFS[p.field].name : '場地：—'}</div></div>`;
-    h += `<div class="lab">手牌（觀戰才看得到）</div><div class="chips">${p.hand.length ? p.hand.map((id) => chip(id, hl.has(id))).join('') : '<span class="chip dim">空</span>'}</div>`;
-    h += `<div class="lab">墓地</div><div class="chips">${p.grave.length ? p.grave.map((id) => chip(id)).join('') : '<span class="chip dim">空</span>'}</div>`;
-    if (p.ark.length) h += `<div class="lab">聖櫃（額外牌組）</div><div class="chips">${p.ark.map((id) => chip(id, hl.has(id))).join('')}</div>`;
-    return h;
-  }
-
-  function cardNode(id) {
-    const d = DEFS[id], art = ART[id];
-    const w = document.createElement('div'); w.className = 'cw';
-    if (art) {
-      if (!viewCache[id]) { viewCache[id] = CardView.create(art, { faceUp: true }); viewCache[id].dataset.name = art.name; }
-      w.append(viewCache[id]);
-    } else {
-      const t = document.createElement('div'); t.className = 'tcard'; t.style.setProperty('--dc', d.domain ? DC[d.domain] : '#6c5230');
-      t.innerHTML = `<div class="t">${d.name}</div><div class="s">${kindName[d.kind]}${d.domain ? '・' + E.DN[d.domain] : ''}${d.stage ? '・' + d.stage + '階' : ''}・費用 ${d.special ? '特' : d.evoCost != null ? d.evoCost + '（進化）' : d.cost}</div><div class="x">${d.desc || ''}</div>${d.kind === 'god' ? `<div class="nums"><span>${d.atk}</span><span>${d.hp}</span></div>` : ''}<div class="no">（卡面尚未製作，先用文字代替）</div>`;
-      w.append(t);
-    }
-    return w;
-  }
-
-  function show() {
-    const e = game.events[idx];
-    $('m-step').textContent = idx + 1;
-    $('m-turn').textContent = e.turn;
-    const s = e.snap;
-    for (const i of [0, 1]) { const el = $('side' + i); el.innerHTML = sideHTML(s, i, e); el.classList.toggle('turn', s.cur === i && e.type !== 'setup' && e.type !== 'end'); }
-    const spot = $('spot'); spot.innerHTML = '';
-    const ids = (e.cards || []).filter((x, k, a) => a.indexOf(x) === k).slice(0, 2);
-    if (!ids.length) spot.innerHTML = '<div class="none">這一步沒有特定的卡</div>';
-    else ids.forEach((id) => spot.append(cardNode(id)));
-    if (e.type === 'end') { const b = $('banner'); b.textContent = e.text; b.className = 'banner on'; }
-    else $('banner').className = 'banner';
-  }
-
-  $('play').onclick = () => { if (idx >= game.events.length - 1) start(newSeed()); else play(); };
-  $('pause').onclick = stop;
-  $('restart').onclick = () => start(newSeed());
-  $('prev').onclick = () => { stop(); step(-1); };
-  $('next').onclick = () => { stop(); step(1); };
-  $('speed').onchange = () => { if (playing) { clearTimeout(timer); play(); } };
-
-  // 說明區
-  function infoHTML() {
-    const dk = (k) => {
-      const d = window.SIM_DECKS[k]; const rows = Object.entries(d.cards).map(([id, n]) => `${DEFS[id].art ? '★' : ''}${DEFS[id].name}${n > 1 ? '×' + n : ''}`);
-      return `<h4>${d.player}　${d.name}</h4><p style="margin:2px 0;color:var(--dim)">${d.style}</p><p style="margin:2px 0">${rows.join('、')}${d.ark.length ? `<br>聖櫃：${d.ark.map((a) => '★' + DEFS[a].name).join('、')}` : ''}</p>`;
-    };
-    return `
-    <details open><summary>這個模擬在做什麼、做到哪裡</summary>
-      <h4>已經照規則在跑</h4>
-      <ul>
-        <li>心 20、牌組 30、起手 5 張、神殿祭品與安卡、神祇欄 3 格、墓室 3 格、場地 1 格、墓地與聖櫃</li>
-        <li>五領域剋制（+2）、守護、飛行、劇毒、狂暴、不朽、隱匿、夜行</li>
-        <li>進化（一階→二階→三階）、合成（小母獅＋法老＝斯芬克斯）、融合（奧西里斯＋阿比斯聖牛＝塞拉皮斯）、死者復活（開口儀式、奧西里斯）</li>
-        <li>陷阱（假門、沙坑、豎井）、三個場地、三神之一的阿蒙（特殊召喚）</li>
-      </ul>
-      <h4>先用文字或簡化代替</h4>
-      <ul>
-        <li>沒有 ★ 的卡都用文字卡代替；★ 的卡是已經做好卡面的。</li>
-        <li>靈魂系統（卡、巴、阿赫）、墓穴計數、荷魯斯之眼的「對手回合速攻」、瑪特的「秩序」、卡諾卜守護者（需要 4 格，見下）、拉與普塔、章節特殊規則：都還沒實作。</li>
-        <li>AI 只有一種簡單強度：看價值、看安卡、看能不能打死。「見習生／抄寫員／大祭司」三種難度以後再拆。</li>
-      </ul>
-      <h4>從這場模擬看出來的規則問題（草案）</h4>
-      <ul>
-        <li><b>荷魯斯四子合成＝4 張素材，但神祇欄只有 3 格</b>：卡諾卜守護者永遠合不出來。要嘛素材改 3 張，要嘛神祇欄改 4 格。</li>
-        <li><b>進化線太慢、卵又打不出傷害</b>：整副牌放太多一階卵，開局常被對手一刀砍掉。幼體可能要有自己的小能力，或進化費用降低。</li>
-        <li><b>三神放太早會壓垮比賽</b>：所以加了「神殿至少 5 張」的草案條件。</li>
-        <li><b>先攻優勢與疲勞</b>：先攻第一回合不抽牌，是否夠平衡還要多測。</li>
-        <li><b>祭品很吃手牌</b>：後期手牌常只剩 1～2 張，是節奏的關鍵，需要調整神殿上限或加上補牌機制。</li>
-      </ul>
-    </details>
-    <details><summary>兩副牌組</summary>${dk('A')}${dk('B')}</details>
-    <details><summary>AI 怎麼想（很簡單）</summary>
-      <ul>
-        <li><b>祭品</b>：神殿張數還沒到自己的目標（甲 4 張、乙 6 張）就蓋放一張；挑「價值最低」的牌，會保留能進化的牌、可復活時的復活咒文、能融合時的融合魔法。</li>
-        <li><b>主要階段</b>：列出所有做得到的動作（召喚、進化、施法、蓋陷阱、發動場地…），各自打分，由高到低做到沒有為止。</li>
-        <li><b>攻擊</b>：看打不打得死、會不會被反擊打死、有沒有領域剋制；不划算就留著防守。敵方沒有神祇時直接打心。</li>
-      </ul>
-    </details>`;
-  }
-  $('info').innerHTML = infoHTML();
-
-  const m = location.hash.match(/seed=(\d+)/);
-  start(m ? +m[1] : 3874);   // 預設是一局「示範局」：剛好有進化、合成、融合、陷阱、場地、復活
-})();
-</script>
+<script src="js/battle-ui.js"></script>
 </body>
 </html>

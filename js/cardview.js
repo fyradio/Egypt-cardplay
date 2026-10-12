@@ -6,7 +6,7 @@
 
   function el(tag, cls, html) { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
 
-  function frontHTML(card) {
+  function frontHTML(card, plain) {
     const R = window.CardArt.RARITY[card.rarity];
     let h = window.CardArt.cardSVG(card);
     h += `<div class="cf cf-cost${typeof card.cost === 'string' ? ' sp' : ''}">${card.cost}</div>`;
@@ -20,6 +20,7 @@
     } else {
       h += `<div class="cf cf-foot l">${card.sub}</div><div class="cf cf-foot r">No.${card.no}　${R.name}</div>`;
     }
+    if (plain) return h;
     h += `${card.rarity === 'mythic' || card.rarity === 'divine' ? '<div class="shimmer"></div>' : ''}${card.rarity === 'divine' ? '<div class="holo"></div><div class="aura"></div><div class="pass"><i></i></div>' : ''}<div class="foil"></div><div class="glint"></div>`;
     return h;
   }
@@ -109,5 +110,8 @@
     });
   }
 
-  window.CardView = { create, flip };
+  // 平面卡：不做 3D、不做光澤，給對戰盤面大量使用（要快）
+  function flat(card) { const r = el('div', `flat kind-${card.kind} rarity-${card.rarity}`); r.dataset.id = card.id; r.innerHTML = frontHTML(card, true); return r; }
+  function flatBack() { if (!backCache) backCache = window.CardArt.backSVG(); return el('div', 'flat back', backCache); }
+  window.CardView = { create, flip, flat, flatBack };
 })();

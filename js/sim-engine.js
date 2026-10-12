@@ -83,7 +83,7 @@
       p: g.p.map((p) => ({
         name: p.name, deckName: p.deckName, heart: p.heart, ankh: p.ankh, nileAnkh: p.flags.nile || 0, ankhMax: ankhMax(p), temple: p.temple, deck: p.deck.length,
         hand: p.hand.slice(), grave: p.grave.slice(), ark: p.ark.slice(), exiled: p.exiled,
-        gods: p.gods.map((x) => ({ uid: x.uid, id: x.def.id, atk: ATK(g, x), hp: HP(g, x), max: MAXHP(g, x), sick: x.sick, stun: x.stun, base: x.def.atk })),
+        gods: p.gods.map((x) => ({ slot: x.slot, uid: x.uid, id: x.def.id, atk: ATK(g, x), hp: HP(g, x), max: MAXHP(g, x), sick: x.sick, stun: x.stun, base: x.def.atk })),
         traps: p.traps.map((t) => t.id), field: p.field ? p.field.id : null,
       })),
     };
@@ -97,6 +97,7 @@
   }
 
   // ───────── 基本動作 ─────────
+  function place(p, inst) { for (let k = 0; k < 3; k++) if (!p.gods.some((x) => x.slot === k)) { inst.slot = k; break; } p.gods.push(inst); return inst; }
   function mkInst(g, def, owner) { return { uid: g.uid++, def, owner, damage: 0, age: 0, sick: true, stun: false, sleep: 0, evolved: false, under: [] }; }
   function draw(g, p, n, why) {
     const got = [];
@@ -176,14 +177,14 @@
   }
   function reviveFromGrave(g, p, idx, src) {
     const id = p.grave.splice(idx, 1)[0], d = DEFS[id];
-    const inst = mkInst(g, d, p.i); p.gods.push(inst);
+    const inst = mkInst(g, d, p.i); place(p, inst);
     inst.damage = Math.max(0, MAXHP(g, inst) - 3);
     ev(g, 'summon', `${src}：${pn(p)}從墓地把「${d.name}」放回場上（生命 3），它這回合不能攻擊。`, { cards: [id], rule: 'revive' });
   }
   function summon(g, p, id, how) {
     const d = DEFS[id], inst = mkInst(g, d, p.i);
     inst.sick = !d.kw.includes('rush');
-    p.gods.push(inst);
+    place(p, inst);
     return inst;
   }
   function triggerTraps(g, owner, kind, ctx) {
@@ -223,7 +224,7 @@
         const dmg = Math.floor(mats.reduce((a, x) => a + x.damage, 0) / 2);
         p.gods = p.gods.filter((x) => !mats.includes(x));
         for (const m of mats) p.grave.push(m.def.id, ...m.under);
-        const inst = mkInst(g, DEFS[r.into], p.i); inst.age = 1; inst.sick = false; inst.damage = dmg; p.gods.push(inst);
+        const inst = mkInst(g, DEFS[r.into], p.i); inst.age = 1; inst.sick = false; inst.damage = dmg; place(p, inst);
         ev(g, 'synth', `合成！${r.mats.map(nm).join('＋')}都在場滿 1 回合 → 合體成「${nm(r.into)}」（保留一半傷害：${dmg}）。素材進墓地。`, { cards: [r.into, ...r.mats], rule: 'synth' });
       }
     }

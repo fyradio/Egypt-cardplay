@@ -136,3 +136,7 @@
   animation: p-ptah 5s cubic-bezier(.4, 0, .3, 1) infinite; }
 @keyframes p-ptah { 0%, 60% { transform: translateY(34%); } 100% { transform: translateY(-34%); } }
 @media (prefers-reduced-motion: reduce) { .aura, .pass, .pass i { animation: none; } .pass { opacity: 0; } }
+
+/* ── 平面卡（對戰盤面用） ── */
+.flat { position: absolute; inset: 0; border-radius: 4.8% / 3.43%; overflow: hidden; container-type: inline-size; background: #15100d; }
+.flat .card-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
