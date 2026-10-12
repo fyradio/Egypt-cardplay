@@ -30,14 +30,21 @@
 
   // ───────── 版面（橫式 1280×720／直式 720×1280）─────────
   const PORT = /layout=p/.test(location.search) || (!/layout=l/.test(location.search) && window.innerWidth < window.innerHeight);
-  const CFG = PORT ? {
+  const EXPL = /[#&]x=1/.test(location.hash); // 解說欄（預設關閉，正式版面）
+  const CFG = PORT && !EXPL ? {
+    SW: 720, SH: 1040, PW: 720, CW: 138, CH: 193, HW: 104, HH: 146, cx: 360, cy: 474, castW: 270,
+    gy: [526, 238], hy: [846, 80], hudX: 12, hudY: [762, 8], hudH: 64, wide: true,
+    slotX: [24, 174, 324], field: { x: 484, dy: 0, w: 66, h: 92 }, deck: { x: 556, dy: 0, w: 66, h: 92 }, grave: { x: 628, dy: 0, w: 66, h: 92 },
+    trap: { x: [484, 544, 604], dy: 112, w: 52, h: 73 }, arkDy: 192,
+    cap: { x: 0, y: 448, w: 720, h: 52 }, side: { x: 12, y: 828, w: 696, h: 272 }, bannerW: 720,
+  } : PORT ? {
     SW: 720, SH: 1280, PW: 720, CW: 138, CH: 193, HW: 92, HH: 129, cx: 360, cy: 462, castW: 270,
     gy: [514, 226], hy: [1124, 80], hudX: 12, hudY: [748, 8], hudH: 64, wide: true,
     slotX: [24, 174, 324], field: { x: 484, dy: 0, w: 66, h: 92 }, deck: { x: 556, dy: 0, w: 66, h: 92 }, grave: { x: 628, dy: 0, w: 66, h: 92 },
     trap: { x: [484, 544, 604], dy: 112, w: 52, h: 73 }, arkDy: 192,
     cap: { x: 0, y: 436, w: 720, h: 52 }, side: { x: 12, y: 828, w: 696, h: 272, row: true }, bannerW: 720,
   } : {
-    SW: 1280, SH: 720, PW: 1028, CW: 96, CH: 134, HW: 78, HH: 109, cx: 514, cy: 362, castW: 250,
+    SW: EXPL ? 1280 : 1028, SH: 720, PW: 1028, CW: 96, CH: 134, HW: 78, HH: 109, cx: 514, cy: 362, castW: 250,
     gy: [410, 150], hy: [596, 8], hudX: 14, hudY: [518, 10], hudH: 140, wide: false,
     slotX: [330, 462, 594], field: { x: 222, dy: 0, w: 86, h: 120 }, deck: { x: 880, dy: 0, w: 68, h: 95 }, grave: { x: 952, dy: 0, w: 68, h: 95 },
     trap: { x: [706, 762, 818], dy: 0, w: 50, h: 70 }, arkDy: 96,
@@ -67,7 +74,7 @@
   <line x1="40" y1="${cy}" x2="${PW - 40}" y2="${cy}" stroke="url(#mgold)" stroke-opacity=".5" stroke-width="1.5"/>
   <circle cx="${cx}" cy="${cy}" r="22" fill="#120d0a" stroke="url(#mgold)" stroke-width="2"/>
   <circle cx="${cx}" cy="${cy}" r="9" fill="none" stroke="#e9cd85" stroke-opacity=".7"/><circle cx="${cx}" cy="${cy}" r="3" fill="#e9cd85"/>
-  ${PORT ? '' : `<path d="M1028 0V720" stroke="#e9cd85" stroke-opacity=".25"/><rect x="1028" width="252" height="720" fill="#0e0a07"/>`}`; }
+  ${PORT || !EXPL ? '' : `<path d="M1028 0V720" stroke="#e9cd85" stroke-opacity=".25"/><rect x="1028" width="252" height="720" fill="#0e0a07"/>`}`; }
   stage.appendChild(mat);
 
   const side = mk('', null); side.id = 'side';
@@ -79,6 +86,7 @@
   { const c = CFG.cap, sd = CFG.side;
     cap.style.cssText = `left:${c.x}px;top:${c.y}px;width:${c.w}px;height:${c.h}px`;
     side.style.cssText = `left:${sd.x}px;top:${sd.y}px;width:${sd.w}px;height:${sd.h}px`; if (sd.row) side.classList.add('row');
+    if (!EXPL) side.style.display = 'none';
     banner.style.cssText = `top:${CFG.cy - 60}px;width:${CFG.bannerW}px`; }
   const handEl = [mk('hand', null, 'left:0;top:0;width:0;height:0'), mk('hand mine', null, 'left:0;top:0;width:0;height:0')];
   handEl[0].className = 'hand'; handEl[1].className = 'hand mine';
@@ -446,7 +454,7 @@
     settle(); seed = sd; game = E.play(sd, ['A', 'B']); game.p = game.p.map((p) => p.name);
     $('m-seed').textContent = sd; logEl.innerHTML = ''; setPlaying(false);
     jump(0); if (autoplay) setTimeout(run, 400);
-    try { history.replaceState(null, '', '#seed=' + sd); } catch (_) { }
+    try { history.replaceState(null, '', '#seed=' + sd + (EXPL ? '&x=1' : '')); } catch (_) { }
   }
   $('play').onclick = () => { if (idx >= game.events.length - 1) { start(seed, true); return; } settle(); run(); };
   $('pause').onclick = () => { playing = false; setPlaying(false); wake(); token++; };
@@ -466,9 +474,12 @@
     const f = Math.min(w / CFG.SW, h / CFG.SH);
     stage.style.transform = `scale(${f})`; wrap.style.height = CFG.SH * f + 'px'; stage.style.left = (w - CFG.SW * f) / 2 + 'px';
   }
-  window.addEventListener('resize', () => { if ((window.innerWidth < window.innerHeight) !== PORT && !/layout=/.test(location.search)) location.reload(); else fit(); }); fit();
+  window.addEventListener('resize', () => { if ((window.innerWidth < window.innerHeight) !== PORT && !/layout=/.test(location.search)) { try { sessionStorage.setItem('sim-idx', idx); } catch (_) { } location.reload(); } else fit(); }); fit();
 
   const m = /seed=(\d+)/.exec(location.hash);
+  $('explain').checked = EXPL;
+  $('explain').onchange = (e) => { try { sessionStorage.setItem('sim-idx', idx); } catch (_) { } history.replaceState(null, '', '#seed=' + seed + (e.target.checked ? '&x=1' : '')); location.reload(); };
   start(m ? +m[1] : 3874, false);
+  try { const k = sessionStorage.getItem('sim-idx'); if (k != null) { sessionStorage.removeItem('sim-idx'); jump(Math.min(+k, game.events.length - 1)); } } catch (_) { }
   window.__battle = { get game() { return game; }, jump, present: (i) => present(i, ++token), get idx() { return idx; } };
 })();
