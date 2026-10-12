@@ -45,6 +45,12 @@
   .cap button { padding: 8px 14px; font-size: 12px; flex: none; }
   .cap button[hidden] { display: none; }
 
+  h2.sec { margin: 64px 0 6px; text-align: center; font: 700 22px/1.3 var(--serif); letter-spacing: .2em; color: var(--gold); }
+  p.sec { margin: 0 auto 28px; max-width: 40em; text-align: center; color: var(--dim); }
+  .evo { display: grid; grid-template-columns: minmax(0, 1fr) 56px minmax(0, 1fr) 56px minmax(0, 1fr); gap: 0 12px; align-items: center; }
+  .evo .arrow { display: grid; justify-items: center; gap: 6px; color: var(--gold); font: 700 12px/1 var(--serif); letter-spacing: .12em; }
+  .evo .arrow svg { width: 40px; height: 24px; }
+  @media (max-width: 860px) { .evo { grid-template-columns: minmax(0, 1fr); max-width: 360px; margin: 0 auto; gap: 14px; } .evo .arrow svg { transform: rotate(90deg); } }
   section.notes { margin-top: 56px; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
   .note { border: 1px solid var(--line); border-radius: 6px; padding: 18px 20px; background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(0,0,0,0)); min-width: 0; }
   .note h2 { margin: 0 0 8px; font: 700 17px/1.3 var(--serif); letter-spacing: .1em; color: var(--gold); }
@@ -73,7 +79,7 @@
   <header>
     <div class="eyebrow">主風格樣張　第一版</div>
     <h1>太陽船之書</h1>
-    <p class="lede">六張基本卡：三張怪獸、兩張魔法、一張陷阱。點一下卡片翻牌，翻開後可以看「小檔案」。滑鼠移動或手指按住拖曳，可以看到燙金反光。</p>
+    <p class="lede">六張基本卡（三張怪獸、兩張魔法、一張陷阱）和一條三階進化線。點一下卡片翻牌，翻開後可以看「小檔案」。滑鼠移動或手指按住拖曳，可以看到燙金反光。</p>
     <div class="rule"></div>
   </header>
 
@@ -83,6 +89,10 @@
   </div>
 
   <main class="grid" id="grid"></main>
+
+  <h2 class="sec">進化線</h2>
+  <p class="sec">一階、二階、三階：進化卡疊在場上的低階牌上，只付費用差額，傷害與裝備保留。類別列中間的三顆菱形，亮到目前的階段。</p>
+  <div class="evo" id="evo"></div>
 
   <section class="notes">
     <div class="note">
@@ -124,27 +134,35 @@
 <script src="js/cardart.js"></script>
 <script src="js/cardview.js"></script>
 <script src="data/cards-sample.js"></script>
+<script src="data/cards-evo.js"></script>
 <script>
 (function () {
   const grid = document.getElementById('grid');
+  const evo = document.getElementById('evo');
   const views = [];
-  for (const card of window.SAMPLE_CARDS) {
+  const ARROW = (label) => `<div class="arrow" aria-hidden="true"><svg viewBox="0 0 40 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 H36 M26 3 L37 12 L26 21"/></svg><span>${label}</span></div>`;
+  function makeSlot(card, parent) {
     const slot = document.createElement('div');
     slot.className = 'slot';
     const v = CardView.create(card);
     v.dataset.name = card.name;
     const cap = document.createElement('div');
     cap.className = 'cap';
-    cap.innerHTML = `<div><div class="t">${card.name}</div><div class="s">${card.typeLine}・${CardArt.RARITY[card.rarity].name}</div></div><button type="button" hidden>小檔案</button>`;
+    cap.innerHTML = `<div><div class="t">${card.name}</div><div class="s">${card.typeLine}・${CardArt.RARITY[card.rarity].name}${card.stage ? '・' + card.stage : ''}</div></div><button type="button" hidden>小檔案</button>`;
     const btn = cap.querySelector('button');
     const toggle = () => CardView.flip(v).then(() => { btn.hidden = !v._state.faceUp; });
     v.addEventListener('click', toggle);
     v.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
     btn.addEventListener('click', () => openCodex(card));
     slot.append(v, cap);
-    grid.append(slot);
+    parent.append(slot);
     views.push([v, btn]);
   }
+  for (const card of window.SAMPLE_CARDS) makeSlot(card, grid);
+  window.EVO_CARDS.forEach((card, i) => {
+    if (i > 0) evo.insertAdjacentHTML('beforeend', ARROW(i === 1 ? '費用 1' : '費用 2'));
+    makeSlot(card, evo);
+  });
   const all = (up) => views.forEach(([v, btn], i) => setTimeout(() => CardView.flip(v, up).then(() => { btn.hidden = !v._state.faceUp; }), i * 140));
   document.getElementById('btn-open').onclick = () => all(true);
   document.getElementById('btn-close').onclick = () => all(false);

@@ -775,6 +775,141 @@
     return s;
   };
 
+  // ───────── 聖甲蟲進化線 ─────────
+  // 彩色聖甲蟲（俯視，頭朝上）：前腳高舉托住太陽
+  function scarabColor(cx, cy, k, o) {
+    o = o || {};
+    const L = '#1b1410', sw = 2.2;
+    const body = o.body || '#2f9d8c', body2 = o.body2 || '#1f6b62', cap = o.cap || '#2c5d9c';
+    let g = `<g transform="translate(${cx},${cy}) scale(${k})" stroke="${L}" stroke-width="${sw}" stroke-linejoin="round" stroke-linecap="round">`;
+    // 後腳與中腳
+    for (const d of [-1, 1]) {
+      g += `<path d="M${d * 26},24 L${d * 52},40 L${d * 58},58" fill="none" stroke-width="7"/><path d="M${d * 26},24 L${d * 52},40 L${d * 58},58" fill="none" stroke="#3a2a1e" stroke-width="3.6"/>`;
+      g += `<path d="M${d * 30},0 L${d * 56},6 L${d * 66},24" fill="none" stroke-width="7"/><path d="M${d * 30},0 L${d * 56},6 L${d * 66},24" fill="none" stroke="#3a2a1e" stroke-width="3.6"/>`;
+      // 前腳往上托住太陽
+      g += `<path d="M${d * 26},-26 L${d * 54},-52 L${d * 34},-86" fill="none" stroke-width="7.5"/><path d="M${d * 26},-26 L${d * 54},-52 L${d * 34},-86" fill="none" stroke="#3a2a1e" stroke-width="4"/>`;
+    }
+    // 鞘翅
+    g += `<path d="M0,-30 C36,-30 44,8 32,38 Q0,56 -32,38 C-44,8 -36,-30 0,-30 Z" fill="${body}"/>`;
+    g += `<path d="M0,-28 V50" fill="none" stroke-width="1.8"/>`;
+    for (const d of [-1, 1]) for (const r of [10, 20, 30]) g += `<path d="M${d * 3},${-24 + r * 0.2} Q${d * (r + 6)},${r - 8} ${d * (r * 0.9 + 4)},${r + 18}" fill="none" stroke="${body2}" stroke-width="1.5"/>`;
+    // 前胸背板
+    g += `<path d="M-32,-32 Q0,-48 32,-32 Q38,-22 30,-14 L-30,-14 Q-38,-22 -32,-32 Z" fill="${cap}"/>`;
+    g += `<path d="M-18,-30 L-14,-18 M18,-30 L14,-18 M0,-34 V-16" fill="none" stroke-width="1.4"/>`;
+    // 頭與頭盾的鋸齒
+    g += `<path d="M-20,-46 L-14,-58 L-8,-48 L0,-62 L8,-48 L14,-58 L20,-46 L16,-36 L-16,-36 Z" fill="#3a2a1e"/>`;
+    g += `<circle cx="-12" cy="-42" r="2.4" fill="#f7f0dc" stroke-width="1.2"/><circle cx="12" cy="-42" r="2.4" fill="#f7f0dc" stroke-width="1.2"/>`;
+    g += `</g>`;
+    return g;
+  }
+  function sunDiscRays(cx, cy, r, rays, col, op) {
+    let s = `<g stroke="${col}" stroke-width="2" opacity="${op || 0.6}">`;
+    for (let i = 0; i < rays; i++) {
+      const a = (i / rays) * Math.PI * 2, r1 = r + 6, r2 = r + (i % 2 ? 18 : 30);
+      s += `<path d="M${f(cx + Math.cos(a) * r1)},${f(cy + Math.sin(a) * r1)} L${f(cx + Math.cos(a) * r2)},${f(cy + Math.sin(a) * r2)}"/>`;
+    }
+    return s + `</g>`;
+  }
+
+  // 一階：聖甲蟲卵（糞球剖面）
+  SCENES.egg = (card) => {
+    let s = papyrusGround(W.x, W.y, W.w, W.h, 101);
+    s += blockBand(W.x, W.y, W.w, 9, ['#e2b54c', '#2c5d9c', '#b6402a', '#3b7d58']);
+    s += lotusFrieze(W.x, W.y + 9, W.w, 15);
+    const cx = 250, cy = 246, r = 96;
+    s += sunDiscRays(cx, cy, r, 40, '#c8902e', 0.5);
+    // 糞球
+    s += `<clipPath id="ball"><circle cx="${cx}" cy="${cy}" r="${r}"/></clipPath>`;
+    s += `<circle cx="${cx}" cy="${cy}" r="${r + 4}" fill="#1b1410"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="#8a5a30"/>`;
+    const rg = rng(17);
+    s += `<g clip-path="url(#ball)">`;
+    for (let i = 0; i < 90; i++) {
+      const x = cx - r + rg() * r * 2, y = cy - r + rg() * r * 2, l = 10 + rg() * 26, a = rg() * Math.PI;
+      s += `<path d="M${f(x)},${f(y)} l${f(Math.cos(a) * l)},${f(Math.sin(a) * l)}" stroke="${rg() > 0.5 ? '#c79a5a' : '#4a2c14'}" stroke-width="${f(0.8 + rg() * 1.6)}" stroke-linecap="round" opacity="${f(0.45 + rg() * 0.4)}"/>`;
+    }
+    s += `<ellipse cx="${cx - 38}" cy="${cy - 46}" rx="46" ry="26" fill="#e8b878" opacity=".22" transform="rotate(-30 ${cx - 38} ${cy - 46})"/>`;
+    s += `</g>`;
+    // 剖開的育房與卵
+    s += `<ellipse cx="${cx}" cy="${cy + 6}" rx="43" ry="54" fill="#3a2010" stroke="#1b1410" stroke-width="2.4"/>`;
+    s += `<ellipse cx="${cx}" cy="${cy + 6}" rx="40" ry="52" fill="#d9b982"/>`;
+    s += `<ellipse cx="${cx}" cy="${cy + 10}" rx="25" ry="35" fill="#fbf3dc" stroke="#1b1410" stroke-width="2.4"/>`;
+    s += `<path d="M${cx - 14},${cy - 8} Q${cx - 18},${cy + 14} ${cx - 10},${cy + 30}" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".7"/>`;
+    s += `<path d="M${cx - 13},${cy + 36} Q${cx},${cy + 46} ${cx + 13},${cy + 36}" fill="none" stroke="#c9b27a" stroke-width="1.6"/>`;
+    // 小太陽光暈（卵裡有生命）
+    s += `<circle cx="${cx}" cy="${cy + 10}" r="9" fill="#e2b54c" opacity=".55"/>`;
+    // 兩側紙莎草
+    s += papyrusPlant(62, 392, 1) + papyrusPlant(438, 392, -1);
+    // 底部金帶與文字：ḫpr（聖甲蟲，意思是「生成」）
+    s += `<rect x="${W.x}" y="372" width="${W.w}" height="48" fill="#e2b54c"/><path d="M${W.x},372 H${W.x + W.w}" stroke="#1b1410" stroke-width="2"/>`;
+    const t = ['L001'];
+    s += glyphRow(t, cx - rowWidth(t, 34, 6) / 2, 410, 34, '#1b1714', 6).svg;
+    return s;
+  };
+
+  // 二階：聖甲蟲（托起太陽）
+  SCENES.scarab = (card) => {
+    let s = papyrusGround(W.x, W.y, W.w, W.h, 202);
+    s += blockBand(W.x, W.y, W.w, 9, ['#3b7d58', '#e2b54c', '#b6402a', '#2c5d9c']);
+    s += lotusFrieze(W.x, W.y + 9, W.w, 15);
+    const cx = 250, cy = 318, k = 1.36;
+    // 地平線與日光
+    s += `<rect x="${W.x}" y="${GROUND}" width="${W.w}" height="${W.y + W.h - GROUND}" fill="#d9a44a"/><path d="M${W.x},${GROUND} H${W.x + W.w}" stroke="#1b1410" stroke-width="2"/>`;
+    s += `<rect x="${W.x}" y="${GROUND + 9}" width="${W.w}" height="4" fill="#1b1410" opacity=".8"/>`;
+    const sx = cx, sy = cy - 106 * k;
+    s += sunDiscRays(sx, sy, 28 * k, 36, '#c8902e', 0.55);
+    s += `<circle cx="${sx}" cy="${sy}" r="${f(28 * k)}" fill="url(#SUN)" stroke="#1b1410" stroke-width="2.6"/>`;
+    s += `<circle cx="${sx}" cy="${sy}" r="${f(21 * k)}" fill="none" stroke="#f3b27a" stroke-width="1.4" opacity=".7"/>`;
+    s += scarabColor(cx, cy, k);
+    // 直行文字：ḫpr 與 太陽
+    s += `<g stroke="#1b1410" stroke-width="1.2"><path d="M70,150 V${GROUND - 8} M104,150 V${GROUND - 8} M396,150 V${GROUND - 8} M430,150 V${GROUND - 8}"/></g>`;
+    s += glyphColumn(['L001', 'M017'], 87, 160, 26, '#1b1714', 8).svg + glyphColumn(['N005', 'Z001'], 413, 160, 26, '#1b1714', 8).svg;
+    return s;
+  };
+
+  // 三階：凱布利（神話，黑底燙金）
+  SCENES.khepri = (card) => {
+    let s = goldGround(W.x, W.y, W.w, W.h, 303);
+    s += `<g fill="none" stroke="url(#G)" stroke-width="1.3">
+      <path d="M92,${GROUND} V196 A158,96 0 0 1 408,196 V${GROUND}"/>
+      <path d="M102,${GROUND} V198 A148,88 0 0 1 398,198 V${GROUND}" stroke-dasharray="1.5 4"/>
+      <path d="M112,${GROUND} V200 A138,80 0 0 1 388,200 V${GROUND}"/></g>`;
+    s += papyrusColumn(60, 168, GROUND, 15, 'url(#G)', C.turq) + papyrusColumn(440, 168, GROUND, 15, 'url(#G)', C.turq);
+    s += crescent(76, 128, 9, 'url(#G)') + crescent(424, 128, 9, 'url(#G)');
+    // 台座
+    s += `<g fill="#15100d" stroke="url(#G)" stroke-width="1.3"><path d="M120,${GROUND} H380 V${GROUND + 10} H120 Z"/><path d="M104,${GROUND + 10} H396 V${GROUND + 22} H104 Z"/></g>`;
+    for (let i = 0; i < 14; i++) s += diamond(128 + i * 19, GROUND + 5, 3, 3, i % 2 ? C.turq : C.rose, 'none', 0);
+    // 朝陽：日輪、日芒、有翼
+    const sx = 250, sy = 176;
+    s += `<g stroke="url(#G)" stroke-width="1" opacity=".9">`;
+    for (let i = 0; i < 44; i++) { const a = Math.PI + (i / 43) * Math.PI; const r1 = 30, r2 = i % 2 ? 50 : 66; s += `<path d="M${f(sx + Math.cos(a) * r1)},${f(sy + Math.sin(a) * r1)} L${f(sx + Math.cos(a) * r2)},${f(sy + Math.sin(a) * r2)}"/>`; }
+    s += `</g>`;
+    s += wingedSun(sx, sy + 20, 0.74);
+    // 聖甲蟲（金線稿）
+    s += `<g transform="translate(250,326) scale(1.52)">${goldScarab()}</g>`;
+    // 兩側直行文字
+    s += `<g stroke="url(#G)" stroke-width="1"><path d="M140,270 V382 M360,270 V382"/></g>`;
+    s += glyphColumn(['L001', 'M017'], 140, 276, 20, 'url(#G)', 5).svg + glyphColumn(['N005', 'Z001'], 360, 276, 20, 'url(#G)', 5).svg;
+    return s;
+  };
+  function goldScarab() {
+    const G = 'url(#G)';
+    let o = `<g stroke="${G}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" fill="#120d0a">`;
+    for (const d of [-1, 1]) {
+      o += `<path d="M${d * 26},24 L${d * 52},40 L${d * 58},58" fill="none" stroke-width="2.2"/>`;
+      o += `<path d="M${d * 30},0 L${d * 56},6 L${d * 66},24" fill="none" stroke-width="2.2"/>`;
+      o += `<path d="M${d * 26},-26 L${d * 56},-44 L${d * 70},-70" fill="none" stroke-width="2.2"/>`;
+    }
+    o += `<path d="M0,-30 C36,-30 44,8 32,38 Q0,56 -32,38 C-44,8 -36,-30 0,-30 Z"/>`;
+    o += `<path d="M0,-28 V50" fill="none"/>`;
+    for (const d of [-1, 1]) for (const r of [10, 20, 30]) o += `<path d="M${d * 3},${-24 + r * 0.2} Q${d * (r + 6)},${r - 8} ${d * (r * 0.9 + 4)},${r + 18}" fill="none" stroke-width=".9"/>`;
+    o += `<path d="M-32,-32 Q0,-48 32,-32 Q38,-22 30,-14 L-30,-14 Q-38,-22 -32,-32 Z"/>`;
+    o += `<path d="M-18,-30 L-14,-18 M18,-30 L14,-18 M0,-34 V-16" fill="none" stroke-width=".9"/>`;
+    o += `<path d="M-20,-46 L-14,-58 L-8,-48 L0,-62 L8,-48 L14,-58 L20,-46 L16,-36 L-16,-36 Z"/>`;
+    o += `<path d="M-24,-12 L-30,-12 L-24,-6 Z M24,-12 L30,-12 L24,-6 Z" fill="${C.turq}" stroke="none"/>`;
+    o += `<path d="M-22,-24 L-12,-20 M22,-24 L12,-20" fill="none" stroke="${C.turq}" stroke-width="1.4"/>`;
+    return o + `</g>`;
+  }
+
   // ───────── 外框 ─────────
   const KIND = {
     monster: { accent: C.gold, accent2: C.goldLo, name: '神祇' },
@@ -863,6 +998,14 @@
     // 類別列
     s += `<path d="M30,434 H470 V466 H30 Z" fill="#100b09" stroke="url(#G)" stroke-width="1.3"/>`;
     s += `<path d="M30,434 L22,450 L30,466 M470,434 L478,450 L470,466" fill="none" stroke="url(#G)" stroke-width="1.3"/>`;
+    // 進化階段（一階至三階）：類別列中間三顆菱形，亮到目前階段
+    if (card.stageN) {
+      for (let i = 0; i < 3; i++) {
+        const on = i < card.stageN, x = 214 + i * 36;
+        s += `<path d="M${x},441 L${x + 9},450 L${x},459 L${x - 9},450 Z" fill="${on ? C.gold : 'none'}" stroke="${on ? C.goldHi : C.goldLo}" stroke-width="1.3" opacity="${on ? 1 : .7}"/>`;
+        if (i < 2) s += `<path d="M${x + 12},450 H${x + 24}" stroke="${C.goldLo}" stroke-width="1.2"/>`;
+      }
+    }
     // 象形文字名（右側）
     if (card.glyphName) {
       const sz = 22, wd = rowWidth(card.glyphName, sz, 3);
