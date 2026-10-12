@@ -441,6 +441,7 @@
     if (o.crown === 'lunar') g += lunarCrown(P, s, o);
     if (o.crown === 'sun') g += sunCrown(P, s, o);
     if (o.crown === 'plumes') g += plumeCrown(P, s, o);
+    if (o.crown === 'modius') g += modiusCrown(P, s, o);
     if (o.crown === 'feather') g += maatFeather(P, s);
     g += `</g>`;
     return g;
@@ -481,6 +482,22 @@
       return o2 + `<path d="M0,-20.2 V-28.4" stroke="${band}" stroke-width="${f(sw * 0.7)}"/></g>`;
     };
     g += plume(-0.4, o.plumeA || '#14316a', o.plumeBand || '#e6c677') + plume(0.62, o.plumeB || '#5a2a1c', o.plumeBand || '#e6c677');
+    if (o.disk) {
+      // 兩根羽毛之間的日輪與聖蛇（阿蒙－拉）
+      g += `<circle cx="0.12" cy="-20.2" r="1.0" fill="${o.disk}" stroke="${P.line}" stroke-width="${sw}"/><circle cx="0.12" cy="-20.2" r=".62" fill="none" stroke="${o.diskRing || P.gold}" stroke-width="${f(sw * 0.7)}"/>`;
+      g += `<path d="M0.95,-19.7 Q1.95,-19.9 1.8,-20.9 Q1.72,-21.3 1.42,-21.1 Q1.5,-20.75 1.3,-20.4 Q1.2,-20.05 0.9,-19.95 Z" fill="${o.uraeus || P.red}" stroke="${P.line}" stroke-width="${sw}"/>`;
+    }
+    return g;
+  }
+  // 塞拉皮斯的頭飾：裝穀物的量器（modius），頂上插著麥穗
+  function modiusCrown(P, s, o) {
+    const sw = f(P.sw / s), fill = o.modius || P.gold;
+    let g = `<path d="M-1.3,-19.3 L-1.12,-21.75 L1.22,-21.75 L1.4,-19.3 Z" fill="${fill}" stroke="${P.line}" stroke-width="${sw}" stroke-linejoin="round"/>`;
+    g += `<path d="M-0.55,-19.4 V-21.7 M0.1,-19.4 V-21.7 M0.75,-19.4 V-21.7" stroke="${P.line}" stroke-width="${f(sw * 0.6)}" opacity=".8"/>`;
+    for (const [x, a] of [[-0.8, -18], [-0.2, -6], [0.45, 6], [1.0, 18]]) {
+      g += `<g transform="translate(${x},-21.75) rotate(${a})"><path d="M0,0 V-1.9" stroke="${P.line}" stroke-width="${f(sw * 0.8)}"/>` +
+        [0.5, 0.95, 1.4, 1.85].map((y) => `<path d="M0,${-y} q-.28,-.1 -.34,-.42 q.3,0 .34,.42 q.04,-.42 .34,-.42 q-.06,.32 -.34,.42 Z" fill="${P.gold}" stroke="${P.line}" stroke-width="${f(sw * 0.5)}"/>`).join('') + `</g>`;
+    }
     return g;
   }
 
@@ -1114,6 +1131,18 @@
     return s;
   }
 
+  // 融合卡的外框：兩股金線與玫瑰銅線交纏的繩紋（兩種東西合而為一）
+  function braid(x, y0, y1) {
+    const n = Math.round((y1 - y0) / 10);
+    let pa = `M${x},${y0}`, pb = pa;
+    for (let i = 0; i < n; i++) {
+      const y = y0 + i * 10, k = i % 2 ? -1 : 1;
+      pa += ` Q${x + k * 7},${y + 5} ${x},${y + 10}`;
+      pb += ` Q${x - k * 7},${y + 5} ${x},${y + 10}`;
+    }
+    return `<g fill="none" stroke-linecap="round"><path d="${pb}" stroke="#0d0907" stroke-width="4.6"/><path d="${pa}" stroke="#0d0907" stroke-width="4.6"/><path d="${pb}" stroke="${C.carn}" stroke-width="2.4"/><path d="${pa}" stroke="url(#G)" stroke-width="2.4"/></g>`;
+  }
+
   function frame(card) {
     const K = KIND[card.kind], R = RARITY[card.rarity];
     const A = K.accent;
@@ -1134,6 +1163,7 @@
     s += ankh(68, 18, 16, C.goldHi, '#0d0907', 1.2);
     s += medallion(448, 62, 30, A);
     s += domainEmblem(card, 448, 62);
+    if (card.form === 'fusion') s += braid(24, 100, 622) + braid(476, 100, 622);
     // 插圖窗外框
     s += `<rect x="${W.x - 6}" y="${W.y - 6}" width="${W.w + 12}" height="${W.h + 12}" fill="#0d0907" stroke="url(#G)" stroke-width="2.4"/>`;
     if (card.rarity === 'divine') {
@@ -1144,6 +1174,40 @@
       s += `<path d="M120,40 H404 M120,84 H404" stroke="url(#G)" stroke-width=".8" stroke-dasharray="0.1 4" stroke-linecap="round" opacity=".9"/>`;
       s += `<g opacity=".85">${cornerFan(21, 679, 38, 0, 'url(#G)')}${cornerFan(479, 679, 38, 270, 'url(#G)')}</g>`;
     }
+    return s;
+  }
+
+  // 素材條：疊在插圖窗下緣，左邊是「合成」或「融合」的標籤，右邊（HTML）寫素材
+  function matRibbon(card) {
+    const y = W.y + W.h - 32, fu = card.form === 'fusion', tag = fu ? C.carn : C.turqLo;
+    let s = `<rect x="${W.x}" y="${y}" width="${W.w}" height="32" fill="#0d0907" opacity=".94"/>`;
+    s += `<path d="M${W.x},${y} H${W.x + W.w}" stroke="url(#G)" stroke-width="1.6"/>`;
+    s += `<path d="M${W.x},${y} h66 l10,16 l-10,16 h-66 Z" fill="${tag}" stroke="url(#G)" stroke-width="1.4"/>`;
+    s += `<path d="M${W.x + 4},${y + 4} h58 l7,12 l-7,12 h-58 Z" fill="none" stroke="#0d0907" stroke-width=".8" opacity=".55"/>`;
+    return s;
+  }
+
+  // 場地卡：把插圖當成從神殿大門看出去的景——上緣是埃及式的凹弧飛簷（cavetto cornice），兩側是圓柱狀的繩紋門框
+  function fieldGate(card) {
+    const x0 = W.x, x1 = W.x + W.w, y0 = W.y, y1 = W.y + W.h, G = 'url(#G)';
+    let s = '';
+    // 兩側繩紋門框（torus）
+    for (const x of [x0, x1 - 11]) {
+      s += `<rect x="${x}" y="${y0}" width="11" height="${W.h}" fill="#120d0a"/>`;
+      s += `<g stroke="${G}" stroke-width="1.2">`;
+      for (let y = y0 + 20; y < y1; y += 8) s += `<path d="M${x},${y + 8} L${x + 11},${y}"/>`;
+      s += `</g><path d="M${x + (x === x0 ? 11 : 0)},${y0} V${y1}" stroke="${G}" stroke-width="1.6"/><path d="M${x + (x === x0 ? 0 : 11)},${y0} V${y1}" stroke="#0d0907" stroke-width="1"/>`;
+    }
+    // 凹弧飛簷：一排直立的葉紋（棕櫚葉／羽狀），底下一條彩色橫飾帶
+    s += `<path d="M${x0},${y0} H${x1} V${y0 + 14} Q${x1 - 20},${y0 + 24} ${x1 - 20},${y0 + 24} H${x0 + 20} Q${x0 + 20},${y0 + 24} ${x0},${y0 + 14} Z" fill="#100b09" stroke="${G}" stroke-width="1.4"/>`;
+    const n = 36, bw = (W.w - 40) / n;
+    for (let i = 0; i < n; i++) {
+      const lx = x0 + 20 + i * bw, c = [C.lapis, C.turq, C.carn, C.gold][i % 4];
+      s += `<path d="M${f(lx + 0.6)},${y0 + 23.5} Q${f(lx + bw / 2)},${y0 + 7} ${f(lx + bw - 0.6)},${y0 + 23.5} Z" fill="${c}" stroke="#0d0907" stroke-width=".6"/>`;
+    }
+    s += `<path d="M${x0},${y0 + 14} Q${x0 + 20},${y0 + 24} ${x0 + 20},${y0 + 24} M${x1},${y0 + 14} Q${x1 - 20},${y0 + 24} ${x1 - 20},${y0 + 24}" fill="none" stroke="${G}" stroke-width="1.4"/>`;
+    s += `<path d="M${x0 + 11},${y0 + 25.5} H${x1 - 11}" stroke="${G}" stroke-width="1.6"/>`;
+    s += wingedSun(250, y0 + 13, 0.3);
     return s;
   }
 
@@ -1169,6 +1233,8 @@
       };
       s += band(W.y - 6) + band(W.y + W.h + 6);
     }
+    if (card.form === 'field') s += fieldGate(card);
+    if (card.mats) s += matRibbon(card);
     if (card.rarity === 'divine') {
       // 窗框的第二道亮金線，與上緣的有翼日輪冠飾
       s += `<rect x="${W.x - 9.5}" y="${W.y - 9.5}" width="${W.w + 19}" height="${W.h + 19}" fill="none" stroke="url(#GF)" stroke-width="1.2" opacity=".9"/>`;
@@ -1388,5 +1454,9 @@
     </g>`;
   }
 
-  window.CardArt = { cardSVG, backSVG, C, KIND, RARITY };
+  // 給 cardart-ext.js 等延伸檔使用的零件
+  const kit = { f, rng, C, MODE, W, GROUND, BR, gP, GL, SCENES, nextId: () => ++UID, gT, gst, glyph, glyphColumn, glyphRow, rowWidth, sparkle, crescent, diamond, cornerFan,
+    papyrusColumn, blockBand, lotusFrieze, papyrusGround, goldGround, papyrusPlant, ankh, strider, head, collar, wigBlock, wigCap, plumeCrown, ptahFigure, scarabColor, sunDiscRays,
+    feather, tint, ringGlyphs, podium, wingedSun, solarBoat, goldScarab, PART, FACE, JACKAL, FALCON, IBIS, wedjat };
+  window.CardArt = { cardSVG, backSVG, C, KIND, RARITY, kit };
 })();

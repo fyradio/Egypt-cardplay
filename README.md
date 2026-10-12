@@ -11,7 +11,7 @@
 
 **美術階段：主風格樣張第一版。** 這次美術與卡牌品質優先，樣張通過後才開工做對決遊戲。
 
-- 卡牌試看頁：[`cards.html`](cards.html)（開啟 Pages 後：https://fyradio.github.io/Egypt-cardplay/cards.html ）——六張基本卡、燙金卡背、立體翻牌、神話小檔案
+- 卡牌試看頁：[`cards.html`](cards.html)（開啟 Pages 後：https://fyradio.github.io/Egypt-cardplay/cards.html ）——基本卡、進化線、三神（各有專屬光影）、合成與融合怪、場地卡、燙金卡背、立體翻牌、神話小檔案
 - 完整企劃：[`docs/埃及神話卡牌-企劃.md`](docs/埃及神話卡牌-企劃.md)
 
 ## 美術主風格
@@ -38,11 +38,14 @@
 cards.html            ✅ 卡牌試看頁
 css/cards.css         ✅ 卡牌元件：卡面文字、燙金光澤、翻牌
 js/cardart.js         ✅ 卡圖繪製（外框、插圖、卡背）
+js/cardart-ext.js     ✅ 合成怪、融合怪、場地卡的插圖
 js/cardview.js        ✅ 卡片元件、立體翻牌、傾斜反光
 js/glyphs.js          ✅ 象形文字向量路徑（自動產生）
 data/cards-sample.js  ✅ 樣張六張卡的資料與小檔案
 data/cards-evo.js     ✅ 進化線樣張（聖甲蟲卵 → 聖甲蟲 → 凱布利）
 data/cards-trinity.js ✅ 三神樣張（阿蒙、拉、普塔）
+data/cards-fusion.js  ✅ 合成怪（卡諾卜守護者、斯芬克斯）與融合怪（阿蒙－拉、塞拉皮斯）
+data/cards-field.js   ✅ 場地卡（卡納克大柱廳、冥河夜航、尼羅河氾濫）
 assets/fonts/         ✅ 切字後的宋體與 Cinzel（OFL 授權）
 tools/                ✅ extract_glyphs.py、build_fonts.py
 index.html            入口
@@ -91,6 +94,7 @@ docs/                 企劃與文件
 - 2026-10-12：主風格樣張第一版——六張基本卡（阿努比斯、瑪特、托特、荷魯斯之眼、開口儀式、假門）、燙金卡背、立體翻牌動畫
 - 2026-10-12：進化線樣張（聖甲蟲卵、聖甲蟲、凱布利），進化卡加上三階菱形標記
 - 2026-10-12：三神樣張（阿蒙、拉、普塔），三神專用卡框與稜鏡光
+- 2026-10-12：三神專屬浮動光影與每 5 秒的掃光（阿蒙月光帶、拉日芒、普塔水光）；合成怪、融合怪（含素材條與繩紋卡框）、三張場地卡（神殿門框）
 
 ## 授權
 

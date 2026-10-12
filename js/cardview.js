@@ -13,13 +13,14 @@
     h += `<div class="cf cf-name${card.name.length > 4 ? ' long' : ''}">${card.name}</div>`;
     h += `<div class="cf cf-type">${card.typeLine}${card.stage ? `<span class="stage">${card.stage}</span>` : ''}</div>`;
     h += `<div class="cf cf-text"><div>${card.text}</div>${card.flavor ? `<div class="cf-flavor">${card.flavor}</div>` : ''}</div>`;
+    if (card.mats) h += `<div class="cf cf-mat-tag">${card.form === 'fusion' ? '融合' : '合成'}</div><div class="cf cf-mat"><b>素材</b>${card.mats}</div>`;
     if (card.kind === 'monster') {
       h += `<div class="cf cf-stat cf-atk" aria-label="攻擊">${card.atk}</div><div class="cf cf-stat cf-hp" aria-label="生命">${card.hp}</div>`;
       h += `<div class="cf cf-foot l">${R.name}</div><div class="cf cf-foot r">No.${card.no}</div>`;
     } else {
       h += `<div class="cf cf-foot l">${card.sub}</div><div class="cf cf-foot r">No.${card.no}　${R.name}</div>`;
     }
-    h += `${card.rarity === 'mythic' || card.rarity === 'divine' ? '<div class="shimmer"></div>' : ''}${card.rarity === 'divine' ? '<div class="holo"></div>' : ''}<div class="foil"></div><div class="glint"></div>`;
+    h += `${card.rarity === 'mythic' || card.rarity === 'divine' ? '<div class="shimmer"></div>' : ''}${card.rarity === 'divine' ? '<div class="holo"></div><div class="aura"></div><div class="pass"><i></i></div>' : ''}<div class="foil"></div><div class="glint"></div>`;
     return h;
   }
 

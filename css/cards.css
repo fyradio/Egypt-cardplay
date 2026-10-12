@@ -97,3 +97,42 @@
 }
 
 .cf-cost.sp { font: 700 7.2cqw/1 var(--serif); letter-spacing: 0; }
+
+/* ── 素材條文字（合成／融合） ── */
+.cf-mat-tag { left: 6.4%; width: 12.6%; top: 55.43%; height: 4.57%; display: flex; align-items: center; justify-content: center; font: 700 3.5cqw/1 var(--serif); letter-spacing: .1em; color: var(--card-gold-hi); text-shadow: 0 .3cqw 0 rgba(0, 0, 0, .8); }
+.cf-mat { left: 21%; right: 7.5%; top: 55.43%; height: 4.57%; display: flex; align-items: center; font: 700 3cqw/1 var(--serif); letter-spacing: .03em; color: var(--card-parch); white-space: nowrap; }
+.cf-mat b { color: var(--card-gold); margin-right: 1.6cqw; font-weight: 700; }
+
+/* ── 三神專屬光影：低調的浮動光＋每 5 秒一道各有特色的掃光 ──
+   阿蒙＝月白藍的寬光帶，帶著幾點星屑，由左往右滑過
+   拉　＝金橘色的日芒，從下方升起、扇形展開
+   普塔＝松石綠的光，由下往上湧，帶著水波般的細紋 */
+.aura, .pass { position: absolute; inset: 0; pointer-events: none; border-radius: inherit; mix-blend-mode: screen; }
+.aura { opacity: .2; background-repeat: no-repeat; animation: aura 11s ease-in-out infinite alternate; }
+@keyframes aura { from { background-position: 0% 0%, 100% 100%; } to { background-position: 100% 60%, 0% 30%; } }
+.card3d.is-tilting .aura { opacity: .1; }
+.pass { overflow: hidden; opacity: 0; animation: pass 5s linear infinite; }
+.pass i { position: absolute; inset: 0; display: block; }
+@keyframes pass { 0%, 62% { opacity: 0; } 66% { opacity: 1; } 92% { opacity: 1; } 100% { opacity: 0; } }
+
+[data-id="amun"] .aura { background-image: radial-gradient(circle at 30% 30%, rgba(150, 190, 255, .55), transparent 42%), radial-gradient(circle at 70% 70%, rgba(220, 235, 255, .4), transparent 38%); background-size: 160% 160%, 150% 150%; }
+[data-id="amun"] .pass i { left: -100%; right: -100%;
+  background: radial-gradient(circle, #fff 0 1px, transparent 2px) 0 0 / 34px 44px,
+    linear-gradient(105deg, transparent 40%, rgba(130, 170, 255, .3) 46%, rgba(235, 244, 255, .85) 50%, rgba(130, 170, 255, .3) 54%, transparent 60%);
+  -webkit-mask: linear-gradient(90deg, transparent 30%, #000 50%, transparent 70%); mask: linear-gradient(90deg, transparent 30%, #000 50%, transparent 70%);
+  animation: p-amun 5s cubic-bezier(.4, 0, .3, 1) infinite; }
+@keyframes p-amun { 0%, 60% { transform: translateX(-34%); } 100% { transform: translateX(34%); } }
+
+[data-id="ra"] .pass { opacity: 0; }
+[data-id="ra"] .pass i { background: repeating-conic-gradient(from -60deg at 50% 78%, rgba(255, 205, 120, .55) 0deg 2.2deg, transparent 2.2deg 10deg);
+  -webkit-mask: radial-gradient(circle at 50% 78%, #000 0, transparent 62%); mask: radial-gradient(circle at 50% 78%, #000 0, transparent 62%);
+  transform-origin: 50% 78%; animation: p-ra 5s cubic-bezier(.3, .6, .3, 1) infinite; }
+@keyframes p-ra { 0%, 62% { transform: scale(.3) rotate(-5deg); } 100% { transform: scale(1.15) rotate(8deg); } }
+
+[data-id="ptah"] .pass i { top: -100%; bottom: -100%;
+  background: linear-gradient(0deg, transparent 42%, rgba(110, 235, 205, .4) 47%, rgba(230, 255, 245, .85) 50%, rgba(110, 235, 205, .4) 53%, transparent 58%),
+    repeating-linear-gradient(0deg, rgba(210, 255, 240, .3) 0 1px, transparent 1px 8px);
+  -webkit-mask: linear-gradient(0deg, transparent 38%, #000 50%, transparent 62%); mask: linear-gradient(0deg, transparent 38%, #000 50%, transparent 62%);
+  animation: p-ptah 5s cubic-bezier(.4, 0, .3, 1) infinite; }
+@keyframes p-ptah { 0%, 60% { transform: translateY(34%); } 100% { transform: translateY(-34%); } }
+@media (prefers-reduced-motion: reduce) { .aura, .pass, .pass i { animation: none; } .pass { opacity: 0; } }
