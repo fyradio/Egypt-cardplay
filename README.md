@@ -5,6 +5,7 @@
 - 對象：11 歲以上，適合親子一起玩、一起讀
 - 形式：橫向手機／電腦，單機對 AI，離線可玩
 - 發佈：GitHub Pages（多檔案專案）
+- 版面：手機直式為主（見 `sim.html`）
 - 遊戲網址（開啟 Pages 後）：https://fyradio.github.io/Egypt-cardplay/
 
 ## 目前狀態
