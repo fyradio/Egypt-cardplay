@@ -41,20 +41,6 @@
     if (o.amulet) g += `<path d="M38,-48 Q46,-40 54,-48" fill="none" stroke="#b6402a" stroke-width="${f(3 / k)}"/><circle cx="46" cy="-40" r="4.5" fill="#2c5d9c"/>`;
     return g + '</g>';
   }
-  SCENES.cub = () => {
-    let s = templeBg(81, ['#e2b54c', '#3b7d58', '#e2b54c', '#b6402a']);
-    s += `<g opacity=".85">${sunDisc(374, 214, 50, '#c8432a')}</g>`;
-    s += glyphColumn(['E015', 'M017'], 124, 150, 28, '#1b1714', 6).svg;
-    s += lion(236, 392, 2.2, { cub: true, amulet: true });
-    return s;
-  };
-  SCENES.lioness = () => {
-    let s = templeBg(82, ['#b6402a', '#e2b54c', '#2c5d9c', '#b6402a']);
-    s += `<g opacity=".85">${sunDisc(374, 206, 50, '#c8432a')}</g>`;
-    s += glyphColumn(['E015', 'D036'], 124, 150, 28, '#1b1714', 6).svg;
-    s += lion(236, 392, 2.35, { armor: true, shield: true });
-    return s;
-  };
 
   // ───────── 阿比斯聖牛 ─────────
   SCENES.apis = () => {
