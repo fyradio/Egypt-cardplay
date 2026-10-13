@@ -546,4 +546,98 @@
     s += base(GY, 150, 350);
     return s;
   };
+
+  // ───────── 伊西斯 ─────────
+  // 背後是紅色的「伊西斯結」（tyet）。她站在紙莎草小船上，穿過三角洲的沼澤去尋找丈夫。
+  SCENES.isis = () => {
+    const T = theme(false), GY = K.GROUND;
+    let s = T.bg(66, '#2a8a7a', 250, 240, 250);
+    // 伊西斯結
+    const tyet = (k) => { const X = (x) => f(250 + (x - 250) * k), Y = (y) => f(236 + (y - 236) * k);
+      return `M${X(250)},${Y(102)} C${X(300)},${Y(102)} ${X(306)},${Y(168)} ${X(270)},${Y(184)} L${X(300)},${Y(186)} C${X(336)},${Y(188)} ${X(338)},${Y(214)} ${X(326)},${Y(250)} L${X(316)},${Y(250)} C${X(322)},${Y(222)} ${X(318)},${Y(204)} ${X(282)},${Y(206)} L${X(272)},${Y(206)} L${X(290)},${Y(380)} L${X(210)},${Y(380)} L${X(228)},${Y(206)} L${X(218)},${Y(206)} C${X(182)},${Y(204)} ${X(178)},${Y(222)} ${X(184)},${Y(250)} L${X(174)},${Y(250)} C${X(162)},${Y(214)} ${X(164)},${Y(188)} ${X(200)},${Y(186)} L${X(230)},${Y(184)} C${X(194)},${Y(168)} ${X(200)},${Y(102)} ${X(250)},${Y(102)} Z`; };
+    s += `<path d="${tyet(1)}" fill="#5a1a12" opacity=".55" ${gs(2)}/><path d="${tyet(.9)}" fill="none" stroke="${G}" stroke-width="1" stroke-dasharray="0.1 5" stroke-linecap="round"/>`;
+    s += `<path d="M250,128 C226,128 222,166 250,174 C278,166 274,128 250,128 Z" fill="#0d0907" ${gs(1.2)}/>`;
+    // 兩旁的紙莎草
+    const pap = (x, h, lean) => `<path d="M${x},${GY - 20} Q${x + lean * .5},${GY - 20 - h * .5} ${x + lean},${GY - 20 - h}" fill="none" ${gs(1.6)}/><path d="M${x + lean},${GY - 20 - h} l-16,-22 q16,-6 32,0 Z" fill="#173f45" ${gs(1.2)}/>`;
+    s += pap(70, 150, -6) + pap(96, 110, 8) + pap(408, 130, 4) + pap(436, 170, -8);
+    s += K.glyphColumn(['Q001', 'X001', 'B001'], 132, 140, 22, G, 6).svg + K.glyphColumn(['V030', 'X001', 'N001'], 370, 140, 22, G, 6).svg;
+    // 水
+    s += `<g fill="none" stroke="${G}" stroke-width="1" opacity=".7">${Array.from({ length: 9 }, (_, i) => `<path d="M${60 + i * 44},${GY - 8 - (i % 2) * 6} q11,-5 22,0 t22,0"/>`).join('')}</g>`;
+    const skin = '#8a6a2a', dress = '#f2e7cc';
+    let L = '';
+    s += '<!--boat-->';
+    // 紙莎草小船（兩端捆紮上翹）
+    L += `<path d="M120,326 C150,360 350,360 380,326 C376,350 346,372 250,372 C154,372 124,350 120,326 Z" fill="#173f45" ${gs(1.8)}/>`;
+    L += `<g stroke="${G}" stroke-width="1.6">${[150, 180, 320, 350].map((x) => `<path d="M${x},${x < 250 ? 346 : 346} v18"/>`).join('')}</g><path d="M128,338 C170,362 330,362 372,338" fill="none" stroke="${G}" stroke-width=".8" opacity=".7"/>`;
+    L += '<!--fig-->';
+    // 身體：白色貼身長裙
+    const body = 'M240,204 C252,198 270,200 278,212 C282,226 270,244 268,256 C274,276 276,300 272,328 L270,348 L242,348 C236,318 234,288 236,256 C236,236 236,218 240,204 Z';
+    L += `<path d="${body}" fill="${dress}" ${gs(1.8)}/>`;
+    L += `<g fill="none" stroke="#b8a070" stroke-width="1">${[[248, 262], [256, 262], [264, 262]].map(([x, y]) => `<path d="M${x},${y} L${x + 2},346"/>`).join('')}</g>`;
+    L += `<path d="M262,236 C268,232 276,232 280,226" fill="none" stroke="#c8432a" stroke-width="3"/>`;
+    // 手（垂在身側（垂下，握安卡）
+    L += `<path d="M246,212 C240,236 238,256 240,276" fill="none" stroke="${G}" stroke-width="12" stroke-linecap="round"/><path d="M246,212 C240,236 238,256 240,276" fill="none" stroke="${skin}" stroke-width="8.5" stroke-linecap="round"/>`;
+    // 腳
+    L += `<path d="M244,348 L242,354 H262 L260,348 Z M260,348 L262,354 H282 C282,350 276,348 270,348 Z" fill="${skin}" ${gs(1.2)}/>`;
+    // 前手（舉起，護著）
+    L += `<path d="M266,212 C282,214 298,206 312,190 L322,176" fill="none" stroke="${G}" stroke-width="12" stroke-linecap="round"/><path d="M266,212 C282,214 298,206 312,190 L322,176" fill="none" stroke="${skin}" stroke-width="8.5" stroke-linecap="round"/>`;
+    L += `<path d="M318,178 C322,168 328,164 332,166 C332,172 328,178 322,182 Z" fill="${skin}" ${gs(1)}/>`;
+    // 寬領
+    L += `<path d="M240,204 C252,196 270,198 278,210 C272,222 256,226 244,222 Z" fill="#15100d" ${gs(1.2)}/><path d="M244,206 C254,202 266,203 272,210 M244,214 C254,214 264,214 270,216" fill="none" stroke="${K.C.turq}" stroke-width="2"/>`;
+    L += K.ankh(240, 272, 30, GF, '#0d0907', .9);
+    // 頭與假髮
+    L += `<path d="M256,166 C256,150 268,142 280,146 C288,150 290,160 288,168 C292,172 294,176 290,180 C288,184 286,188 284,192 C278,198 268,196 262,190 Z" fill="${skin}" ${gs(1.6)}/>`;
+    L += `<path d="M274,166 C278,162 284,162 287,166 C284,169 278,170 274,166 Z" fill="#f2e7cc" stroke="#0d0907" stroke-width=".8"/><circle cx="281" cy="166" r="1.8" fill="#0d0907"/><path d="M287,166 L294,163" stroke="#0d0907" stroke-width="1.6" stroke-linecap="round"/>`;
+    L += `<path d="M252,152 C252,138 268,132 282,136 C290,140 290,148 286,150 C276,148 268,152 266,162 L264,208 C252,214 240,210 236,200 C238,180 244,162 252,152 Z" fill="#14100c" ${gs(1.6)}/>`;
+    L += `<g fill="none" stroke="${G}" stroke-width=".7" opacity=".7">${[244, 250, 256].map((x) => `<path d="M${x},164 V204"/>`).join('')}</g>`;
+    L += `<path d="M252,150 C262,144 276,142 286,146" fill="none" stroke="${GF}" stroke-width="3"/>`;
+    // 王座頭冠
+    L += `<path d="M258,134 L256,118 H282 L280,134 Z" fill="${GF}" ${gs(1.2)}/><path d="M270,118 V98 H282 V118 Z M256,118 L262,104 H270" fill="#1c3f7a" ${gs(1.2)}/>`;
+    s += `<g transform="translate(250,350) scale(.8) translate(-250,-350)">${L.slice(L.indexOf('<!--fig-->'))}</g>`;
+    s = s.replace('<!--boat-->', L.slice(0, L.indexOf('<!--fig-->')));
+    return s;
+  };
+
+  // ───────── 哈碧 ─────────
+  // 一圈圈水紋的光環前，尼羅河氾濫之神單膝跪著，捧出盛滿供品的托盤，水從瓶口流下。
+  SCENES.hapi = () => {
+    const T = theme(false), GY = K.GROUND;
+    let s = T.bg(75, '#2a7ab8', 244, 250, 250);
+    // 水紋光環：三圈波浪圓
+    const wave = (r, n, a) => { let d = ''; for (let i = 0; i <= n * 8; i++) { const th = i / (n * 8) * Math.PI * 2, rr = r + Math.sin(i / 8 * Math.PI * 2) * a; d += (i ? ' L' : 'M') + f(244 + Math.cos(th) * rr) + ',' + f(246 + Math.sin(th) * rr); } return d + ' Z'; };
+    s += `<path d="${wave(132, 30, 4)}" fill="#0d0907" ${gs(1.6)}/><path d="${wave(118, 26, 3)}" fill="none" stroke="${G}" stroke-width="1"/><path d="${wave(104, 22, 3)}" fill="none" stroke="${K.C.turq}" stroke-width="1" opacity=".8"/>`;
+    s += `<circle cx="244" cy="246" r="100" fill="#2a7ab8" opacity=".12"/>`;
+    s += `<g ${gs(1)}><path d="M70,140 V380 M432,140 V380"/></g>`;
+    s += K.glyphColumn(['V028', 'D036', 'Q003', 'M017', 'M017'], 70, 146, 19, G, 4).svg + K.glyphColumn(['N035A', 'N035A'], 432, 160, 30, G, 14).svg;
+    const sk = '#1f6b8a', skD = '#174f68';
+    let L = '';
+    // 後腿：膝蓋跪地、腳背貼地
+    L += `<path d="M234,316 C224,340 218,360 216,378 C200,382 184,382 172,384 C166,388 170,392 176,392 L224,392 C232,374 242,350 250,330 Z" fill="${skD}" ${gs(1.6)}/>`;
+    // 前腿：立膝，小腿垂直
+    L += `<path d="M240,312 C260,310 284,310 298,314 C306,320 306,330 302,340 L300,384 C312,384 320,388 322,392 L284,392 L282,344 C268,344 252,342 240,338 Z" fill="${sk}" ${gs(1.6)}/>`;
+    // 腰帶與短裙
+    L += `<path d="M222,300 C236,304 256,306 270,304 L276,330 C260,334 240,334 226,330 Z" fill="#15100d" ${gs(1.4)}/><path d="M224,306 C240,310 256,310 270,308" fill="none" stroke="${GF}" stroke-width="3"/>`;
+    // 身體：圓肚子、柔和的胸
+    L += `<path d="M232,232 C222,250 218,276 222,302 C240,312 266,310 278,298 C288,284 284,262 272,250 C264,242 262,236 258,228 Z" fill="${sk}" ${gs(1.8)}/>`;
+    L += `<path d="M258,252 C270,252 274,262 266,268" fill="none" ${gs(1)}/><path d="M246,284 C256,292 268,292 276,286" fill="none" stroke="${G}" stroke-width=".8" opacity=".7"/>`;
+    // 雙臂捧著托盤
+    L += `<path d="M244,238 C262,252 286,254 306,246" fill="none" stroke="${G}" stroke-width="12" stroke-linecap="round"/><path d="M244,238 C262,252 286,254 306,246" fill="none" stroke="${sk}" stroke-width="8.5" stroke-linecap="round"/>`;
+    L += `<path d="M236,240 C246,262 272,270 300,262" fill="none" stroke="${G}" stroke-width="12" stroke-linecap="round"/><path d="M236,240 C246,262 272,270 300,262" fill="none" stroke="${skD}" stroke-width="8.5" stroke-linecap="round"/>`;
+    L += `<path d="M290,240 H356 V246 H290 Z" fill="${GF}" ${gs(1.2)}/><path d="M298,246 V262 M348,246 V262" ${gs(1.4)}/>`;
+    // 托盤上的供品：麵包、兩個水瓶、蓮花
+    L += `<ellipse cx="306" cy="232" rx="9" ry="7" fill="#c8902e" ${gs(1)}/><path d="M318,240 C314,226 318,216 324,214 L324,208 H330 L330,214 C336,216 340,226 336,240 Z" fill="#173f45" ${gs(1.1)}/><path d="M338,240 C334,230 336,222 342,220 L342,214 H348 L348,220 C354,222 356,230 352,240 Z" fill="#173f45" ${gs(1.1)}/>`;
+    L += `<path d="M314,226 C304,212 300,198 304,188 M304,188 l-8,-10 q8,-4 16,0 Z" fill="none" ${gs(1.2)}/><path d="M296,178 Q304,170 312,178 Q304,186 296,178 Z" fill="#c8432a" ${gs(.8)}/>`;
+    // 從瓶口流下的水
+    L += `<path d="M352,224 C366,226 372,250 368,290 C364,330 370,360 378,384" fill="none" stroke="${K.C.turq}" stroke-width="4" stroke-linecap="round" opacity=".9"/><path d="M356,226 C372,236 380,264 378,300 C376,336 384,362 394,384" fill="none" stroke="#9fd6e6" stroke-width="2" stroke-linecap="round" opacity=".8"/>`;
+    L += `<path d="M350,${GY - 2} C370,${GY - 10} 404,${GY - 10} 424,${GY - 2} Z" fill="${K.C.turq}" opacity=".5" stroke="${G}" stroke-width=".8"/>`;
+    // 頭、假鬍子、紙莎草頭冠
+    L += `<path d="M244,206 C244,192 254,184 266,186 C276,188 282,196 282,206 C286,210 288,214 284,218 C280,222 278,226 276,230 C270,236 258,236 250,230 Z" fill="${sk}" ${gs(1.6)}/>`;
+    L += `<path d="M266,202 C270,198 276,198 279,202 C276,205 270,206 266,202 Z" fill="#f2e7cc" stroke="#0d0907" stroke-width=".8"/><circle cx="273" cy="202" r="1.7" fill="#0d0907"/>`;
+    L += `<path d="M274,232 L276,248 L282,246 L280,230 Z" fill="#14100c" ${gs(1)}/>`;
+    L += `<path d="M240,196 C240,182 256,176 270,180 C276,182 280,188 280,192 C268,190 262,194 260,206 L258,234 C248,238 236,232 234,222 Z" fill="#14100c" ${gs(1.4)}/>`;
+    for (const a of [-50, -25, 0, 25, 50]) { const r = a * Math.PI / 180; L += `<path d="M258,182 L${f(258 + Math.sin(r) * 30)},${f(182 - Math.cos(r) * 30)}" ${gs(1.4)}/><path d="M0,0 L-8,-12 Q0,-16 8,-12 Z" transform="translate(${f(258 + Math.sin(r) * 30)},${f(182 - Math.cos(r) * 30)}) rotate(${a})" fill="#173f45" ${gs(1.1)}/>`; }
+    s += L;
+    s += base(GY, 140, 340);
+    return s;
+  };
 })();
