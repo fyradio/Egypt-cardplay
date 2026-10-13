@@ -755,4 +755,30 @@
     s += K.glyphColumn(['N025', 'D021'], 60, 150, 26, LN, 8).svg;
     return s;
   };
+
+  // ───────── 阿佩普 ─────────
+  // 被吞到只剩一圈火光的太陽（日蝕）前，巨蛇阿佩普盤成一圈圈；身上插著刀，表示牠已被制伏。
+  SCENES.apep = () => {
+    const T = theme(false), GY = K.GROUND;
+    let s = T.bg(133, '#6a2a8a', 250, 220, 260);
+    // 日蝕：黑色圓盤＋紅色日冕
+    for (let i = 0; i < 36; i++) { const a = i / 36 * Math.PI * 2, L = i % 2 ? 22 : 38; s += `<path d="M${f(250 + Math.cos(a - .05) * 84)},${f(214 + Math.sin(a - .05) * 84)} L${f(250 + Math.cos(a) * (84 + L))},${f(214 + Math.sin(a) * (84 + L))} L${f(250 + Math.cos(a + .05) * 84)},${f(214 + Math.sin(a + .05) * 84)} Z" fill="${i % 2 ? '#c8432a' : GF}" opacity=".6"/>`; }
+    s += `<circle cx="250" cy="214" r="86" fill="#c8432a" opacity=".5"/><circle cx="250" cy="214" r="80" fill="#050403" ${gs(1.6)}/><circle cx="250" cy="214" r="72" fill="none" stroke="${G}" stroke-width=".8" stroke-dasharray="0.1 5" stroke-linecap="round"/>`;
+    s += K.glyphColumn(['D036', 'G001', 'Q003', 'Q003'], 66, 140, 22, G, 6).svg;
+    // 蛇身：擺線形成一圈圈的盤繞
+    const pts = []; for (let i = 0; i <= 260; i++) { const tt = i / 260; pts.push([96 + 250 * tt - 26 * Math.sin(tt * Math.PI * 7), 318 - 34 * Math.cos(tt * Math.PI * 7) + tt * 10]); }
+    const last = pts[pts.length - 1];
+    let d = poly(pts) + ` C${f(last[0] + 30)},${f(last[1] - 10)} ${f(last[0] + 46)},${f(last[1] - 60)} ${f(last[0] + 30)},${f(last[1] - 96)}`;
+    s += `<path d="${d}" fill="none" stroke="${G}" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="#1a1410" stroke-width="21" stroke-linecap="round" stroke-linejoin="round"/>`;
+    s += `<path d="${d}" fill="none" stroke="${K.C.turq}" stroke-width="7" stroke-dasharray="2 9" stroke-linejoin="round" opacity=".85"/><path d="${d}" fill="none" stroke="${GF}" stroke-width="2" stroke-dasharray="1 10" stroke-dashoffset="5" opacity=".9"/>`;
+    // 尾尖
+    s += `<path d="M${f(pts[0][0] - 4)},${f(pts[0][1] + 6)} L${f(pts[0][0] - 26)},${f(pts[0][1] + 14)} L${f(pts[0][0] + 2)},${f(pts[0][1] - 8)} Z" fill="#1a1410" ${gs(1.4)}/>`;
+    // 頭：張口朝向太陽
+    const hx = last[0] + 30, hy = last[1] - 96;
+    s += `<g transform="translate(${f(hx)},${f(hy)}) rotate(-20)"><path d="M10,8 C4,-8 -14,-16 -36,-14 L-52,-22 L-40,-6 L-56,4 L-36,6 C-20,14 0,20 10,8 Z" fill="#1a1410" ${gs(1.8)}/><path d="M-40,-6 L-52,-22 M-36,6 L-56,4" stroke="#f2e7cc" stroke-width="1.6"/><path d="M-44,-14 L-42,-6 M-44,4 L-42,-2" stroke="#f2e7cc" stroke-width="2.2" stroke-linecap="round"/><circle cx="-18" cy="-6" r="3.4" fill="#e0402a" stroke="${G}" stroke-width=".8"/><path d="M-6,-10 C2,-4 6,2 6,8" fill="none" stroke="${K.C.turq}" stroke-width="2"/></g>`;
+    // 插在身上的刀
+    for (const k of [40, 92, 150, 204]) { const [x, y] = pts[k]; s += `<g transform="translate(${f(x)},${f(y)}) rotate(${k % 2 ? 14 : -10})"><path d="M-3,-4 L0,-46 L3,-4 Z" fill="#e8ecf2" ${gs(1)}/><rect x="-5" y="-4" width="10" height="4" fill="${GF}" ${gs(.8)}/><rect x="-2.6" y="0" width="5.2" height="14" fill="#8a5a30" ${gs(.8)}/></g>`; }
+    s += base(GY, 130, 370);
+    return s;
+  };
 })();
