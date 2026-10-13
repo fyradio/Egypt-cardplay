@@ -26,8 +26,8 @@
   const X0 = W.x, Y0 = W.y, X1 = W.x + W.w, Y1 = W.y + W.h;
 
   // ───────── 母獅戰士 ─────────
-  // 黃昏的沙漠，太陽在她身後。她站在岩石上，四分之三側身，直視前方；不吼。
-  SCENES.lioness = () => {
+  // （卡通版，保留作參考）
+  SCENES.lionessToon = () => {
     const id = { sky: uid('sk'), sun: uid('sn'), glow: uid('gl'), fur: uid('fu'), furD: uid('fd'), gold: uid('go'), iris: uid('ir'), dune: uid('du'), rock: uid('rk'), vig: uid('vg'), haze: uid('hz'), blur: uid('bl'), soft: uid('sf') };
     const FUR = `url(#${id.fur})`, GOLD = `url(#${id.gold})`;
     const FL = '#f0c97e', FM = '#d9a457', FD = '#a86c34', FDD = '#7c4a22', CR = '#f6e8c8', CRD = '#dcc49a', RIM = '#fff2c6';
@@ -232,6 +232,76 @@
     // ── 空氣中的沙塵、暗角 ──
     s += `<g fill="#fff0c0">${[[120, 250, 1.6, .7], [150, 210, 1.2, .5], [360, 180, 1.8, .8], [438, 210, 1.4, .7], [420, 320, 2, .6], [96, 330, 1.4, .5], [340, 128, 1.2, .5], [452, 290, 1.6, .7], [70, 220, 1.2, .5]].map(([x, y, r, o]) => `<circle cx="${x}" cy="${y}" r="${r}" opacity="${o}"/>`).join('')}</g>`;
     s += `<rect x="${X0}" y="${Y0}" width="${W.w}" height="${W.h}" fill="url(#${id.vig})"/>`;
+    return s;
+  };
+
+  // ════════ 三神標準（黑底燙金）════════
+  // 深色底＋領域色光暈＋大型幾何光環＋金線描邊的主角＋兩側建築與直行象形文字。
+  const G = 'url(#G)', GF = 'url(#GF)';
+  const gs = (w) => `stroke="${G}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"`;
+  const glow = (cx, cy, r, col, a1, a2) => { const i = uid('tg'); return `<radialGradient id="${i}" cx="${cx}" cy="${cy}" r="${r}" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="${col}" stop-opacity="${a1}"/><stop offset=".55" stop-color="${col}" stop-opacity="${a2}"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></radialGradient><rect x="${X0}" y="${Y0}" width="${W.w}" height="${W.h}" fill="url(#${i})"/>`; };
+  const base = (y, x0, x1) => `<g fill="#15100d" ${gs(1.3)}><path d="M${x0},${y} H${x1} V${y + 10} H${x0} Z"/><path d="M${x0 - 16},${y + 10} H${x1 + 16} V${y + 22} H${x0 - 16} Z"/></g>` + Array.from({ length: Math.floor((x1 - x0 - 16) / 19) + 1 }, (_, i) => K.diamond(x0 + 8 + i * 19, y + 5, 3, 3, i % 2 ? K.C.turq : K.C.rose, 'none', 0)).join('');
+
+  // ───────── 母獅戰士 ─────────
+  // 地平線上升起的半個太陽（akhet，日出），她側身大步走過，背著盾、披胸甲。不吼。
+  SCENES.lioness = () => {
+    const GY = K.GROUND;
+    let s = K.goldGround(X0, Y0, W.w, W.h, 52);
+    s += glow(250, 300, 260, '#e0552e', .5, .2);
+    // 日出：半圓日輪＋放射的金芒
+    const cx = 250, cy = GY - 4, r = 108;
+    for (let i = 0; i <= 24; i++) {
+      const a = Math.PI + (i / 24) * Math.PI, a2 = Math.PI + ((i + .5) / 24) * Math.PI, a3 = Math.PI + ((i + 1) / 24) * Math.PI;
+      if (i < 24) s += `<path d="M${f(cx + Math.cos(a) * (r + 10))},${f(cy + Math.sin(a) * (r + 10))} L${f(cx + Math.cos(a2) * (i % 2 ? 196 : 240))},${f(cy + Math.sin(a2) * (i % 2 ? 196 : 240))} L${f(cx + Math.cos(a3) * (r + 10))},${f(cy + Math.sin(a3) * (r + 10))} Z" fill="${i % 2 ? 'none' : GF}" stroke="${G}" stroke-width="1" opacity="${i % 2 ? .75 : .42}"/>`;
+    }
+    s += `<path d="M${cx - r - 5},${cy} A${r + 5},${r + 5} 0 0 1 ${cx + r + 5},${cy} Z" fill="#0d0907" ${gs(2.2)}/>`;
+    s += `<path d="M${cx - r},${cy} A${r},${r} 0 0 1 ${cx + r},${cy} Z" fill="url(#SUN)"/>`;
+    s += `<path d="M${cx - r + 12},${cy} A${r - 12},${r - 12} 0 0 1 ${cx + r - 12},${cy}" fill="none" stroke="#ffd9a0" stroke-width="1" stroke-dasharray="0.1 5" stroke-linecap="round" opacity=".8"/>`;
+    s += `<path d="M${cx - r + 28},${cy} A${r - 28},${r - 28} 0 0 1 ${cx + r - 28},${cy}" fill="none" stroke="#ffd9a0" stroke-width=".8" opacity=".5"/>`;
+    // 兩側直行文字：母獅（E015）＋戰士（D036），右：拉的眼睛（N005 D004）
+    s += `<g ${gs(1)}><path d="M66,140 V380 M434,140 V380"/></g>`;
+    s += K.glyphColumn(['E015', 'D036'], 66, 150, 26, G, 8).svg + K.glyphColumn(['D004', 'N005', 'Z001'], 434, 150, 24, G, 8).svg;
+
+    // ── 母獅（側面，往右大步走）──
+    const FUR = '#5a3416', FURD = '#3a1f0c', CR = '#7a4a1e';
+    const leg = (d, fill) => `<path d="${d}" fill="${fill}" ${gs(1.6)}/>`;
+    const paw = (x, y, fill) => `<path d="M${x - 15},${y} C${x - 16},${y - 9} ${x - 8},${y - 13} ${x + 2},${y - 12} C${x + 12},${y - 11} ${x + 19},${y - 6} ${x + 18},${y} Z" fill="${fill}" ${gs(1.5)}/><path d="M${x + 6},${y - 1} v-4 M${x + 12},${y - 1} v-4" ${gs(.8)}/>`;
+    let L = '';
+    // 尾巴：由臀部往後垂，末端上翹，黑色毛簇
+    L += `<path d="M156,226 C124,234 104,266 104,304 C104,328 98,340 86,336" fill="none" stroke="${G}" stroke-width="9" stroke-linecap="round"/><path d="M156,226 C124,234 104,266 104,304 C104,328 98,340 86,336" fill="none" stroke="${FUR}" stroke-width="6" stroke-linecap="round"/>`;
+    L += `<path d="M88,338 C78,342 70,334 74,326 C78,320 88,322 92,330 Z" fill="#14100c" ${gs(1.3)}/>`;
+    // 遠側的腿（較暗）：後腿往前、前腿往後
+    L += leg('M212,268 C220,290 224,314 226,336 C227,354 230,368 234,382 L250,382 C248,366 244,348 242,330 C240,310 236,290 232,272 Z', FURD) + paw(242, GY - 6, FURD);
+    L += leg('M298,276 C296,300 292,326 286,348 C282,362 278,374 272,382 L290,382 C296,370 302,356 308,340 C314,322 318,300 318,282 Z', FURD) + paw(282, GY - 6, FURD);
+    // 身體＋頸＋頭：深胸、收腰
+    const body = 'M156,224 C162,208 186,204 210,206 C246,210 280,212 300,206 C316,202 328,194 336,184 C342,176 352,170 362,170 C372,170 380,174 386,180 C394,186 402,192 410,198 C416,202 416,212 410,216 C404,220 398,222 396,228 C394,236 386,242 376,244 C366,246 358,252 352,262 C346,274 336,286 318,290 C300,293 286,286 270,278 C254,271 236,268 220,272 C204,277 188,278 174,268 C160,258 154,242 156,224 Z';
+    const bid = uid('bd');
+    L += `<linearGradient id="${bid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${CR}"/><stop offset=".6" stop-color="${FUR}"/><stop offset="1" stop-color="${FURD}"/></linearGradient>`;
+    L += `<path d="${body}" fill="url(#${bid})" ${gs(1.8)}/>`;
+    // 毛流與肌肉的細金線
+    L += `<g fill="none" ${gs(.8)} opacity=".75"><path d="M302,214 C314,234 318,256 312,280"/><path d="M232,218 q4,12 0,24 M250,218 q4,12 0,24 M268,218 q4,12 0,24"/><path d="M338,194 C346,212 348,230 342,248"/></g>`;
+    // 近側的腿：後腿往後蹬（大腿連著臀部）、前腿往前跨
+    L += `<path d="M166,234 C148,252 146,284 158,302 C164,312 164,326 158,340 C154,352 148,368 144,382 L162,382 C168,368 176,354 182,342 C190,326 196,312 204,300 C210,290 210,276 202,262" fill="${FUR}" ${gs(1.6)}/>` + paw(152, GY - 6, FUR);
+    L += `<path d="M322,262 C334,280 338,300 340,318 C342,336 348,354 356,372 L360,382 L378,382 C372,366 366,350 362,334 C358,314 354,292 346,270" fill="${FUR}" ${gs(1.6)}/>` + paw(368, GY - 6, FUR);
+    L += `<path d="M178,262 C170,280 170,296 176,306 M336,292 C342,310 346,326 352,344" fill="none" ${gs(.8)} opacity=".7"/>`;
+    // 盾牌：埃及式（上圓下平），斜背在身側，金框、豹皮紋
+    L += `<g transform="rotate(-10 236 244)"><path d="M212,280 V232 C212,212 260,212 260,232 V280 Z" fill="#1b130d" ${gs(1.8)}/><path d="M218,274 V234 C218,220 254,220 254,234 V274 Z" fill="#8a5a24" stroke="${G}" stroke-width=".8"/>${[[226, 236], [240, 230], [246, 248], [230, 254], [242, 264], [226, 268], [250, 238]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="2.6" fill="#1b130d"/>`).join('')}<circle cx="236" cy="250" r="5.5" fill="${GF}" stroke="${G}" stroke-width="1"/></g>`;
+    L += `<path d="M206,214 L268,276" ${gs(2.6)} opacity=".9"/>`;
+    // 胸甲＋寬領圈（側面的弧形）
+    L += `<path d="M330,190 C342,214 348,240 344,262 C356,256 366,246 374,240 C364,224 352,204 344,184 Z" fill="#15100d" ${gs(1.4)}/>`;
+    L += `<path d="M333,194 C344,216 349,238 346,256" fill="none" stroke="${K.C.turq}" stroke-width="3"/><path d="M338,192 C348,212 354,232 354,250" fill="none" stroke="${K.C.rose}" stroke-width="2.4"/><path d="M343,189 C352,207 358,224 362,242" fill="none" stroke="${GF}" stroke-width="2.4"/>`;
+    L += `<g fill="${K.C.turq}" stroke="${G}" stroke-width=".7">${[[346, 266], [356, 260], [366, 252], [374, 244]].map(([x, y]) => `<path d="M${x - 3},${y - 3} L${x},${y + 6} L${x + 3},${y - 3} Z"/>`).join('')}</g>`;
+    L += `<circle cx="318" cy="250" r="9" fill="url(#SUN)" ${gs(1.3)}/><circle cx="318" cy="250" r="4" fill="none" stroke="#ffd9a0" stroke-width=".8"/>`;
+    L += `<path d="M300,232 C306,238 312,244 318,241 M334,232 C330,238 326,244 322,242" fill="none" ${gs(1)}/>`;
+    // 頭部細節：耳朵、眼睛、鼻、口、鬍鬚點
+    L += `<path d="M352,176 C350,164 356,156 364,158 C368,164 368,170 364,174 Z" fill="${FURD}" ${gs(1.3)}/><path d="M356,170 C356,164 359,161 362,162" fill="none" ${gs(.7)}/>`;
+    L += `<path d="M376,190 C382,186 390,186 394,190 C389,194 382,195 376,190 Z" fill="${GF}" stroke="#0d0907" stroke-width="1"/><circle cx="386" cy="190" r="2.2" fill="#0d0907"/>`;
+    L += `<path d="M372,188 C380,183 390,182 398,186" fill="none" ${gs(1.4)}/><path d="M394,190 C398,196 400,202 404,206" fill="none" stroke="#0d0907" stroke-width="1.6" stroke-linecap="round"/>`;
+    L += `<path d="M406,198 C412,198 416,202 414,207 C410,208 406,206 405,202 Z" fill="#14100c" ${gs(1)}/>`;
+    L += `<path d="M410,216 C402,220 394,220 386,218" fill="none" ${gs(1.2)}/><g fill="${G}">${[[396, 210], [401, 212], [392, 213]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1"/>`).join('')}</g>`;
+    L += `<path d="M368,206 C372,216 374,228 372,238 M360,200 C362,214 360,228 354,240" fill="none" ${gs(.8)} opacity=".75"/>`;
+    s += L;
+    s += base(GY, 104, 396);
     return s;
   };
 })();
