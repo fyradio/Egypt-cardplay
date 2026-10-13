@@ -436,4 +436,114 @@
     s += base(GY, 150, 350);
     return s;
   };
+
+  // ───────── 主題：普通卡＝紙草底墨線；其餘＝黑底燙金 ─────────
+  const theme = (pap) => {
+    if (!pap) return { pap, G, GF, gs, base, ink: '#0d0907', dark: '#15100d',
+      bg: (seed, col, cx, cy, r) => K.goldGround(X0, Y0, W.w, W.h, seed) + glow(cx || 250, cy || 250, r || 250, col, .5, .2) };
+    const gsP = (w) => `stroke="${LN}" stroke-width="${w * 1.25}" stroke-linejoin="round" stroke-linecap="round"`;
+    return { pap, G: LN, GF: '#e2b54c', gs: gsP, ink: LN, dark: '#2c5d9c',
+      base: (y, x0, x1) => `<g fill="#c8902e" ${gsP(1.3)}><path d="M${x0},${y} H${x1} V${y + 10} H${x0} Z"/><path d="M${x0 - 16},${y + 10} H${x1 + 16} V${y + 22} H${x0 - 16} Z" fill="#2c5d9c"/></g>` + Array.from({ length: Math.floor((x1 - x0 - 16) / 19) + 1 }, (_, i) => K.diamond(x0 + 8 + i * 19, y + 5, 3, 3, i % 2 ? '#2c5d9c' : '#b6402a', 'none', 0)).join(''),
+      bg: (seed, col, cx, cy, r) => K.papyrusGround(X0, Y0, W.w, W.h, seed) + K.blockBand(X0, Y0, W.w, 9, ['#2c5d9c', '#e2b54c', '#b6402a', '#3b7d58', '#e2b54c']) + K.lotusFrieze(X0, Y0 + 9, W.w, 15) + glow(cx || 250, cy || 250, r || 220, col, .5, .2) };
+  };
+  // 埃及胸飾式的翅膀：沿著上緣排三層羽毛（覆羽、次級、初級）
+  const wing = (T, root, ctrl, tip, n, dir, cols) => {
+    let o = '';
+    const rows = [[1, 54, 11, cols[2]], [.72, 38, 11, cols[1]], [.42, 22, 10, cols[0]]];
+    for (const [k, len, w, col] of rows) {
+      for (let i = n - 1; i >= 0; i--) {
+        const tt = (i + .5) / n, u = 1 - tt;
+        const x = u * u * root[0] + 2 * u * tt * ctrl[0] + tt * tt * tip[0], y = u * u * root[1] + 2 * u * tt * ctrl[1] + tt * tt * tip[1];
+        const L = len * k * (0.75 + tt * .6) * (k === 1 ? 1.25 : 1) , a = (90 - dir * (8 + tt * 34)) * Math.PI / 180;
+        const ex = x + Math.cos(a) * L, ey = y + Math.sin(a) * L, px = -Math.sin(a) * w / 2, py = Math.cos(a) * w / 2;
+        o += `<path d="M${f(x + px)},${f(y + py)} L${f(ex + px)},${f(ey + py)} Q${f(ex + Math.cos(a) * w * .6)},${f(ey + Math.sin(a) * w * .6)} ${f(ex - px)},${f(ey - py)} L${f(x - px)},${f(y - py)} Z" fill="${col}" ${T.gs(1)}/>`;
+      }
+    }
+    return o + `<path d="M${root[0]},${root[1]} Q${ctrl[0]},${ctrl[1]} ${tip[0]},${tip[1]}" fill="none" ${T.gs(2.2)}/>`;
+  };
+
+  // ───────── 荷魯斯 ─────────
+  // 背後是一隻巨大的荷魯斯之眼；隼展開雙翼（像王室胸飾），爪握「申」環，頭頂日輪。
+  SCENES.horus = () => {
+    const T = theme(false), GY = K.GROUND;
+    let s = T.bg(61, '#2a6fb8', 250, 236, 250);
+    // 荷魯斯之眼（wedjat）大圖騰
+    s += `<g fill="none" stroke="${G}" opacity=".5"><path d="M118,214 C170,160 320,160 380,206 C318,252 172,256 118,214 Z" stroke-width="2"/><path d="M110,176 C170,134 320,130 392,170" stroke-width="7" stroke-linecap="round"/><path d="M380,206 L420,206" stroke-width="5" stroke-linecap="round"/><path d="M226,248 C224,286 214,318 196,338" stroke-width="5" stroke-linecap="round"/><path d="M262,250 C282,288 312,318 346,322 C366,324 372,306 360,298 C352,294 346,302 350,308" stroke-width="5" stroke-linecap="round"/><circle cx="248" cy="208" r="26" stroke-width="2"/></g>`;
+    s += K.glyphColumn(['G005'], 70, 140, 30, G, 8).svg + K.glyphColumn(['V030', 'N001'], 432, 140, 24, G, 8).svg;
+    let L = '';
+    const blue = '#1c3f7a', turq = K.C.turq, red = '#a83a22';
+    // 尾羽
+    for (let i = -3; i <= 3; i++) L += `<path d="M${250 + i * 5},300 L${250 + i * 13},${352 + Math.abs(i) * -3} Q${250 + i * 13},${360 - Math.abs(i) * 3} ${250 + i * 13 + 8},${352 - Math.abs(i) * 3} L${250 + i * 5 + 6},300 Z" fill="${i % 2 ? blue : '#15100d'}" ${gs(1)}/>`;
+    // 雙翼
+    L += wing(T, [240, 238], [150, 196], [64, 214], 9, 1, [turq, red, blue]);
+    L += wing(T, [260, 238], [350, 196], [436, 214], 9, -1, [turq, red, blue]);
+    // 身體（胸前的羽鱗）
+    L += `<path d="M232,232 C228,206 242,192 256,196 C270,200 276,220 272,250 C270,276 262,298 250,306 C238,298 232,276 232,232 Z" fill="${blue}" ${gs(1.8)}/>`;
+    L += `<g fill="none" stroke="${G}" stroke-width=".8" opacity=".8">${[226, 242, 258, 274, 290].map((y, i) => `<path d="M${238 + i},${y} q6,6 12,0 q6,6 12,0"/>`).join('')}</g>`;
+    // 頭（側面向右）、喙、眼紋
+    L += `<path d="M240,200 C236,182 248,170 262,172 C276,174 284,184 284,194 C292,196 296,202 292,208 C286,206 282,206 278,210 C270,214 250,214 240,200 Z" fill="${blue}" ${gs(1.8)}/>`;
+    L += `<path d="M284,194 C292,196 296,202 292,208 C288,206 284,204 280,204 Z" fill="${GF}" ${gs(1.2)}/>`;
+    L += `<path d="M258,186 C262,182 270,182 274,186 C270,190 262,191 258,186 Z" fill="${GF}" stroke="#0d0907" stroke-width=".9"/><circle cx="267" cy="186" r="2" fill="#0d0907"/>`;
+    L += `<path d="M262,192 C262,200 258,206 252,210" fill="none" stroke="${G}" stroke-width="2.4" stroke-linecap="round"/>`;
+    // 日輪與聖蛇
+    L += `<circle cx="258" cy="150" r="20" fill="url(#SUN)" ${gs(1.8)}/><circle cx="258" cy="150" r="13" fill="none" stroke="#ffd9a0" stroke-width=".8" opacity=".7"/>`;
+    L += `<path d="M268,168 C276,166 280,158 278,150 C274,146 270,150 272,156 C273,160 270,164 266,166 Z" fill="${turq}" ${gs(1)}/>`;
+    // 爪與申環
+    for (const x of [230, 270]) {
+      L += `<path d="M${x + (x < 250 ? 12 : -12)},296 L${x},326" stroke="${G}" stroke-width="5" stroke-linecap="round"/><path d="M${x + (x < 250 ? 12 : -12)},296 L${x},326" stroke="${GF}" stroke-width="2.6" stroke-linecap="round"/>`;
+      L += `<circle cx="${x}" cy="340" r="13" fill="none" stroke="${G}" stroke-width="5"/><circle cx="${x}" cy="340" r="13" fill="none" stroke="${GF}" stroke-width="2.6"/><path d="M${x - 15},354 H${x + 15}" stroke="${G}" stroke-width="5" stroke-linecap="round"/><path d="M${x - 15},354 H${x + 15}" stroke="${GF}" stroke-width="2.6" stroke-linecap="round"/>`;
+    }
+    s += `<g transform="translate(0,22)">${L}</g>`;
+    s += base(GY, 120, 380);
+    return s;
+  };
+
+  // ───────── 法老 ─────────
+  // 站在巨大的王名圈裡的正面胸像：條紋頭巾、聖蛇、辮鬚、寬領，胸前交叉著彎鉤與連枷。
+  SCENES.pharaoh = () => {
+    const T = theme(false), GY = K.GROUND;
+    let s = T.bg(62, '#c8902e', 250, 250, 260);
+    // 王名圈（繩結圍成的橢圓）
+    const cart = (rx, ry) => `M250,${256 - ry} C${250 + rx * 1.1},${256 - ry} ${250 + rx * 1.1},${256 + ry} 250,${256 + ry} C${250 - rx * 1.1},${256 + ry} ${250 - rx * 1.1},${256 - ry} 250,${256 - ry} Z`;
+    s += `<path d="${cart(118, 140)}" fill="#0d0907" ${gs(2.4)}/><path d="${cart(110, 132)}" fill="none" stroke="${G}" stroke-width="5" stroke-dasharray="3 3"/><path d="${cart(102, 124)}" fill="none" ${gs(1)}/>`;
+    s += `<path d="${cart(102, 124)}" fill="#c8902e" opacity=".08"/>`;
+    // 兩側：國王（nsw）、法老（pr-ꜥꜣ「大房子」）
+    s += `<g ${gs(1)}><path d="M78,140 V380 M422,140 V380"/></g>`;
+    s += K.glyphColumn(['M023', 'X001', 'N035'], 78, 150, 26, G, 8).svg + K.glyphColumn(['O001', 'O029'], 422, 160, 30, G, 10).svg;
+    const skin = '#7a3a1c', lap = '#1c3f7a';
+    let L = '';
+    // 肩膀與胸
+    L += `<path d="M120,392 Q122,324 190,302 H310 Q378,324 380,392 Z" fill="${skin}" ${gs(1.8)}/>`;
+    // 頭巾：後片與兩側垂片
+    const nemes = 'M172,168 Q250,118 328,168 L344,240 L334,338 H292 L294,250 H206 L208,338 H166 L156,240 Z';
+    L += `<path d="${nemes}" fill="${lap}" ${gs(2)}/>`;
+    L += within(nemes, Array.from({ length: 20 }, (_, i) => `<path d="M140,${150 + i * 10} H360" stroke="#d9b45e" stroke-width="4.2"/>`).join(''));
+    L += `<path d="${nemes}" fill="none" ${gs(2)}/>`;
+    // 頸
+    L += `<path d="M214,250 H286 V330 H214 Z" fill="${skin}" ${gs(1.4)}/><path d="M222,262 Q250,276 278,262" fill="none" stroke="#4a2010" stroke-width="2" opacity=".6"/>`;
+    // 臉
+    const face = 'M208,196 Q206,268 250,280 Q294,268 292,196 Q290,166 250,164 Q210,166 208,196 Z';
+    L += `<path d="${face}" fill="${skin}" ${gs(1.8)}/>`;
+    L += `<path d="M208,200 Q200,208 208,220 M292,200 Q300,208 292,220" fill="none" ${gs(1.4)}/>`;
+    for (const [cx, sx] of [[229, -1], [271, 1]]) {
+      L += `<path d="M${cx - sx * 15},${213} Q${cx},${200} ${cx + sx * 15},${209} Q${cx},${220} ${cx - sx * 15},${213} Z" fill="#f2e7cc" stroke="#0d0907" stroke-width="1.2"/><circle cx="${cx}" cy="210" r="4.6" fill="#0d0907"/>`;
+      L += `<path d="M${cx + sx * 13},208 L${cx + sx * 28},203" stroke="#0d0907" stroke-width="2.6" stroke-linecap="round"/><path d="M${cx - sx * 14},196 Q${cx},188 ${cx + sx * 16},194" fill="none" stroke="#0d0907" stroke-width="3" stroke-linecap="round"/>`;
+    }
+    L += `<path d="M250,212 Q245,234 240,242 Q250,247 260,242 Q255,234 250,212" fill="none" ${gs(1.2)}/>`;
+    L += `<path d="M234,258 Q250,263 266,258 Q250,269 234,258 Z" fill="#5a2412" ${gs(1)}/>`;
+    // 額前的金頭帶與聖蛇
+    L += `<path d="M206,190 Q250,174 294,190 L292,198 Q250,184 208,198 Z" fill="${GF}" stroke="#0d0907" stroke-width=".8"/>`;
+    L += `<path d="M250,182 C244,170 246,156 252,150 C258,152 258,160 254,164 C252,170 254,176 256,182 Z" fill="${GF}" ${gs(1.2)}/><circle cx="252" cy="155" r="2.6" fill="#c8432a"/>`;
+    // 辮鬚
+    L += `<path d="M242,276 H258 L262,322 Q250,334 238,322 Z" fill="${lap}" ${gs(1.4)}/><g stroke="${GF}" stroke-width="2.2">${[288, 300, 312].map((y) => `<path d="M241,${y} H259"/>`).join('')}</g>`;
+    // 寬領
+    const cols = [GF, K.C.turq, '#c8432a', lap, GF];
+    cols.forEach((c, i) => { const d = i * 11; L += `<path d="M${168 + d * .3},${314 + d * .1} Q250,${352 + d} ${332 - d * .3},${314 + d * .1} L${326 - d * .3},${326 + d * .1} Q250,${366 + d} ${174 + d * .3},${326 + d * .1} Z" fill="${c}" ${gs(1)}/>`; });
+    // 彎鉤與連枷交叉在胸前
+    L += `<g transform="rotate(-24 250 384)"><path d="M250,384 V306" stroke="${G}" stroke-width="9"/><path d="M250,384 V306" stroke="${lap}" stroke-width="5"/><g stroke="${GF}" stroke-width="5">${[318, 332, 346, 360, 374].map((y) => `<path d="M250,${y} v5"/>`).join('')}</g><path d="M250,306 Q250,282 272,284 Q282,288 276,298" fill="none" stroke="${G}" stroke-width="9" stroke-linecap="round"/><path d="M250,306 Q250,282 272,284 Q282,288 276,298" fill="none" stroke="${lap}" stroke-width="5" stroke-linecap="round"/></g>`;
+    L += `<g transform="rotate(24 250 384)"><path d="M250,384 V312" stroke="${G}" stroke-width="9"/><path d="M250,384 V312" stroke="${GF}" stroke-width="5"/>${[-12, 0, 12].map((x) => `<path d="M250,314 Q${250 + x * 2},298 ${250 + x * 2.4},284" fill="none" stroke="${G}" stroke-width="6" stroke-linecap="round"/><path d="M250,314 Q${250 + x * 2},298 ${250 + x * 2.4},284" fill="none" stroke="#c8432a" stroke-width="3" stroke-linecap="round" stroke-dasharray="4 2"/>`).join('')}</g>`;
+    s += L;
+    s += base(GY, 150, 350);
+    return s;
+  };
 })();
