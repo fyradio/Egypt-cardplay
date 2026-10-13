@@ -56,8 +56,7 @@ data/cards-trinity.js ✅ 三神樣張（阿蒙、拉、普塔）
 data/cards-fusion.js  ✅ 合成怪（卡諾卜守護者、斯芬克斯）與融合怪（阿蒙－拉、塞拉皮斯）
 data/cards-field.js   ✅ 場地卡（卡納克大柱廳、冥河夜航、尼羅河氾濫）
 data/cards-battle.js  ✅ 對戰用 19 張卡（獅子線、荷魯斯、法老、伊西斯…、魔法 2、陷阱 2）
-js/cardart-battle.js  ✅ 上述卡牌的插圖（人形神祇、木乃伊形）
-js/cardart-battle2.js ✅ 上述卡牌的插圖（動物、魔法、陷阱）
+js/cardart-v2.js      ✅ 對戰用 19 張卡的插圖（三神標準，逐張手工構圖）
 assets/fonts/         ✅ 切字後的宋體與 Cinzel（OFL 授權）
 tools/                ✅ extract_glyphs.py、build_fonts.py
 index.html            入口
