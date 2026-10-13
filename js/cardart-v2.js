@@ -781,4 +781,43 @@
     s += base(GY, 130, 370);
     return s;
   };
+
+  // ───────── 木乃伊戰士（普通卡：紙草底）─────────
+  // 從墓室的「假門」走出來的守衛：全身亞麻繃帶、金色面具，一手長矛、一手牛皮盾。
+  SCENES.mummy = () => {
+    const T = theme(true), GY = K.GROUND;
+    let s = T.bg(141, '#f6d48a', 250, 250, 220);
+    // 假門：層層內縮的門框＋凹弧簷口＋上方的供桌浮雕
+    const fd = (x0, x1, y0, fill) => `<path d="M${x0},${GY} V${y0} H${x1} V${GY}" fill="${fill}" ${T.gs(1.4)}/>`;
+    s += `<path d="M112,150 H388 L396,128 C340,134 160,134 104,128 Z" fill="#3b7d58" ${T.gs(1.4)}/>` + Array.from({ length: 12 }, (_, i) => `<path d="M${122 + i * 23},148 L${118 + i * 23.4},132" stroke="${LN}" stroke-width="1.2"/>`).join('');
+    s += fd(112, 388, 150, '#b6402a') + fd(136, 364, 176, '#c8902e') + fd(160, 340, 200, '#b6402a') + fd(186, 314, 226, '#3a2a1e');
+    s += `<g fill="none" stroke="${LN}" stroke-width="1" opacity=".55">${[[124, 160], [148, 186], [172, 210]].map(([x, y]) => `<path d="M${x},${y + 14} V${GY - 6} M${500 - x},${y + 14} V${GY - 6}"/>`).join('')}</g>`;
+    s += `<path d="M200,226 V${GY}" stroke="#e2b54c" stroke-width="1" opacity=".6"/>`;
+    s += K.glyphColumn(['D028', 'X001'], 124, 192, 22, LN, 8).svg + K.glyphColumn(['S034'], 376, 200, 30, LN, 0).svg;
+    const wrap = '#efe2c0', wl = '#a8946a';
+    let L = '';
+    // 長矛
+    L += `<path d="M190,${GY - 4} V140" stroke="${LN}" stroke-width="7" stroke-linecap="round"/><path d="M190,${GY - 4} V140" stroke="#8a5a30" stroke-width="4" stroke-linecap="round"/><path d="M190,112 C198,124 198,136 190,146 C182,136 182,124 190,112 Z" fill="#c8902e" ${T.gs(1.2)}/>`;
+    // 身體（繃帶）
+    const body = 'M218,224 C232,216 268,216 282,224 C290,250 288,290 280,330 C276,354 272,372 268,384 L232,384 C228,372 224,354 220,330 C212,290 210,250 218,224 Z';
+    L += `<path d="${body}" fill="${wrap}" ${T.gs(1.6)}/>`;
+    L += within(body, Array.from({ length: 16 }, (_, i) => `<path d="M200,${226 + i * 11} L300,${216 + i * 11 + (i % 2 ? 8 : -2)}" stroke="${wl}" stroke-width="1.6"/>`).join(''));
+    L += `<path d="${body}" fill="none" ${T.gs(1.6)}/>`;
+    L += `<path d="M232,384 L230,${GY} H248 L248,384 Z M252,384 L252,${GY} H270 L268,384 Z" fill="${wrap}" ${T.gs(1.2)}/>`;
+    // 手臂：右臂握矛、左臂舉盾
+    L += `<path d="M222,232 C206,244 198,258 196,272" fill="none" stroke="${LN}" stroke-width="16" stroke-linecap="round"/><path d="M222,232 C206,244 198,258 196,272" fill="none" stroke="${wrap}" stroke-width="12" stroke-linecap="round"/><ellipse cx="192" cy="276" rx="8" ry="7" fill="${wrap}" ${T.gs(1.2)}/>`;
+    L += `<path d="M278,232 C292,246 300,262 302,276" fill="none" stroke="${LN}" stroke-width="16" stroke-linecap="round"/><path d="M278,232 C292,246 300,262 302,276" fill="none" stroke="${wrap}" stroke-width="12" stroke-linecap="round"/>`;
+    // 盾：上圓下平的牛皮盾
+    L += `<path d="M282,338 V262 C282,238 338,238 338,262 V338 Z" fill="#7a3a1c" ${T.gs(1.8)}/><path d="M290,330 V264 C290,248 330,248 330,264 V330 Z" fill="#f2e7cc" ${T.gs(.8)}/>`;
+    L += `<g fill="#3a2414">${[[300, 270], [318, 262], [310, 290], [298, 310], [322, 304], [314, 322]].map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="6" ry="4.5"/>`).join('')}</g><circle cx="310" cy="282" r="5" fill="#e2b54c" ${T.gs(1)}/>`;
+    // 金面具（條紋頭巾＋金臉）
+    L += `<path d="M222,196 C222,166 278,166 278,196 L284,232 H264 L262,214 H238 L236,232 H216 Z" fill="#2c5d9c" ${T.gs(1.6)}/>`;
+    L += within('M222,196 C222,166 278,166 278,196 L284,232 H264 L262,214 H238 L236,232 H216 Z', Array.from({ length: 8 }, (_, i) => `<path d="M210,${174 + i * 8} H290" stroke="#e2b54c" stroke-width="3.4"/>`).join(''));
+    L += `<path d="M232,190 C232,174 268,174 268,190 C268,208 262,218 250,220 C238,218 232,208 232,190 Z" fill="#e2b54c" ${T.gs(1.6)}/>`;
+    L += `<path d="M236,192 Q242,186 248,192 Q242,196 236,192 Z M252,192 Q258,186 264,192 Q258,196 252,192 Z" fill="#fff8e0" stroke="${LN}" stroke-width="1"/><circle cx="242" cy="192" r="2" fill="${LN}"/><circle cx="258" cy="192" r="2" fill="${LN}"/>`;
+    L += `<path d="M234,186 L248,186 M252,186 L266,186 M250,196 V206 M244,212 H256" fill="none" stroke="${LN}" stroke-width="1.4" stroke-linecap="round"/><path d="M246,220 H254 L256,232 Q250,236 244,232 Z" fill="#2c5d9c" ${T.gs(1)}/>`;
+    s += L;
+    s += T.base(GY, 150, 350);
+    return s;
+  };
 })();
