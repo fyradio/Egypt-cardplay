@@ -304,4 +304,68 @@
     s += base(GY, 104, 396);
     return s;
   };
+
+  // ───────── 小母獅 ─────────
+  // 蓮花圓窗裡，一隻大腳掌的小獅子壓低身子，準備撲向推著太陽球的聖甲蟲。
+  SCENES.cub = () => {
+    const GY = K.GROUND;
+    let s = K.goldGround(X0, Y0, W.w, W.h, 33);
+    s += glow(250, 286, 240, '#e0a02e', .42, .16);
+    // 蓮花圓窗：兩圈花瓣
+    const cx = 250, cy = 286;
+    for (const [n, r0, r1, wd, op, fill] of [[16, 96, 150, 22, .9, '#0f0b08'], [16, 70, 112, 16, .8, '#15100b']]) {
+      for (let i = 0; i < n; i++) {
+        const a = (i + (r0 === 70 ? .5 : 0)) / n * Math.PI * 2, c = Math.cos(a), sn = Math.sin(a), px = -sn, py = c;
+        const x0 = cx + c * r0, y0 = cy + sn * r0, x1 = cx + c * r1, y1 = cy + sn * r1, mx = cx + c * (r0 + r1) / 2, my = cy + sn * (r0 + r1) / 2;
+        s += `<path d="M${f(x0)},${f(y0)} Q${f(mx + px * wd)},${f(my + py * wd)} ${f(x1)},${f(y1)} Q${f(mx - px * wd)},${f(my - py * wd)} ${f(x0)},${f(y0)} Z" fill="${fill}" stroke="${G}" stroke-width="1.1" opacity="${op}"/>`;
+        if (r0 === 96) s += `<path d="M${f(cx + c * (r0 + 10))},${f(cy + sn * (r0 + 10))} L${f(cx + c * (r1 - 14))},${f(cy + sn * (r1 - 14))}" stroke="${i % 2 ? K.C.turq : K.C.rose}" stroke-width="1.4" opacity=".8"/>`;
+      }
+    }
+    s += `<circle cx="${cx}" cy="${cy}" r="70" fill="#0d0907" ${gs(1.8)}/><circle cx="${cx}" cy="${cy}" r="62" fill="none" stroke="${G}" stroke-width="1" stroke-dasharray="0.1 5" stroke-linecap="round"/>`;
+    s += `<circle cx="${cx}" cy="${cy}" r="58" fill="#e0a02e" opacity=".12"/>`;
+    // 兩側直行文字：獅子（E015）＋ 小的（G039 鴨子＝「兒子」）→ 用 M017
+    s += `<g ${gs(1)}><path d="M70,140 V380 M430,140 V380"/></g>`;
+    s += K.glyphColumn(['E015', 'M017'], 70, 150, 26, G, 8).svg + K.glyphColumn(['N005', 'S034'], 430, 150, 24, G, 10).svg;
+
+    const FUR = '#7a4a1e', FURL = '#9a6428', FURD = '#4a2a10';
+    let L = '';
+    // 尾巴：翹起來、末端彎
+    L += `<path d="M152,300 C128,288 118,262 126,240 C130,230 140,228 144,236" fill="none" stroke="${G}" stroke-width="9" stroke-linecap="round"/><path d="M152,300 C128,288 118,262 126,240 C130,230 140,228 144,236" fill="none" stroke="${FUR}" stroke-width="6" stroke-linecap="round"/>`;
+    L += `<path d="M144,236 C150,226 160,230 156,240 C152,246 144,246 142,240 Z" fill="#3a1f0c" ${gs(1.2)}/>`;
+    // 遠側的前腳
+    L += `<path d="M266,344 C276,360 290,372 304,378 L318,384 C316,374 300,364 290,354 C284,346 280,340 276,336 Z" fill="${FURD}" ${gs(1.4)}/>`;
+    L += `<ellipse cx="318" cy="384" rx="14" ry="7" fill="${FURD}" ${gs(1.4)}/>`;
+    // 身體：臀部抬高、前身壓低
+    const body = 'M280,306 C254,290 212,280 182,282 C160,284 146,298 146,318 C146,340 156,356 172,364 C200,374 240,376 268,372 C284,370 294,360 292,346 C290,330 288,316 280,306 Z';
+    const bid = uid('cb');
+    L += `<linearGradient id="${bid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${FURL}"/><stop offset=".7" stop-color="${FUR}"/><stop offset="1" stop-color="${FURD}"/></linearGradient>`;
+    L += `<path d="${body}" fill="url(#${bid})" ${gs(1.8)}/>`;
+    // 幼獅的斑點
+    L += `<g fill="${FURD}" opacity=".85">${[[196, 300], [214, 296], [232, 300], [206, 318], [226, 316], [248, 312], [186, 334], [262, 330]].map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="4.5" ry="3.2"/>`).join('')}</g>`;
+    // 後腿（圓圓的大腿）＋大腳掌
+    L += `<path d="M150,326 C148,302 166,292 186,298 C206,304 212,330 204,350 C200,362 196,372 196,380" fill="${FUR}" ${gs(1.6)}/>`;
+    L += `<ellipse cx="190" cy="384" rx="20" ry="8" fill="${FUR}" ${gs(1.5)}/><path d="M198,382 v4 M205,382 v4" ${gs(.8)}/>`;
+    // 近側的前腳：往前伸、壓低
+    L += `<path d="M276,334 C288,352 304,366 322,374 L340,380 C340,372 326,362 312,352 C300,344 292,334 290,324 Z" fill="${FUR}" ${gs(1.6)}/>`;
+    L += `<ellipse cx="344" cy="382" rx="18" ry="8" fill="${FUR}" ${gs(1.5)}/><path d="M350,379 v5 M357,380 v4" ${gs(.8)}/>`;
+    // 頭：大頭、圓耳
+    L += `<circle cx="282" cy="290" r="11" fill="${FUR}" ${gs(1.5)}/><circle cx="282" cy="290" r="5" fill="${FURD}"/>`;
+    const head = 'M268,320 C266,298 280,286 300,286 C322,286 336,298 338,314 C346,320 352,328 348,336 C342,346 330,350 318,350 C302,354 284,350 274,340 C268,334 268,326 268,320 Z';
+    L += `<path d="${head}" fill="url(#${bid})" ${gs(1.8)}/>`;
+    L += `<circle cx="302" cy="284" r="11" fill="${FUR}" ${gs(1.5)}/><circle cx="302" cy="285" r="5" fill="${FURD}"/>`;
+    L += `<path d="M316,312 C322,305 332,305 336,311 C331,317 322,318 316,312 Z" fill="${GF}" stroke="#0d0907" stroke-width="1"/><circle cx="327" cy="311" r="3.2" fill="#0d0907"/><circle cx="328.5" cy="309.5" r="1" fill="#fff6d8"/>`;
+    L += `<path d="M314,308 C320,302 330,301 338,306" fill="none" ${gs(1.3)}/>`;
+    L += `<path d="M343,322 C348,320 352,324 350,329 C346,330 343,327 343,322 Z" fill="#14100c" ${gs(.9)}/>`;
+    L += `<path d="M348,334 C342,340 334,342 326,340" fill="none" ${gs(1.1)}/><g fill="${G}">${[[336, 332], [340, 335], [333, 336]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r=".9"/>`).join('')}</g>`;
+    L += `<path d="M296,300 q6,-4 12,0" fill="none" ${gs(.8)} opacity=".7"/>`;
+    // 頸上的護身符（安卡）
+    L += `<path d="M276,322 C282,336 292,344 304,348" fill="none" stroke="${K.C.turq}" stroke-width="3"/><path d="M276,322 C282,336 292,344 304,348" fill="none" ${gs(.8)}/>`;
+    L += K.ankh(296, 360, 16, GF, '#0d0907', .8);
+    // 聖甲蟲推著太陽球
+    L += `<circle cx="420" cy="370" r="16" fill="url(#SUN)" ${gs(1.4)}/><circle cx="420" cy="370" r="10" fill="none" stroke="#ffd9a0" stroke-width=".8" opacity=".7"/>`;
+    L += `<g transform="translate(392,376)"><ellipse cx="0" cy="0" rx="13" ry="9" fill="#173f45" ${gs(1.3)}/><path d="M0,-9 V9" ${gs(.8)}/><circle cx="-13" cy="-1" r="4.5" fill="#173f45" ${gs(1)}/><path d="M8,6 l8,4 M2,8 l2,8 M-6,8 l-4,7 M10,-2 l9,-4" ${gs(1.2)}/></g>`;
+    s += L;
+    s += base(GY, 108, 436);
+    return s;
+  };
 })();
