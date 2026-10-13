@@ -723,4 +723,36 @@
     s += base(GY, 140, 360);
     return s;
   };
+
+  // ───────── 沙漠蠍（普通卡：紙草底）─────────
+  // 傳說伊西斯帶著小荷魯斯逃亡時，有七隻蠍子護送她：一隻大蠍在中央，六隻小蠍圍成一圈。
+  const scorpion = (T, cx, cy, k, rot, body, dark) => {
+    const st = T.gs(1.4 / k);
+    let o = `<g transform="translate(${cx},${cy}) rotate(${rot}) scale(${k})">`;
+    for (const sx of [-1, 1]) {
+      for (let i = 0; i < 4; i++) o += `<path d="M${sx * 8},${-6 + i * 7} L${sx * (20 + i * 2)},${-10 + i * 9} L${sx * (26 + i * 2)},${-2 + i * 11}" fill="none" stroke="${T.G}" stroke-width="${3.2}" stroke-linecap="round" stroke-linejoin="round"/><path d="M${sx * 8},${-6 + i * 7} L${sx * (20 + i * 2)},${-10 + i * 9} L${sx * (26 + i * 2)},${-2 + i * 11}" fill="none" stroke="${dark}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>`;
+      o += `<path d="M${sx * 6},-18 L${sx * 18},-30 L${sx * 20},-40" fill="none" stroke="${T.G}" stroke-width="5" stroke-linecap="round"/><path d="M${sx * 6},-18 L${sx * 18},-30 L${sx * 20},-40" fill="none" stroke="${body}" stroke-width="3" stroke-linecap="round"/>`;
+      o += `<path d="M${sx * 20},-38 C${sx * 30},-44 ${sx * 30},-58 ${sx * 22},-62 C${sx * 22},-54 ${sx * 20},-50 ${sx * 16},-48 C${sx * 12},-54 ${sx * 12},-60 ${sx * 14},-64 C${sx * 6},-58 ${sx * 8},-44 ${sx * 20},-38 Z" fill="${body}" ${st}/>`;
+    }
+    o += `<ellipse cx="0" cy="-10" rx="11" ry="13" fill="${body}" ${st}/><circle cx="-3" cy="-17" r="1.4" fill="${T.ink}"/><circle cx="3" cy="-17" r="1.4" fill="${T.ink}"/>`;
+    for (let i = 0; i < 5; i++) o += `<rect x="${-12 + i * .8}" y="${3 + i * 6}" width="${24 - i * 1.6}" height="6.5" rx="3" fill="${body}" ${st}/>`;
+    const tail = [[0, 38], [3, 46], [9, 53], [17, 57], [26, 56], [33, 50]];
+    tail.forEach(([x, y], i) => { o += `<ellipse cx="${x}" cy="${y}" rx="${4.6 - i * .3}" ry="${4.2 - i * .3}" fill="${body}" ${st}/>`; });
+    o += `<path d="M33,50 C40,46 42,38 38,32 C37,38 34,42 30,44 Z" fill="${dark}" ${st}/>`;
+    return o + '</g>';
+  };
+  SCENES.scorp = () => {
+    const T = theme(true), GY = K.GROUND;
+    let s = T.bg(132, '#f6d48a', 250, 254, 220);
+    // 沙紋光環
+    for (const [r, w, c] of [[132, 2, LN], [120, 1, '#b6402a'], [96, 1.4, LN]]) s += `<ellipse cx="250" cy="254" rx="${r * 1.12}" ry="${r * .86}" fill="none" stroke="${c}" stroke-width="${w}" ${r === 120 ? 'stroke-dasharray="2 5"' : ''}/>`;
+    s += `<ellipse cx="250" cy="254" rx="${96 * 1.12}" ry="${96 * .86}" fill="#e2b54c" opacity=".35"/>`;
+    s += `<g fill="none" stroke="#c8902e" stroke-width="1.4" opacity=".8">${Array.from({ length: 6 }, (_, i) => `<path d="M${180 + i * 6},${214 + i * 16} q35,-10 70,0 t70,0"/>`).join('')}</g>`;
+    // 六隻小蠍圍成一圈
+    for (let i = 0; i < 6; i++) { const a = -90 + 30 + i * 60, r = a * Math.PI / 180; s += scorpion(T, f(250 + Math.cos(r) * 148), f(254 + Math.sin(r) * 112), .62, a + 90, '#c8902e', '#5a3416'); }
+    // 中央的大蠍
+    s += scorpion(T, 250, 262, 1.75, -10, '#dcae52', '#8a4a1c');
+    s += K.glyphColumn(['N025', 'D021'], 60, 150, 26, LN, 8).svg;
+    return s;
+  };
 })();
