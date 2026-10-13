@@ -685,4 +685,42 @@
     s += base(GY, 130, 370);
     return s;
   };
+
+  // ───────── 賽特 ─────────
+  // 沙暴捲成的漩渦前，賽特獸站在岩頂：彎長的吻、方頂的豎耳、筆直分叉的尾巴。
+  SCENES.set = () => {
+    const T = theme(false), GY = K.GROUND;
+    let s = T.bg(83, '#b8402a', 250, 236, 260);
+    // 漩渦：一條金色螺旋＋沙粒
+    let d = ''; for (let i = 0; i <= 220; i++) { const th = i / 220 * Math.PI * 7.2, r = 6 + i * .62; d += (i ? ' L' : 'M') + f(250 + Math.cos(th) * r) + ',' + f(232 + Math.sin(th) * r * .82); }
+    s += `<path d="${d}" fill="none" stroke="${G}" stroke-width="1.6" opacity=".7"/>`;
+    s += `<g fill="${GF}" opacity=".7">${Array.from({ length: 40 }, (_, i) => { const th = i * 2.4, r = 30 + (i * 37) % 120; return `<circle cx="${f(250 + Math.cos(th) * r)}" cy="${f(232 + Math.sin(th) * r * .8)}" r="${1 + (i % 3) * .6}"/>`; }).join('')}</g>`;
+    // 閃電
+    s += `<path d="M444,128 L428,170 L440,170 L420,214" fill="none" stroke="#fff0b0" stroke-width="3" stroke-linejoin="round"/><path d="M110,140 L98,180 L110,180 L92,222" fill="none" stroke="#fff0b0" stroke-width="2" stroke-linejoin="round" opacity=".8"/>`;
+    s += K.glyphColumn(['S029', 'X001'], 66, 150, 28, G, 10).svg + K.glyphColumn(['N025'], 434, 300, 30, G, 0).svg;
+    // 岩頂
+    s += `<path d="M130,${GY} L150,350 L196,342 L260,346 L318,340 L360,350 L376,${GY} Z" fill="#2a1a10" ${gs(1.6)}/><path d="M164,356 L190,368 M300,350 L330,370 M230,350 L240,376" fill="none" stroke="${G}" stroke-width=".8" opacity=".6"/>`;
+    const red = '#8e3a22', dk = '#5a2414';
+    let L = '';
+    // 遠側的腿
+    L += `<path d="M210,292 L212,336 L206,372" fill="none" stroke="${G}" stroke-width="9" stroke-linecap="round"/><path d="M210,292 L212,336 L206,372" fill="none" stroke="${dk}" stroke-width="5.5" stroke-linecap="round"/><path d="M314,292 L328,334 L330,372" fill="none" stroke="${G}" stroke-width="9" stroke-linecap="round"/><path d="M314,292 L328,334 L330,372" fill="none" stroke="${dk}" stroke-width="5.5" stroke-linecap="round"/>`;
+    // 尾巴：筆直上翹、末端分叉
+    L += `<path d="M184,252 L172,214 L168,182" fill="none" stroke="${G}" stroke-width="10" stroke-linecap="round"/><path d="M184,252 L172,214 L168,182" fill="none" stroke="${red}" stroke-width="6" stroke-linecap="round"/><path d="M168,182 L156,160 M168,182 L180,158" fill="none" stroke="${G}" stroke-width="8" stroke-linecap="round"/><path d="M168,182 L156,160 M168,182 L180,158" fill="none" stroke="${red}" stroke-width="4" stroke-linecap="round"/>`;
+    // 身體：細長的犬形
+    L += `<path d="M180,262 C178,244 196,236 222,238 C252,240 280,240 304,234 C320,230 330,224 336,214 C344,198 356,190 368,194 L380,208 C386,214 390,222 390,230 C404,236 420,246 428,258 C430,264 424,268 416,266 C400,262 388,256 380,252 C372,262 358,272 344,284 C328,296 306,302 282,302 C256,302 232,300 210,296 C190,292 182,280 180,262 Z" fill="${red}" ${gs(1.8)}/>`;
+    L += `<g stroke="${dk}" stroke-width="3" opacity=".8">${[0, 1, 2, 3, 4].map((i) => `<path d="M${214 + i * 22},246 l6,${30 - (i % 2) * 6}"/>`).join('')}</g>`;
+    // 近側的腿
+    L += `<path d="M194,284 L184,330 L190,372" fill="none" stroke="${G}" stroke-width="11" stroke-linecap="round"/><path d="M194,284 L184,330 L190,372" fill="none" stroke="${red}" stroke-width="7" stroke-linecap="round"/><path d="M298,290 L298,330 L308,372" fill="none" stroke="${G}" stroke-width="11" stroke-linecap="round"/><path d="M298,290 L298,330 L308,372" fill="none" stroke="${red}" stroke-width="7" stroke-linecap="round"/>`;
+    L += `<path d="M180,372 h20 l-2,5 h-20 Z M298,372 h20 l-2,5 h-20 Z" fill="${GF}" ${gs(.9)}/>`;
+    // 方頂豎耳
+    L += `<path d="M364,196 L358,160 L376,156 L378,194 Z M380,200 L388,164 L404,170 L394,206 Z" fill="${red}" ${gs(1.6)}/><path d="M364,186 L362,166 L372,164 L373,186 Z" fill="${dk}" opacity=".7"/>`;
+    // 眼與口
+    L += `<path d="M380,220 C386,216 394,216 398,220 C394,224 386,225 380,220 Z" fill="#ffdc70" stroke="#0d0907" stroke-width=".9"/><circle cx="390" cy="220" r="1.8" fill="#0d0907"/>`;
+    L += `<path d="M418,262 C406,262 394,258 384,252" fill="none" ${gs(1)}/>`;
+    // 頸上的金環
+    L += `<path d="M334,214 C344,226 350,240 352,252" fill="none" stroke="${G}" stroke-width="7"/><path d="M334,214 C344,226 350,240 352,252" fill="none" stroke="${K.C.turq}" stroke-width="3"/>`;
+    s += `<g transform="translate(0,-28)">${L}</g>`;
+    s += base(GY, 140, 360);
+    return s;
+  };
 })();
