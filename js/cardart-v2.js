@@ -309,29 +309,35 @@
   // 蓮花圓窗裡，一隻大腳掌的小獅子壓低身子，準備撲向推著太陽球的聖甲蟲。
   SCENES.cub = () => {
     const GY = K.GROUND;
-    let s = K.goldGround(X0, Y0, W.w, W.h, 33);
-    s += glow(250, 286, 240, '#e0a02e', .42, .16);
+    // 普通卡：紙草底、墨線（構圖仍照三神標準）
+    const G = LN, GF = '#e2b54c';
+    const gs = (w) => `stroke="${LN}" stroke-width="${w * 1.25}" stroke-linejoin="round" stroke-linecap="round"`;
+    const base = (y, x0, x1) => `<g fill="#c8902e" ${gs(1.3)}><path d="M${x0},${y} H${x1} V${y + 10} H${x0} Z"/><path d="M${x0 - 16},${y + 10} H${x1 + 16} V${y + 22} H${x0 - 16} Z" fill="#2c5d9c"/></g>` + Array.from({ length: Math.floor((x1 - x0 - 16) / 19) + 1 }, (_, i) => K.diamond(x0 + 8 + i * 19, y + 5, 3, 3, i % 2 ? '#2c5d9c' : '#b6402a', 'none', 0)).join('');
+    let s = K.papyrusGround(X0, Y0, W.w, W.h, 33);
+    s += K.blockBand(X0, Y0, W.w, 9, ['#2c5d9c', '#e2b54c', '#b6402a', '#3b7d58', '#e2b54c']);
+    s += K.lotusFrieze(X0, Y0 + 9, W.w, 15);
+    s += glow(250, 286, 220, '#f6d48a', .55, .2);
     // 蓮花圓窗：兩圈花瓣
     const cx = 250, cy = 286;
-    for (const [n, r0, r1, wd, op, fill] of [[16, 96, 150, 22, .9, '#0f0b08'], [16, 70, 112, 16, .8, '#15100b']]) {
+    for (const [n, r0, r1, wd, op, fill] of [[16, 96, 150, 22, 1, '#3b7d58'], [16, 70, 112, 16, 1, '#e2b54c']]) {
       for (let i = 0; i < n; i++) {
         const a = (i + (r0 === 70 ? .5 : 0)) / n * Math.PI * 2, c = Math.cos(a), sn = Math.sin(a), px = -sn, py = c;
         const x0 = cx + c * r0, y0 = cy + sn * r0, x1 = cx + c * r1, y1 = cy + sn * r1, mx = cx + c * (r0 + r1) / 2, my = cy + sn * (r0 + r1) / 2;
-        s += `<path d="M${f(x0)},${f(y0)} Q${f(mx + px * wd)},${f(my + py * wd)} ${f(x1)},${f(y1)} Q${f(mx - px * wd)},${f(my - py * wd)} ${f(x0)},${f(y0)} Z" fill="${fill}" stroke="${G}" stroke-width="1.1" opacity="${op}"/>`;
-        if (r0 === 96) s += `<path d="M${f(cx + c * (r0 + 10))},${f(cy + sn * (r0 + 10))} L${f(cx + c * (r1 - 14))},${f(cy + sn * (r1 - 14))}" stroke="${i % 2 ? K.C.turq : K.C.rose}" stroke-width="1.4" opacity=".8"/>`;
+        s += `<path d="M${f(x0)},${f(y0)} Q${f(mx + px * wd)},${f(my + py * wd)} ${f(x1)},${f(y1)} Q${f(mx - px * wd)},${f(my - py * wd)} ${f(x0)},${f(y0)} Z" fill="${fill}" stroke="${LN}" stroke-width="1.4" opacity="${op}"/>`;
+        if (r0 === 96) s += `<path d="M${f(cx + c * (r0 + 10))},${f(cy + sn * (r0 + 10))} L${f(cx + c * (r1 - 14))},${f(cy + sn * (r1 - 14))}" stroke="${i % 2 ? '#a8d8c8' : '#2c5d9c'}" stroke-width="1.6" opacity=".9"/>`;
       }
     }
-    s += `<circle cx="${cx}" cy="${cy}" r="70" fill="#0d0907" ${gs(1.8)}/><circle cx="${cx}" cy="${cy}" r="62" fill="none" stroke="${G}" stroke-width="1" stroke-dasharray="0.1 5" stroke-linecap="round"/>`;
+    s += `<circle cx="${cx}" cy="${cy}" r="70" fill="#b6402a" ${gs(1.8)}/><circle cx="${cx}" cy="${cy}" r="62" fill="none" stroke="#f6d48a" stroke-width="1.4" stroke-dasharray="0.1 5" stroke-linecap="round"/>`;
     s += `<circle cx="${cx}" cy="${cy}" r="58" fill="#e0a02e" opacity=".12"/>`;
     // 兩側直行文字：獅子（E015）＋ 小的（G039 鴨子＝「兒子」）→ 用 M017
     s += `<g ${gs(1)}><path d="M70,140 V380 M430,140 V380"/></g>`;
     s += K.glyphColumn(['E015', 'M017'], 70, 150, 26, G, 8).svg + K.glyphColumn(['N005', 'S034'], 430, 150, 24, G, 10).svg;
 
-    const FUR = '#7a4a1e', FURL = '#9a6428', FURD = '#4a2a10';
+    const FUR = '#d9a457', FURL = '#ecc47a', FURD = '#a86c34';
     let L = '';
     // 尾巴：翹起來、末端彎
     L += `<path d="M152,300 C128,288 118,262 126,240 C130,230 140,228 144,236" fill="none" stroke="${G}" stroke-width="9" stroke-linecap="round"/><path d="M152,300 C128,288 118,262 126,240 C130,230 140,228 144,236" fill="none" stroke="${FUR}" stroke-width="6" stroke-linecap="round"/>`;
-    L += `<path d="M144,236 C150,226 160,230 156,240 C152,246 144,246 142,240 Z" fill="#3a1f0c" ${gs(1.2)}/>`;
+    L += `<path d="M144,236 C150,226 160,230 156,240 C152,246 144,246 142,240 Z" fill="#5a3416" ${gs(1.2)}/>`;
     // 遠側的前腳
     L += `<path d="M266,344 C276,360 290,372 304,378 L318,384 C316,374 300,364 290,354 C284,346 280,340 276,336 Z" fill="${FURD}" ${gs(1.4)}/>`;
     L += `<ellipse cx="318" cy="384" rx="14" ry="7" fill="${FURD}" ${gs(1.4)}/>`;
