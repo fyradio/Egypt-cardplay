@@ -865,4 +865,49 @@
     s += base(GY, 150, 350);
     return s;
   };
+
+  // ───────── 孔蘇 ─────────
+  // 夜空上排著一整個月的月相（他是「旅行者」，也是計算月份的神），中央是新月托滿月；他乘月船渡過夜空。
+  SCENES.khonsu = () => {
+    const T = theme(false), GY = K.GROUND;
+    let s = T.bg(151, '#3a5ab8', 250, 220, 260);
+    // 月相弧
+    for (let i = 0; i < 9; i++) {
+      const a = Math.PI * (1.08 + i * .105), x = 250 + Math.cos(a) * 200, y = 330 + Math.sin(a) * 196, ph = i / 8;
+      const id = uid('mp');
+      s += `<clipPath id="${id}"><circle cx="${f(x)}" cy="${f(y)}" r="11"/></clipPath><circle cx="${f(x)}" cy="${f(y)}" r="11" fill="#1a2440" ${gs(1)}/>`;
+      const off = i <= 4 ? -i / 4 * 22 : (8 - i) / 4 * 22;
+      s += `<g clip-path="url(#${id})"><circle cx="${f(x)}" cy="${f(y)}" r="11" fill="#eef2fa"/><circle cx="${f(x + off)}" cy="${f(y)}" r="11" fill="#1a2440"/></g><circle cx="${f(x)}" cy="${f(y)}" r="11" fill="none" ${gs(1)}/>`;
+    }
+    // 中央：新月托著滿月
+    s += `<circle cx="250" cy="214" r="64" fill="#eef2fa" ${gs(2)}/><circle cx="250" cy="214" r="54" fill="none" stroke="#b8c4e0" stroke-width="1.2"/><g fill="#cdd6ea"><circle cx="228" cy="196" r="10"/><circle cx="270" cy="228" r="14"/><circle cx="262" cy="192" r="5"/></g>`;
+    s += `<path d="M168,226 C176,300 324,300 332,226 C316,272 184,272 168,226 Z" fill="${GF}" ${gs(1.6)}/>`;
+    s += K.glyphColumn(['N011', 'N014'], 66, 150, 26, G, 10).svg + K.glyphColumn(['N014', 'N011'], 434, 150, 26, G, 10).svg;
+    // 夜空中的河
+    s += `<g fill="none" stroke="${G}" stroke-width="1" opacity=".6">${Array.from({ length: 9 }, (_, i) => `<path d="M${60 + i * 44},${GY - 6 - (i % 2) * 5} q11,-5 22,0 t22,0"/>`).join('')}</g>`;
+    let L = '';
+    // 月船
+    L += `<path d="M110,330 C140,368 360,368 390,330 C384,360 350,380 250,380 C150,380 116,360 110,330 Z" fill="#15100d" ${gs(1.8)}/><path d="M110,330 C102,316 106,302 116,296 C118,308 116,318 122,328 Z M390,330 C398,316 394,302 384,296 C382,308 384,318 378,328 Z" fill="${GF}" ${gs(1.2)}/>`;
+    L += `<path d="M126,350 C180,366 320,366 374,350" fill="none" stroke="${K.C.turq}" stroke-width="2.4"/>`;
+    // 船上的小神龕
+    L += `<path d="M300,350 V318 H340 V350 Z" fill="#15100d" ${gs(1.2)}/><path d="M296,318 H344 L340,310 H300 Z" fill="${GF}" ${gs(1)}/>`;
+    L += '<g transform="translate(248,352) scale(.86) translate(-248,-352)">';
+    // 孔蘇：側面、木乃伊形、側髮辮
+    const sk = '#5a7ab8', wr = '#ece3cc';
+    L += `<path d="M226,250 C238,244 258,244 266,252 C268,282 264,316 260,352 H232 C228,318 224,282 226,250 Z" fill="${wr}" ${gs(1.6)}/>`;
+    L += within('M226,250 C238,244 258,244 266,252 C268,282 264,316 260,352 H232 C228,318 224,282 226,250 Z', Array.from({ length: 10 }, (_, i) => `<path d="M220,${262 + i * 9} L272,${258 + i * 9}" stroke="#c8b890" stroke-width="1"/>`).join(''));
+    L += `<path d="M250,264 L262,236 M262,236 C264,226 276,226 276,236" fill="none" stroke="${G}" stroke-width="5" stroke-linecap="round"/><path d="M250,264 L262,236 M262,236 C264,226 276,226 276,236" fill="none" stroke="#1c3f7a" stroke-width="2.4" stroke-linecap="round"/>`;
+    L += `<path d="M256,264 L272,240" stroke="${G}" stroke-width="5" stroke-linecap="round"/><path d="M256,264 L272,240" stroke="${GF}" stroke-width="2.4" stroke-linecap="round"/>` + [-6, 0, 6].map((x) => `<path d="M272,240 l${8 + x * .3},${-4 + x}" stroke="#c8432a" stroke-width="2"/>`).join('');
+    L += `<ellipse cx="256" cy="264" rx="7" ry="6" fill="${sk}" ${gs(1)}/>`;
+    L += `<path d="M228,250 C236,244 256,244 266,250 C262,258 250,262 238,260 Z" fill="${GF}" ${gs(1)}/>`;
+    L += `<path d="M240,224 C240,210 252,204 262,206 C270,208 274,216 274,224 C278,228 278,232 274,234 C270,240 260,244 250,242 C244,240 240,232 240,224 Z" fill="${sk}" ${gs(1.6)}/>`;
+    L += `<path d="M262,220 C265,217 270,217 272,220 C269,222 265,223 262,220 Z" fill="#f2e7cc" stroke="#0d0907" stroke-width=".8"/><circle cx="267" cy="220" r="1.4" fill="#0d0907"/>`;
+    L += `<path d="M240,222 C238,210 248,202 262,204 C270,206 274,210 274,214 C262,212 254,216 252,226 Z" fill="#14100c" ${gs(1.2)}/><path d="M240,222 C232,232 232,248 238,258" fill="none" stroke="${G}" stroke-width="7" stroke-linecap="round"/><path d="M240,222 C232,232 232,248 238,258" fill="none" stroke="#14100c" stroke-width="4" stroke-linecap="round"/>`;
+    L += `<path d="M268,240 L270,252 L276,250 L274,238 Z" fill="#1c3f7a" ${gs(.8)}/>`;
+    // 頭上：小的新月托滿月
+    L += `<path d="M240,204 C242,190 270,190 272,204 C266,196 246,196 240,204 Z" fill="${GF}" ${gs(1)}/><circle cx="256" cy="186" r="10" fill="#eef2fa" ${gs(1.2)}/>`;
+    L += '</g>';
+    s += L;
+    return s;
+  };
 })();
