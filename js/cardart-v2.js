@@ -910,4 +910,41 @@
     s += L;
     return s;
   };
+
+  // ───────── 巴斯泰特 ─────────
+  // 背後是一支巨大的叉鈴（sistrum，她的樂器），新月掛在一旁；貓端坐著，戴金耳環、鼻環和荷魯斯之眼項圈。
+  SCENES.bastet = () => {
+    const T = theme(false), GY = K.GROUND;
+    let s = T.bg(152, '#3a5ab8', 250, 236, 250);
+    // 叉鈴：馬蹄形框＋三根橫桿與小鈴片＋手柄頂端的牛耳女神臉
+    s += `<path d="M160,330 V220 C160,120 340,120 340,220 V330" fill="none" stroke="${G}" stroke-width="12" stroke-linecap="round"/><path d="M160,330 V220 C160,120 340,120 340,220 V330" fill="none" stroke="#15100d" stroke-width="7" stroke-linecap="round"/><path d="M160,330 V220 C160,120 340,120 340,220 V330" fill="none" stroke="${K.C.turq}" stroke-width="1.4" stroke-dasharray="4 4"/>`;
+    for (const y of [190, 236, 282]) { s += `<path d="M150,${y} H350" stroke="${G}" stroke-width="3"/><path d="M144,${y} q-6,0 -6,6 M356,${y} q6,0 6,6" fill="none" ${gs(1.4)}/>`; for (const x of [184, 210, 290, 316]) s += `<rect x="${x - 6}" y="${y - 3}" width="12" height="6" rx="2" fill="${GF}" ${gs(.6)}/>`; }
+    s += `<path d="M232,334 H268 L262,${GY} H238 Z" fill="#15100d" ${gs(1.4)}/>`;
+    s += `<path d="M362,168 C350,150 352,128 368,118 C356,136 360,156 376,166 C370,170 366,170 362,168 Z" fill="${GF}" ${gs(1)}/>`;
+    s += K.glyphColumn(['B001', 'X001'], 70, 170, 28, G, 10).svg + K.glyphColumn(['N011', 'N014'], 432, 190, 26, G, 10).svg;
+    const fur = '#2a2018', furL = '#4a3a2a';
+    let L = '';
+    // 尾巴繞到前腳邊
+    L += `<path d="M204,382 C230,392 270,392 300,388 C312,386 318,380 314,374" fill="none" stroke="${G}" stroke-width="10" stroke-linecap="round"/><path d="M204,382 C230,392 270,392 300,388 C312,386 318,380 314,374" fill="none" stroke="${fur}" stroke-width="6.5" stroke-linecap="round"/>`;
+    // 身體
+    const body = 'M262,196 C258,184 258,170 262,150 L276,172 L286,148 C292,162 294,176 298,182 C304,186 308,192 306,198 C304,204 298,206 294,208 C292,216 292,224 294,232 C298,262 300,300 304,340 L308,380 H202 C188,368 186,346 194,322 C200,300 210,276 224,256 C238,236 252,218 262,196 Z';
+    const bid = uid('bt');
+    L += `<linearGradient id="${bid}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="${fur}"/><stop offset=".7" stop-color="${furL}"/><stop offset="1" stop-color="${fur}"/></linearGradient>`;
+    L += `<path d="${body}" fill="url(#${bid})" ${gs(1.8)}/>`;
+    L += `<path d="M284,296 C284,330 284,356 286,380 M214,300 C206,320 206,346 214,366" fill="none" stroke="${G}" stroke-width="1" opacity=".8"/>`;
+    L += `<ellipse cx="298" cy="382" rx="14" ry="5" fill="${fur}" ${gs(1.2)}/>`;
+    // 耳朵內側、眼睛、鼻、鬍鬚
+    L += `<path d="M266,166 L268,156 L274,170 Z M280,166 L286,154 L288,170 Z" fill="#7a4a3a"/>`;
+    L += `<path d="M282,184 C286,180 294,180 297,184 C293,188 286,188 282,184 Z" fill="#e8c35a" stroke="#0d0907" stroke-width=".9"/><path d="M289,181 V187" stroke="#0d0907" stroke-width="2"/>`;
+    L += `<path d="M306,196 L303,199" stroke="#0d0907" stroke-width="2.4" stroke-linecap="round"/><path d="M302,202 L322,198 M302,204 L320,206" stroke="${GF}" stroke-width=".8"/>`;
+    // 金耳環、鼻環、頭上的聖甲蟲
+    L += `<circle cx="270" cy="182" r="5" fill="none" stroke="${GF}" stroke-width="2.2"/><circle cx="304" cy="203" r="2.6" fill="none" stroke="${GF}" stroke-width="1.4"/>`;
+    L += `<ellipse cx="274" cy="176" rx="5" ry="4" fill="${K.C.turq}" ${gs(.8)}/>`;
+    // 項圈與荷魯斯之眼墜飾
+    L += `<path d="M262,214 C272,226 288,230 296,226" fill="none" stroke="${G}" stroke-width="7"/><path d="M262,214 C272,226 288,230 296,226" fill="none" stroke="${K.C.turq}" stroke-width="3.4"/>`;
+    L += `<g transform="translate(288,242)"><rect x="-11" y="-8" width="22" height="16" rx="3" fill="${GF}" ${gs(1)}/><path d="M-7,-1 Q0,-6 7,-1 Q0,3 -7,-1 Z" fill="#f2e7cc" stroke="#0d0907" stroke-width=".7"/><circle cx="0" cy="-1" r="1.6" fill="#0d0907"/><path d="M-3,2 L-5,6 M2,2 Q4,6 7,5" fill="none" stroke="#0d0907" stroke-width=".8"/></g>`;
+    s += L;
+    s += base(GY, 150, 350);
+    return s;
+  };
 })();
