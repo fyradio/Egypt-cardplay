@@ -374,4 +374,66 @@
     s += base(GY, 108, 436);
     return s;
   };
+
+  // ───────── 塞赫美特 ─────────
+  // 火焰光環前，獅頭女神側身坐在王座上，手持安卡；兩旁是阿蒙霍特普三世立的成排雕像。
+  SCENES.sekhmet = () => {
+    const GY = K.GROUND;
+    let s = K.goldGround(X0, Y0, W.w, W.h, 64);
+    s += glow(244, 250, 250, '#d8402a', .55, .22);
+    // 火焰光環：一圈 S 形火舌
+    const cx = 244, cy = 250, R = 100;
+    for (let i = 0; i < 28; i++) {
+      const a = i / 28 * Math.PI * 2, c = Math.cos(a), sn = Math.sin(a), px = -sn, py = c, L = i % 2 ? 40 : 58;
+      const x0 = cx + c * R, y0 = cy + sn * R, x1 = cx + c * (R + L), y1 = cy + sn * (R + L);
+      const m1x = cx + c * (R + L * .35) + px * 12, m1y = cy + sn * (R + L * .35) + py * 12, m2x = cx + c * (R + L * .7) - px * 8, m2y = cy + sn * (R + L * .7) - py * 8;
+      s += `<path d="M${f(x0 - px * 9)},${f(y0 - py * 9)} C${f(m1x)},${f(m1y)} ${f(m2x)},${f(m2y)} ${f(x1)},${f(y1)} C${f(m2x + px * 6)},${f(m2y + py * 6)} ${f(m1x - px * 14)},${f(m1y - py * 14)} ${f(x0 + px * 9)},${f(y0 + py * 9)} Z" fill="${i % 2 ? '#c8432a' : GF}" stroke="${G}" stroke-width=".9" opacity="${i % 2 ? .55 : .5}"/>`;
+    }
+    s += `<circle cx="${cx}" cy="${cy}" r="${R + 2}" fill="#0d0907" ${gs(2)}/><circle cx="${cx}" cy="${cy}" r="${R - 8}" fill="none" stroke="${G}" stroke-width="1" stroke-dasharray="0.1 5" stroke-linecap="round"/>`;
+    s += `<circle cx="${cx}" cy="${cy}" r="${R}" fill="#c8432a" opacity=".14"/>`;
+    // 兩旁成排的小雕像（坐姿剪影）
+    const statue = (x, k, op) => `<g transform="translate(${x},${GY}) scale(${k})" opacity="${op}" fill="#120d0a" ${gs(1.2 / k)}><path d="M-14,0 V-30 H6 V0 Z"/><path d="M-8,-30 V-62 C-8,-70 4,-70 6,-62 L8,-44 H20 V-30 Z"/><circle cx="-1" cy="-74" r="9"/><path d="M5,-76 L13,-72 L6,-68"/><circle cx="-2" cy="-88" r="5"/></g>`;
+    s += statue(78, .95, .8) + statue(118, .75, .55) + statue(424, .95, .8) + statue(384, .75, .55);
+    // 文字：左＝塞赫美特（sḫm-m-t），右＝兩地的女主人（nbt tꜣwy）
+    s += K.glyphColumn(['S042', 'G017', 'X001'], 70, 130, 22, G, 6).svg + K.glyphColumn(['V030', 'X001', 'N016', 'N016'], 432, 130, 20, G, 5).svg;
+
+    const SK = '#6a4418', SKD = '#4a2c10', RED = '#8e2a1c';
+    let L = '';
+    // 王座：方塊座＋矮靠背，側面有羽毛紋
+    L += `<path d="M184,${GY} V306 H272 V${GY} Z" fill="#15100d" ${gs(1.6)}/><path d="M184,306 V246 H200 V306 Z" fill="#15100d" ${gs(1.4)}/>`;
+    L += `<path d="M196,318 H262 V376 H196 Z" fill="none" ${gs(1)}/>` + Array.from({ length: 5 }, (_, i) => `<path d="M${200 + i * 12},322 q6,8 0,16 q6,8 0,16 q6,8 0,16" fill="none" stroke="${G}" stroke-width=".8" opacity=".8"/>`).join('');
+    L += `<path d="M262,322 v50" stroke="${K.C.turq}" stroke-width="2"/>`;
+    // 身體：紅色緊身長裙（坐姿）
+    const dress = 'M220,212 C242,204 258,212 260,230 C262,246 254,258 254,272 C266,286 292,288 306,292 C314,296 314,314 304,318 L302,384 L284,384 L282,320 C262,320 236,318 222,308 C214,282 214,240 220,212 Z';
+    L += `<path d="${dress}" fill="${RED}" ${gs(1.8)}/>`;
+    L += `<g fill="none" stroke="${G}" stroke-width=".7" opacity=".55"><path d="M230,240 V300 M240,236 V300 M262,296 H300 M262,306 H300"/></g>`;
+    // 腳
+    L += `<path d="M282,384 L284,${GY - 2} H326 C326,${GY - 8} 318,${GY - 12} 304,${GY - 12} L302,384 Z" fill="${SK}" ${gs(1.4)}/>`;
+    // 手臂與安卡
+    L += `<path d="M236,222 C232,240 234,258 242,270 C256,284 276,290 292,290" fill="none" stroke="${G}" stroke-width="14" stroke-linecap="round"/><path d="M236,222 C232,240 234,258 242,270 C256,284 276,290 292,290" fill="none" stroke="${SK}" stroke-width="10.5" stroke-linecap="round"/>`;
+    L += K.ankh(300, 262, 44, GF, '#0d0907', 1);
+    // 寬領圈
+    L += `<path d="M222,210 C236,204 254,206 262,218 C258,232 246,240 232,240 C226,234 222,222 222,210 Z" fill="#15100d" ${gs(1.3)}/><path d="M226,214 C238,210 252,212 258,220 M226,222 C236,222 248,224 254,230 M228,230 C236,232 244,234 250,236" fill="none" stroke="${K.C.turq}" stroke-width="2"/>`;
+    // 假髮（垂到肩後）
+    L += `<path d="M206,168 C206,148 222,138 240,140 C252,142 258,150 258,160 L244,164 L240,214 C228,220 214,218 206,210 Z" fill="#14100c" ${gs(1.6)}/>`;
+    L += `<g fill="none" stroke="${G}" stroke-width=".7" opacity=".7">${[212, 220, 228, 236].map((x) => `<path d="M${x},160 V${212}"/>`).join('')}</g>`;
+    // 母獅頭（側面向右）
+    const head = 'M236,166 C238,150 252,144 264,148 C274,152 280,160 286,168 C292,172 296,178 294,184 C290,188 284,188 282,192 C280,200 270,204 260,204 C250,204 242,198 238,190 C234,182 234,174 236,166 Z';
+    L += `<path d="${head}" fill="${SK}" ${gs(1.7)}/>`;
+    L += `<path d="M262,170 C266,166 274,166 278,170 C274,174 266,175 262,170 Z" fill="${GF}" stroke="#0d0907" stroke-width=".9"/><circle cx="271" cy="170" r="1.8" fill="#0d0907"/>`;
+    L += `<path d="M258,166 C264,162 272,161 280,164" fill="none" ${gs(1.2)}/><path d="M278,171 C282,176 284,180 288,182" fill="none" stroke="#0d0907" stroke-width="1.3"/>`;
+    L += `<path d="M290,176 C294,176 296,179 295,183 C292,184 290,182 289,179 Z" fill="#14100c"/><path d="M294,186 C288,190 282,190 276,188" fill="none" ${gs(1)}/>`;
+    L += `<path d="M246,176 C248,186 252,194 258,198 M250,168 C254,180 260,190 268,196" fill="none" ${gs(.7)} opacity=".7"/>`;
+    L += `<path d="M244,152 C242,144 246,138 252,140 C254,146 252,150 248,154 Z" fill="${SKD}" ${gs(1.1)}/>`;
+    // 日輪＋聖蛇
+    L += `<circle cx="250" cy="112" r="26" fill="url(#SUN)" ${gs(1.8)}/><circle cx="250" cy="112" r="18" fill="none" stroke="#ffd9a0" stroke-width=".8" opacity=".7"/>`;
+    L += `<path d="M240,138 C246,136 256,136 262,140 L258,146 C252,144 246,144 242,146 Z" fill="${GF}" stroke="#0d0907" stroke-width=".8"/>`;
+    L += `<path d="M268,134 C276,130 280,120 276,110 C272,106 268,110 270,116 C272,122 268,128 262,132 Z" fill="${K.C.turq}" ${gs(1.1)}/>`;
+    // 腳下翻倒的紅啤酒（傳說中讓她醉倒的酒）
+    L += `<g transform="translate(366,${GY - 10}) rotate(78)"><path d="M-14,-24 Q-20,0 -12,6 H12 Q20,0 14,-24 Q11,-30 4,-31 H-4 Q-11,-30 -14,-24 Z" fill="#15100d" ${gs(1.4)}/><path d="M-14,-14 H14" stroke="${G}" stroke-width=".8"/></g>`;
+    L += `<path d="M332,${GY - 1} C352,${GY - 7} 380,${GY - 6} 404,${GY - 1} Z" fill="#c8432a" opacity=".85" stroke="${G}" stroke-width=".8"/>`;
+    s += `<g transform="translate(244,${GY}) scale(.84) translate(-244,-${GY})">${L}</g>`;
+    s += base(GY, 150, 350);
+    return s;
+  };
 })();
