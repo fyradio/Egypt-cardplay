@@ -820,4 +820,49 @@
     s += T.base(GY, 150, 350);
     return s;
   };
+
+  // ───────── 奧西里斯（神話卡）─────────
+  // 一圈發芽的麥穗光環（重生），兩旁是傑德柱；綠臉的奧西里斯正面站立，戴阿提夫冠，胸前交叉彎鉤與連枷。
+  SCENES.osiris = () => {
+    const T = theme(false), GY = K.GROUND;
+    let s = T.bg(142, '#27b56a', 250, 236, 260);
+    // 麥穗光環
+    const cx = 250, cy = 240;
+    for (let i = 0; i < 30; i++) {
+      const a = i / 30 * Math.PI * 2, c = Math.cos(a), sn = Math.sin(a), r0 = 104, r1 = i % 2 ? 140 : 156;
+      s += `<path d="M${f(cx + c * r0)},${f(cy + sn * r0)} L${f(cx + c * r1)},${f(cy + sn * r1)}" stroke="${G}" stroke-width="1"/>`;
+      for (let k = 0; k < 4; k++) { const rr = r0 + 14 + k * ((r1 - r0 - 14) / 4); for (const sd of [-1, 1]) s += `<ellipse cx="${f(cx + c * rr - sn * sd * 4)}" cy="${f(cy + sn * rr + c * sd * 4)}" rx="4.6" ry="2" transform="rotate(${f(a * 180 / Math.PI + sd * 30)} ${f(cx + c * rr - sn * sd * 4)} ${f(cy + sn * rr + c * sd * 4)})" fill="${GF}" opacity=".8"/>`; }
+    }
+    s += `<circle cx="${cx}" cy="${cy}" r="104" fill="#0d0907" ${gs(1.8)}/><circle cx="${cx}" cy="${cy}" r="96" fill="none" stroke="${G}" stroke-width="1" stroke-dasharray="0.1 5" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="96" fill="#27b56a" opacity=".12"/>`;
+    // 兩旁的傑德柱
+    const djed = (x) => `<g fill="#15100d" ${gs(1.4)}><path d="M${x - 10},${GY} V230 H${x + 10} V${GY} Z"/>${[0, 1, 2, 3].map((i) => `<path d="M${x - 22},${178 + i * 13} H${x + 22} V${188 + i * 13} H${x - 22} Z"/>`).join('')}<path d="M${x - 14},230 H${x + 14} V218 C${x + 10},210 ${x - 10},210 ${x - 14},218 Z"/></g>` + [0, 1, 2, 3].map((i) => K.diamond(x, 183 + i * 13, 3, 3, i % 2 ? K.C.turq : K.C.rose, 'none', 0)).join('');
+    s += djed(70) + djed(430);
+    s += K.glyphColumn(['Q001', 'D004'], 70, 270, 22, G, 10).svg + K.glyphColumn(['S038', 'S045'], 430, 270, 22, G, 10).svg;
+    const green = '#1f6a3a', wrap = '#ece3cc';
+    let L = '';
+    // 身體：白色裹布，正面
+    const body = 'M216,232 C230,224 270,224 284,232 C290,268 286,306 278,340 C274,360 270,374 268,386 H232 C230,374 226,360 222,340 C214,306 210,268 216,232 Z';
+    L += `<path d="${body}" fill="${wrap}" ${gs(1.8)}/>`;
+    L += within(body, `<path d="M250,300 V390" stroke="#c8b890" stroke-width="1.2"/>` + Array.from({ length: 9 }, (_, i) => `<path d="M206,${300 + i * 10} Q250,${306 + i * 10} 294,${300 + i * 10}" fill="none" stroke="#c8b890" stroke-width="1"/>`).join(''));
+    L += `<path d="M228,330 H272 L270,344 H230 Z" fill="#c8432a" ${gs(1)}/><path d="M242,344 V384 M258,344 V384" stroke="#c8432a" stroke-width="3"/>`;
+    // 雙手交叉，握彎鉤與連枷
+    L += `<path d="M222,248 C236,276 258,282 274,276 M278,248 C264,276 242,282 226,276" fill="none" stroke="${G}" stroke-width="14" stroke-linecap="round"/><path d="M222,248 C236,276 258,282 274,276 M278,248 C264,276 242,282 226,276" fill="none" stroke="${green}" stroke-width="10" stroke-linecap="round"/>`;
+    L += `<path d="M236,280 L262,212 M262,212 C268,196 286,198 284,212 C283,218 278,220 276,216" fill="none" stroke="${G}" stroke-width="7" stroke-linecap="round"/><path d="M236,280 L262,212 M262,212 C268,196 286,198 284,212 C283,218 278,220 276,216" fill="none" stroke="#1c3f7a" stroke-width="3.6" stroke-linecap="round"/>`;
+    L += `<path d="M264,280 L240,214" stroke="${G}" stroke-width="7" stroke-linecap="round"/><path d="M264,280 L240,214" stroke="${GF}" stroke-width="3.6" stroke-linecap="round"/>` + [-12, 0, 12].map((x) => `<path d="M240,214 Q${232 + x * .4},200 ${226 + x},190" fill="none" stroke="${G}" stroke-width="4.6" stroke-linecap="round"/><path d="M240,214 Q${232 + x * .4},200 ${226 + x},190" fill="none" stroke="#c8432a" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 2"/>`).join('');
+    // 寬領
+    L += `<path d="M218,230 Q250,256 282,230 L280,240 Q250,266 220,240 Z" fill="${GF}" ${gs(1)}/><path d="M222,236 Q250,258 278,236" fill="none" stroke="${K.C.turq}" stroke-width="2.4"/>`;
+    // 綠色的臉、假鬍子
+    L += `<path d="M232,188 C232,168 268,168 268,188 C268,208 262,220 250,222 C238,220 232,208 232,188 Z" fill="${green}" ${gs(1.6)}/>`;
+    L += `<path d="M236,192 Q242,186 248,192 Q242,196 236,192 Z M252,192 Q258,186 264,192 Q258,196 252,192 Z" fill="#f2e7cc" stroke="#0d0907" stroke-width="1"/><circle cx="242" cy="192" r="2" fill="#0d0907"/><circle cx="258" cy="192" r="2" fill="#0d0907"/>`;
+    L += `<path d="M234,186 L248,186 M252,186 L266,186" stroke="#0d0907" stroke-width="1.8" stroke-linecap="round"/><path d="M250,196 V206 M244,212 H256" fill="none" stroke="#0d0907" stroke-width="1.3" stroke-linecap="round"/>`;
+    L += `<path d="M245,222 H255 L258,240 Q250,246 242,240 Z" fill="#14100c" ${gs(1)}/>`;
+    // 阿提夫冠：白冠＋兩根羽毛＋公羊角＋聖蛇
+    L += `<path d="M236,176 C234,146 242,122 250,108 C258,122 266,146 264,176 Z" fill="${wrap}" ${gs(1.6)}/><circle cx="250" cy="106" r="5" fill="${GF}" ${gs(1)}/>`;
+    L += `<path d="M236,174 C226,150 222,128 224,112 C230,126 234,146 238,168 Z M264,174 C274,150 278,128 276,112 C270,126 266,146 262,168 Z" fill="${GF}" ${gs(1.2)}/>`;
+    L += `<path d="M236,178 C218,176 208,182 206,188 C216,186 226,186 236,186 Z M264,178 C282,176 292,182 294,188 C284,186 274,186 264,186 Z" fill="${GF}" ${gs(1)}/>`;
+    L += `<path d="M250,172 C246,164 248,156 252,154 C255,158 254,164 252,168 Z" fill="${K.C.turq}" ${gs(.8)}/>`;
+    s += `<g transform="translate(250,${GY}) scale(.92) translate(-250,-${GY})">${L}</g>`;
+    s += base(GY, 150, 350);
+    return s;
+  };
 })();
